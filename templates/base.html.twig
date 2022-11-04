@@ -17,7 +17,10 @@
         <div class="navbar-like">
             <form class="navbar-form" role="search" style="position: absolute; right: 20px;" action="{{ path('app_homepage') }}">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search ..." name="q">
+                    <input type="text" class="form-control" placeholder="Search..." name="q" value="{{ app.request.query.get('q') }}">
+                    {% if app.request.query.has('q') %}
+                        <a href="{{ path('app_homepage') }}"><i class="fa-solid fa-times"></i></a>
+                    {% endif %}
                 </div>
             </form>
 
