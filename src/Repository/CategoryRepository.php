@@ -29,6 +29,8 @@ class CategoryRepository extends ServiceEntityRepository
 ////        dd($query->getSQL());
 
         $qb = $this->createQueryBuilder('category')
+            ->addSelect('fortune_cookies')
+            ->leftJoin('category.fortuneCookies', 'fortune_cookies')
             ->addOrderBy('category.name', Criteria::DESC);
         $query = $qb->getQuery();
 //        dd($query->getDQL());
@@ -39,10 +41,25 @@ class CategoryRepository extends ServiceEntityRepository
     public function search(string $term): array
     {
         return $this->createQueryBuilder('category')
-            ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm')
+            ->addSelect('fortune_cookies')
+            ->leftJoin('category.fortuneCookies', 'fortune_cookies')
+            ->andWhere('category.name LIKE :searchTerm
+            OR category.iconKey LIKE :searchTerm
+            OR fortune_cookies.fortune LIKE :searchTerm')
             ->setParameter('searchTerm', '%'.$term.'%')
             ->getQuery()
             ->execute();
+    }
+
+    public function findWithFortunesJoin(int $id): ?Category
+    {
+        return $this->createQueryBuilder('category')
+            ->addSelect('fortune_cookies')
+            ->leftJoin('category.fortuneCookies', 'fortune_cookies')
+            ->andWhere('category.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function save(Category $entity, bool $flush = false): void
