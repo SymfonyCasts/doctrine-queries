@@ -14,10 +14,10 @@ class DiscontinuedFilterSubscriber implements EventSubscriberInterface
 
     public function onRequestEvent(RequestEvent $event): void
     {
-        $this->entityManager
-            ->getFilters()
-            ->enable('fortune_cookie_discontinued')
-            ->setParameter('discontinued', false);
+//        $this->entityManager
+//            ->getFilters()
+//            ->enable('fortune_cookie_discontinued')
+//            ->setParameter('discontinued', false);
     }
 
     public static function getSubscribedEvents(): array

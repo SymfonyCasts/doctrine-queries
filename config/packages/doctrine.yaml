@@ -16,7 +16,11 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
         filters:
-            fortune_cookie_discontinued: App\Doctrine\DiscontinuedFilter
+            fortune_cookie_discontinued:
+                class: App\Doctrine\DiscontinuedFilter
+                enabled: true
+                parameters:
+                    discontinued: false
 
 when@test:
     doctrine:
