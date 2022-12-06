@@ -22,17 +22,32 @@ class FortuneCookieRepository extends ServiceEntityRepository
         parent::__construct($registry, FortuneCookie::class);
     }
 
-    public function countNumberPrintedForCategory(Category $category): int
+    public function countNumberPrintedForCategory(Category $category): array
     {
-//        $result = $this->createQueryBuilder('fortune_cookie')
-        return (int) $this->createQueryBuilder('fortune_cookie')
-            ->select('SUM(fortune_cookie.numberPrinted) AS fortunesPrinted')
-            ->andWhere('fortune_cookie.category = :category')
-            ->setParameter('category', $category)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $conn = $this->getEntityManager()->getConnection();
+//        dd($conn);
+        $sql = 'SELECT SUM(fortune_cookie.number_printed) AS fortunesPrinted, AVG(fortune_cookie.number_printed) fortunesAverage, category.name FROM fortune_cookie INNER JOIN category ON category.id = fortune_cookie.category_id WHERE fortune_cookie.category_id = :category';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery([
+            'category' => $category->getId(),
+        ]);
+//        dd($result->fetchAssociative());
+        return $result->fetchAssociative();
 
-//        dd($result);
+//        $result = $this->createQueryBuilder('fortune_cookie')
+//            ->select('SUM(fortune_cookie.numberPrinted) AS fortunesPrinted')
+//            ->addSelect('AVG(fortune_cookie.numberPrinted) fortunesAverage')
+//            ->addSelect('category.name')
+//            ->innerJoin('fortune_cookie.category', 'category')
+//            ->andWhere('fortune_cookie.category = :category')
+//            ->setParameter('category', $category)
+//            ->getQuery()
+//            ->getSingleResult();
+//
+////        dd($result);
+//
+////        return (int) $result;
+//        return $result;
     }
 
     public function save(FortuneCookie $entity, bool $flush = false): void

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Repository\FortuneCookieRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,8 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class FortuneController extends AbstractController
 {
     #[Route('/', name: 'app_homepage')]
-    public function index(Request $request, CategoryRepository $categoryRepository): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, CategoryRepository $categoryRepository): Response
     {
+//        $entityManager->getFilters()
+//            ->enable('fortune_cookie_discontinued')
+//            ->setParameter('discontinued', false);
+
         $search = $request->query->get('q');
         if ($search) {
             $categories = $categoryRepository->search($search);
@@ -36,11 +41,13 @@ class FortuneController extends AbstractController
             throw $this->createNotFoundException('Category not found!');
         }
 
-        $fortunesPrinted = $fortuneCookieRepository->countNumberPrintedForCategory($category);
+        $result = $fortuneCookieRepository->countNumberPrintedForCategory($category);
 
         return $this->render('fortune/showCategory.html.twig',[
             'category' => $category,
-            'fortunesPrinted' => $fortunesPrinted,
+            'fortunesPrinted' => $result['fortunesPrinted'],
+            'fortunesAverage' => $result['fortunesAverage'],
+            'categoryName' => $result['name'],
         ]);
     }
 }

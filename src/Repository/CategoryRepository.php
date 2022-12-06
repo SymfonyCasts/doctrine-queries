@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -28,10 +29,9 @@ class CategoryRepository extends ServiceEntityRepository
 //        $query = $this->getEntityManager()->createQuery($dql);
 ////        dd($query->getSQL());
 
-        $qb = $this->createQueryBuilder('category')
-            ->addSelect('fortune_cookies')
-            ->leftJoin('category.fortuneCookies', 'fortune_cookies')
-            ->addOrderBy('category.name', Criteria::DESC);
+        $qb = $this->createQueryBuilder('category');
+        $this->addFortuneCookieJoinAndSelect($qb);
+        $qb->addOrderBy('category.name', Criteria::DESC);
         $query = $qb->getQuery();
 //        dd($query->getDQL());
 
@@ -40,9 +40,10 @@ class CategoryRepository extends ServiceEntityRepository
 
     public function search(string $term): array
     {
-        return $this->createQueryBuilder('category')
-            ->addSelect('fortune_cookies')
-            ->leftJoin('category.fortuneCookies', 'fortune_cookies')
+        $qb = $this->createQueryBuilder('category');
+        $this->addFortuneCookieJoinAndSelect($qb);
+
+        return $qb
             ->andWhere('category.name LIKE :searchTerm
             OR category.iconKey LIKE :searchTerm
             OR fortune_cookies.fortune LIKE :searchTerm')
@@ -53,9 +54,10 @@ class CategoryRepository extends ServiceEntityRepository
 
     public function findWithFortunesJoin(int $id): ?Category
     {
-        return $this->createQueryBuilder('category')
-            ->addSelect('fortune_cookies')
-            ->leftJoin('category.fortuneCookies', 'fortune_cookies')
+        $qb = $this->createQueryBuilder('category');
+        $this->addFortuneCookieJoinAndSelect($qb);
+
+        return $qb
             ->andWhere('category.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
@@ -78,6 +80,12 @@ class CategoryRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    private function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
+    {
+        return $qb->leftJoin('category.fortuneCookies', 'fortune_cookies')
+            ->addSelect('fortune_cookies');
     }
 
 //    /**
