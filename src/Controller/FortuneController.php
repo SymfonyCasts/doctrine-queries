@@ -28,7 +28,7 @@ class FortuneController extends AbstractController
         }
 
         return $this->render('fortune/homepage.html.twig',[
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
