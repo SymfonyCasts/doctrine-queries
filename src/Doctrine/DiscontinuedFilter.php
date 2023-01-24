@@ -10,6 +10,7 @@ class DiscontinuedFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
+        return ''; // TODO
         //dd($targetEntity, $targetTableAlias);
         if ($targetEntity->getReflectionClass()->name !== FortuneCookie::class) {
             return '';
