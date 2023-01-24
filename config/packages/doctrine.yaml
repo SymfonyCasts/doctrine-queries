@@ -21,9 +21,9 @@ doctrine:
                 enabled: true
                 parameters:
                     discontinued: false
-#        dql:
-#            numeric_functions:
-#                rand: DoctrineExtensions\Query\Mysql\Rand
+        dql:
+            numeric_functions:
+                rand: DoctrineExtensions\Query\Mysql\Rand
 
 when@test:
     doctrine:

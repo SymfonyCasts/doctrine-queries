@@ -60,6 +60,7 @@ class CategoryRepository extends ServiceEntityRepository
         return $qb
             ->andWhere('category.id = :id')
             ->setParameter('id', $id)
+            ->orderBy('RAND()', Criteria::ASC)
             ->getQuery()
             ->getOneOrNullResult();
     }
