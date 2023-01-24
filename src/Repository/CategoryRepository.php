@@ -46,7 +46,8 @@ class CategoryRepository extends ServiceEntityRepository
         $termList = explode(' ', $term);
 
         return $qb
-            ->andWhere('category.name IN (:termList)
+            ->andWhere('category.name LIKE :searchTerm
+            OR category.name IN (:termList)
             OR category.iconKey LIKE :searchTerm
             OR fortune_cookies.fortune LIKE :searchTerm')
             ->setParameter('termList', $termList)
