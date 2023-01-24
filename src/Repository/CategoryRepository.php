@@ -43,10 +43,13 @@ class CategoryRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('category');
         $this->addFortuneCookieJoinAndSelect($qb);
 
+        $termList = explode(' ', $term);
+
         return $qb
-            ->andWhere('category.name LIKE :searchTerm
+            ->andWhere('category.name IN (:termList)
             OR category.iconKey LIKE :searchTerm
             OR fortune_cookies.fortune LIKE :searchTerm')
+            ->setParameter('termList', $termList)
             ->setParameter('searchTerm', '%'.$term.'%')
             ->getQuery()
             ->execute();

@@ -42,7 +42,7 @@ final class FortuneCookieFactory extends ModelFactory
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
             'fortune' => self::faker()->text(),
             'numberPrinted' => self::faker()->numberBetween(1000, 999999),
-            'discontinued' => self::faker()->boolean(),
+            'discontinued' => self::faker()->boolean(80),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTimeBetween(new \DateTime('-3 years'))),
         ];
     }
