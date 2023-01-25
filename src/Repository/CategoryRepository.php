@@ -31,6 +31,7 @@ class CategoryRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('category');
         $this->addFortuneCookieJoinAndSelect($qb);
+        $this->addSelectAndGroupByCategory($qb);
         $qb->addOrderBy('category.name', Criteria::DESC);
         $query = $qb->getQuery();
 //        dd($query->getDQL());
@@ -42,6 +43,7 @@ class CategoryRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('category');
         $this->addFortuneCookieJoinAndSelect($qb);
+        $this->addSelectAndGroupByCategory($qb);
 
         $termList = explode(' ', $term);
 
@@ -91,6 +93,14 @@ class CategoryRepository extends ServiceEntityRepository
     {
         return $qb->leftJoin('category.fortuneCookies', 'fortune_cookies')
             ->addSelect('fortune_cookies');
+    }
+
+    private function addSelectAndGroupByCategory(QueryBuilder $qb): QueryBuilder
+    {
+        return $qb->select('category.id, category.name, category.iconKey, COUNT(fortune_cookies.id) AS fortuneCookiesTotal')
+            ->groupBy('category.id')
+            ->addGroupBy('category.name')
+            ->addGroupBy('category.iconKey');
     }
 
 //    /**
