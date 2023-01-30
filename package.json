@@ -7,7 +7,6 @@
         "@popperjs/core": "^2.11.6",
         "@symfony/stimulus-bridge": "^3.2.0",
         "@symfony/webpack-encore": "^4.0.0",
-        "bootstrap": "^5.2.2",
         "core-js": "^3.23.0",
         "file-loader": "^6.0.0",
         "regenerator-runtime": "^0.13.9",
