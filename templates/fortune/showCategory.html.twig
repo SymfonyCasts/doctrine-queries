@@ -1,35 +1,39 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12 col-md-8 col-md-offset-2">
-                <table class="table table-bordered">
-                    <thead class="header-bkgrnd">
-                        <tr>
-                            <th>
-                               <span class="fa {{ category.iconKey }}"></span> {{ category.name }} 
-                            </th>
-                            <th>
-                               Printed History
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                {% for fortuneCookie in category.fortuneCookies %}
+    
+        
+<h1 class="text-3xl p-5 text-center my-4 font-semibold"><span class="fa {{ category.iconKey }}"></span> {{ category.name }} Fortunes</h1>
+<div class="flex justify-center mb-16 px-4">
+    <div>
+        <table class="table-auto border mb-6">
+            <thead class="bg-slate-500 text-white">
                 <tr>
-                    <td>
-                        {{ fortuneCookie.fortune }}
-                   </td>
-                    <td>
-                       {{ fortuneCookie.numberPrinted }} printed since {{ fortuneCookie.createdAt|date('M jS Y') }}
-                   </td>
+                    <th class="border p-4">
+                        Fortunes
+                    </th>
+                    <th class="border p-4">
+                        Print History
+                    </th>
                 </tr>
-                {% endfor %}
-                    </tbody>
-                 </table>
-                 <i class="fa fa-angle-double-left"></i> <a class="fortune-black" href="{{ path('app_homepage') }}">More Fortune</a>
-            </div>
-        </div>
+            </thead>
+            <tbody>
+            {% for fortuneCookie in category.fortuneCookies %}
+                <tr class="hover:bg-slate-200">
+                    <td class="border p-4">
+                        {{ fortuneCookie.fortune }}
+                    </td>
+                    <td class="border p-4">
+                        {{ fortuneCookie.numberPrinted }} printed since {{ fortuneCookie.createdAt|date('M jS Y') }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a class="text-slate-700 hover:text-slate-900 font-semibold" href="{{ path('app_homepage') }}"><i class="fa fa-angle-double-left"></i> Back to Fortune Categories</a>
     </div>
+</div>
+    
+        
+    
 {% endblock %}

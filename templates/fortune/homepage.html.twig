@@ -1,18 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <h1 class="fortune-header text-center">Query for your Fortune</h1>
+    
+<h1 class="text-center my-8 text-2xl text-slate-800 font-bold">Query for your Fortune</h1>
+<p class="text-center">Review categories for available cookie fortunes</p>
+<div class="xl:container xl:mx-auto grid grid-cols-2 gap-6 px-10 mt-8 mb-10">
     {% for category in categories %}
-        <div class="row">
-            <div class="col-sm-12 col-md-6 col-md-offset-3">
-                <a class="btn btn-lg btn-margin btn-warning btn-block" href="{{ path('app_category_show', {'id': category.id}) }}">
-                    <span class="fa {{ category.iconKey }}"></span> {{ category.name }}  ({{ category.fortuneCookies|length }})
-                </a>
-            </div>
-        </div>
+    <a class="bg-orange-400 hover:bg-orange-500 text-white text-center rounded-full p-4" href="{{ path('app_category_show', {'id':  category.id}) }}">
+        <span class="fa {{ category.iconKey }}"></span> <span class="font-bold text-lg">{{ category.name }}</span>  ({{ category.fortuneCookies|length }})
+    </a>
     {% else %}
-        <div class="alert alert-warning"><h3>Rough day - no fortunes found :(</h3></div>
+        <h3>Hmm... there don't seem to be any fortunes</h3>
     {% endfor %}
-    </div>
+</div>
 {% endblock %}
