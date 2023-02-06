@@ -36,7 +36,7 @@ class CategoryRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
 //        dd($query->getDQL());
 
-        return $query->execute();
+        return $query->getResult();
     }
 
     public function search(string $term): array
@@ -56,7 +56,7 @@ class CategoryRepository extends ServiceEntityRepository
             ->setParameter('termList', $termList)
             ->setParameter('searchTerm', '%'.$term.'%')
             ->getQuery()
-            ->execute();
+            ->getResult();
     }
 
     public function findWithFortunesJoin(int $id): ?Category
