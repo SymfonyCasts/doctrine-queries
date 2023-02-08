@@ -103,7 +103,8 @@ class CategoryRepository extends ServiceEntityRepository
 
     private function addSelectAndGroupByCategory(QueryBuilder $qb): QueryBuilder
     {
-        return $qb->select('category.id, category.name, category.iconKey, COUNT(fortune_cookies.id) AS fortuneCookiesTotal')
+        return $qb->addSelect('category.id, category.name, category.iconKey, COUNT(fortune_cookies.id) AS fortuneCookiesTotal')
+//        return $qb->addSelect('category, COUNT(fortune_cookies.id) AS fortuneCookiesTotal')
             ->groupBy('category.id')
             ->addGroupBy('category.name')
             ->addGroupBy('category.iconKey');
