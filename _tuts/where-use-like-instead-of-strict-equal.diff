@@ -1,5 +1,5 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index dd153bb..06ea0ea 100644
+index a82b4f3..7d0cf7b 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
 @@ -41,8 +41,8 @@ class CategoryRepository extends ServiceEntityRepository
@@ -10,6 +10,6 @@ index dd153bb..06ea0ea 100644
 -            ->setParameter('searchTerm', $term)
 +            ->andWhere('category.name LIKE :searchTerm')
 +            ->setParameter('searchTerm', '%'.$term.'%')
-             ->getQuery()->getResult();
+             ->getQuery()
+             ->getResult();
      }
- 

@@ -1,0 +1,16 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 526657e..c15307e 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -52,6 +52,11 @@ class CategoryRepository extends ServiceEntityRepository
+             ->getResult();
+     }
+ 
++    public function findWithFortunesJoin(int $id): ?Category
++    {
++        
++    }
++
+     public function save(Category $entity, bool $flush = false): void
+     {
+         $this->getEntityManager()->persist($entity);

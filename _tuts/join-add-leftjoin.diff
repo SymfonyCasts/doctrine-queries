@@ -1,12 +1,12 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 0547a20..a5405e3 100644
+index a5405e3..5fabc72 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -43,6 +43,7 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -41,6 +41,7 @@ class CategoryRepository extends ServiceEntityRepository
+     public function search(string $term): array
+     {
          return $this->createQueryBuilder('category')
++            ->leftJoin('category.fortuneCookies', 'fortuneCookie')
              ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm')
              ->setParameter('searchTerm', '%'.$term.'%')
-+            ->addOrderBy('category.name', Criteria::DESC)
-             ->getQuery()
-             ->getResult();
-     }
+             ->addOrderBy('category.name', Criteria::DESC)

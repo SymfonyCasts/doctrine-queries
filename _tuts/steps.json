@@ -79,7 +79,52 @@
             "id": "where-add-addorderby",
             "name": "WHERE: Add addOrderBy()",
             "description": null
+        },
+        {
+            "id": "join-add-leftjoin",
+            "name": "JOIN: Add leftJoin()",
+            "description": null
+        },
+        {
+            "id": "join-search-in-fortunecookie-as-well",
+            "name": "JOIN: Search in fortuneCookie as well",
+            "description": null
+        },
+        {
+            "id": "join-add-addselect-in-search",
+            "name": "JOIN: Add addSelect() in search()",
+            "description": null
+        },
+        {
+            "id": "join-add-leftjoin-in-findallordered",
+            "name": "JOIN: Add leftJoin() in findAllOrdered()",
+            "description": null
+        },
+        {
+            "id": "join-add-addselect-in-findallordered",
+            "name": "JOIN: Add addSelect() in findAllOrdered()",
+            "description": null
+        },
+        {
+            "id": "join-change-showcategory-signature",
+            "name": "JOIN: Change showCategory() signature",
+            "description": null
+        },
+        {
+            "id": "join-find-category-with-join",
+            "name": "JOIN: Find category with JOIN",
+            "description": null
+        },
+        {
+            "id": "join-create-method-in-repo",
+            "name": "JOIN: Create method in repo",
+            "description": null
+        },
+        {
+            "id": "join-implement-repo-method",
+            "name": "JOIN: Implement repo method",
+            "description": null
         }
     ],
-    "sha": "557689189ada5649027004aae23c6701b637fad3"
+    "sha": "35ff52bade32b79d2d5aba1c70d4ea49e755fab0"
 }

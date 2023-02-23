@@ -1,0 +1,13 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 5fabc72..0e849c1 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -42,7 +42,7 @@ class CategoryRepository extends ServiceEntityRepository
+     {
+         return $this->createQueryBuilder('category')
+             ->leftJoin('category.fortuneCookies', 'fortuneCookie')
+-            ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm')
++            ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm OR fortuneCookie.fortune LIKE :searchTerm')
+             ->setParameter('searchTerm', '%'.$term.'%')
+             ->addOrderBy('category.name', Criteria::DESC)
+             ->getQuery()
