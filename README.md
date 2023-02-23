@@ -40,8 +40,8 @@ Next, build the database with:
 ```
 # "symfony console" is equivalent to "bin/console"
 # but it's aware of your database container
-symfony console doctrine:database:create
-symfony console doctrine:schema:create
+symfony console doctrine:database:create --if-not-exists
+symfony console doctrine:schema:update --force
 symfony console doctrine:fixtures:load
 ```
 
