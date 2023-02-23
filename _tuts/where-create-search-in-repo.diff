@@ -1,0 +1,19 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 3c40c7e..78bb85b 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -35,6 +35,14 @@ class CategoryRepository extends ServiceEntityRepository
+         return $query->getResult();
+     }
+ 
++    /**
++     * @return Category[]
++     */
++    public function search(string $term): array
++    {
++        
++    }
++
+     public function save(Category $entity, bool $flush = false): void
+     {
+         $this->getEntityManager()->persist($entity);

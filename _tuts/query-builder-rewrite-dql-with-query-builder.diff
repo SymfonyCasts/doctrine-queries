@@ -1,0 +1,25 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 2ccd053..3c40c7e 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -4,6 +4,7 @@ namespace App\Repository;
+ 
+ use App\Entity\Category;
+ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
++use Doctrine\Common\Collections\Criteria;
+ use Doctrine\Persistence\ManagerRegistry;
+ 
+ /**
+@@ -26,8 +27,10 @@ class CategoryRepository extends ServiceEntityRepository
+      */
+     public function findAllOrdered(): array
+     {
+-        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
+-        $query = $this->getEntityManager()->createQuery($dql);
++//        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
++        $qb = $this->createQueryBuilder('category')
++            ->addOrderBy('category.name', Criteria::DESC);
++        $query = $qb->getQuery();
+ 
+         return $query->getResult();
+     }

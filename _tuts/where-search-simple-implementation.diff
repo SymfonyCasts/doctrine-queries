@@ -1,0 +1,16 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 78bb85b..dd153bb 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -40,7 +40,10 @@ class CategoryRepository extends ServiceEntityRepository
+      */
+     public function search(string $term): array
+     {
+-        
++        return $this->createQueryBuilder('category')
++            ->andWhere('category.name = :searchTerm')
++            ->setParameter('searchTerm', $term)
++            ->getQuery()->getResult();
+     }
+ 
+     public function save(Category $entity, bool $flush = false): void

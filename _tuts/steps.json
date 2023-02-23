@@ -1,0 +1,85 @@
+{
+    "steps": [
+        {
+            "id": "start",
+            "name": "start",
+            "description": null
+        },
+        {
+            "id": "dql-create-custom-dql-query",
+            "name": "DQL: Create custom DQL query",
+            "description": null
+        },
+        {
+            "id": "dql-write-dql-query",
+            "name": "DQL: Write DQL query",
+            "description": null
+        },
+        {
+            "id": "dql-add-order-by",
+            "name": "DQL: Add ORDER BY",
+            "description": null
+        },
+        {
+            "id": "dql-add-debug-statement",
+            "name": "DQL: Add debug statement",
+            "description": null
+        },
+        {
+            "id": "dql-remove-debug-statement",
+            "name": "DQL: Remove debug statement",
+            "description": null
+        },
+        {
+            "id": "query-builder-rewrite-dql-with-query-builder",
+            "name": "Query Builder: Rewrite DQL with query builder",
+            "description": null
+        },
+        {
+            "id": "query-builder-add-debug-statement",
+            "name": "Query Builder: Add debug statement",
+            "description": null
+        },
+        {
+            "id": "query-builder-remove-debug-statement",
+            "name": "Query Builder: Remove debug statement",
+            "description": null
+        },
+        {
+            "id": "where-inject-request",
+            "name": "WHERE: Inject Request",
+            "description": null
+        },
+        {
+            "id": "where-call-search-if-query-passed",
+            "name": "WHERE: Call search() if query passed",
+            "description": null
+        },
+        {
+            "id": "where-create-search-in-repo",
+            "name": "WHERE: Create search() in repo",
+            "description": null
+        },
+        {
+            "id": "where-search-simple-implementation",
+            "name": "WHERE: search() simple implementation",
+            "description": null
+        },
+        {
+            "id": "where-use-like-instead-of-strict-equal",
+            "name": "WHERE: Use LIKE instead of strict equal",
+            "description": null
+        },
+        {
+            "id": "where-add-or",
+            "name": "WHERE: Add OR",
+            "description": null
+        },
+        {
+            "id": "where-add-addorderby",
+            "name": "WHERE: Add addOrderBy()",
+            "description": null
+        }
+    ],
+    "sha": "c9c16368becf970ef03359fe49b422703ca9b26e"
+}

@@ -1,0 +1,18 @@
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index fe60a47..760db70 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -14,7 +14,12 @@ class FortuneController extends AbstractController
+     #[Route('/', name: 'app_homepage')]
+     public function index(Request $request, CategoryRepository $categoryRepository): Response
+     {
+-        $categories = $categoryRepository->findAllOrdered();
++        $searchTerm = $request->query->get('q');
++        if ($searchTerm) {
++            $categories = $categoryRepository->search($searchTerm);
++        } else {
++            $categories = $categoryRepository->findAllOrdered();
++        }
+ 
+         return $this->render('fortune/homepage.html.twig',[
+             'categories' => $categories

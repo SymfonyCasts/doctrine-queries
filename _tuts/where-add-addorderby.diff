@@ -1,0 +1,12 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index fd72fa5..5290fbd 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -43,6 +43,7 @@ class CategoryRepository extends ServiceEntityRepository
+         return $this->createQueryBuilder('category')
+             ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm')
+             ->setParameter('searchTerm', '%'.$term.'%')
++            ->addOrderBy('category.name', Criteria::DESC)
+             ->getQuery()->getResult();
+     }
+ 

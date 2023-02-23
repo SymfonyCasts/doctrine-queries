@@ -1,0 +1,12 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 2ccd053..165cb72 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -28,6 +28,7 @@ class CategoryRepository extends ServiceEntityRepository
+     {
+         $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
+         $query = $this->getEntityManager()->createQuery($dql);
++        dd($query->getSQL());
+ 
+         return $query->getResult();
+     }

@@ -1,0 +1,32 @@
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index 3b39e5e..1a610ed 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -13,7 +13,7 @@ class FortuneController extends AbstractController
+     #[Route('/', name: 'app_homepage')]
+     public function index(CategoryRepository $categoryRepository): Response
+     {
+-        $categories = $categoryRepository->findAll();
++        $categories = $categoryRepository->findAllOrdered();
+ 
+         return $this->render('fortune/homepage.html.twig',[
+             'categories' => $categories
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index e59e855..8ce800e 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -21,6 +21,14 @@ class CategoryRepository extends ServiceEntityRepository
+         parent::__construct($registry, Category::class);
+     }
+ 
++    /**
++     * @return Category[]
++     */
++    public function findAllOrdered(): array
++    {
++
++    }
++
+     public function save(Category $entity, bool $flush = false): void
+     {
+         $this->getEntityManager()->persist($entity);

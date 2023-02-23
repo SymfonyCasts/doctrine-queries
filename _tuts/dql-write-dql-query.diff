@@ -1,0 +1,15 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 8ce800e..c14cc24 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -26,7 +26,10 @@ class CategoryRepository extends ServiceEntityRepository
+      */
+     public function findAllOrdered(): array
+     {
++        $dql = 'SELECT category FROM App\Entity\Category as category';
++        $query = $this->getEntityManager()->createQuery($dql);
+ 
++        return $query->getResult();
+     }
+ 
+     public function save(Category $entity, bool $flush = false): void

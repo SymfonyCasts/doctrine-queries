@@ -1,0 +1,12 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 3c40c7e..f023dd9 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -31,6 +31,7 @@ class CategoryRepository extends ServiceEntityRepository
+         $qb = $this->createQueryBuilder('category')
+             ->addOrderBy('category.name', Criteria::DESC);
+         $query = $qb->getQuery();
++        dd($query->getDQL());
+ 
+         return $query->getResult();
+     }
