@@ -1,0 +1,12 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index 733d293..7d0d8e2 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -30,6 +30,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+             ->setParameter('category', $category)
+             ->getQuery()
+             ->getOneOrNullResult();
++        dd($result);
+ 
+         return $result;
+     }

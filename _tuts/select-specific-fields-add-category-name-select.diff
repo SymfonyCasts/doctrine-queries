@@ -1,0 +1,12 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index f94d882..ded3553 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -27,6 +27,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+         $result = $this->createQueryBuilder('fortuneCookie')
+             ->select('SUM(fortuneCookie.numberPrinted) AS fortunesPrinted')
+             ->addSelect('AVG(fortuneCookie.numberPrinted) fortunesAverage')
++            ->addSelect('category.name')
+             ->andWhere('fortuneCookie.category = :category')
+             ->setParameter('category', $category)
+             ->getQuery()

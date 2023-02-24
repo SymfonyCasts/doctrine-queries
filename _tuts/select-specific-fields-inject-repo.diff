@@ -1,0 +1,21 @@
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index 2d8162a..a239f54 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -4,6 +4,7 @@ namespace App\Controller;
+ 
+ use App\Entity\Category;
+ use App\Repository\CategoryRepository;
++use App\Repository\FortuneCookieRepository;
+ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\Response;
+@@ -27,7 +28,7 @@ class FortuneController extends AbstractController
+     }
+ 
+     #[Route('/category/{id}', name: 'app_category_show')]
+-    public function showCategory(int $id, CategoryRepository $categoryRepository): Response
++    public function showCategory(int $id, CategoryRepository $categoryRepository, FortuneCookieRepository $fortuneCookieRepository): Response
+     {
+         $category = $categoryRepository->findWithFortunesJoin($id);
+         if (!$category) {

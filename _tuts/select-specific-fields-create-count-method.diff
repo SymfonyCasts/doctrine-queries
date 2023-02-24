@@ -1,0 +1,24 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index 5da72f6..0b4bea7 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -2,6 +2,7 @@
+ 
+ namespace App\Repository;
+ 
++use App\Entity\Category;
+ use App\Entity\FortuneCookie;
+ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+ use Doctrine\Persistence\ManagerRegistry;
+@@ -21,6 +22,11 @@ class FortuneCookieRepository extends ServiceEntityRepository
+         parent::__construct($registry, FortuneCookie::class);
+     }
+ 
++    public function countNumberPrintedForCategory(Category $category): int
++    {
++
++    }
++
+     public function save(FortuneCookie $entity, bool $flush = false): void
+     {
+         $this->getEntityManager()->persist($entity);

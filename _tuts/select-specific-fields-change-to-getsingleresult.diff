@@ -1,0 +1,26 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index 3c25f03..7c8d303 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -22,7 +22,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+         parent::__construct($registry, FortuneCookie::class);
+     }
+ 
+-    public function countNumberPrintedForCategory(Category $category): int
++    public function countNumberPrintedForCategory(Category $category): array
+     {
+         $result = $this->createQueryBuilder('fortuneCookie')
+             ->select('SUM(fortuneCookie.numberPrinted) AS fortunesPrinted')
+@@ -32,10 +32,10 @@ class FortuneCookieRepository extends ServiceEntityRepository
+             ->andWhere('fortuneCookie.category = :category')
+             ->setParameter('category', $category)
+             ->getQuery()
+-            ->getSingleScalarResult();
++            ->getSingleResult();
+         dd($result);
+ 
+-        return (int) $result;
++        return $result;
+     }
+ 
+     public function save(FortuneCookie $entity, bool $flush = false): void

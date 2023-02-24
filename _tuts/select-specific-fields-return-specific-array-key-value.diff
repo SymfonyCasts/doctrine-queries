@@ -1,0 +1,13 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index 7d0d8e2..457f684 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -32,7 +32,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+             ->getOneOrNullResult();
+         dd($result);
+ 
+-        return $result;
++        return $result['fortunesPrinted'];
+     }
+ 
+     public function save(FortuneCookie $entity, bool $flush = false): void

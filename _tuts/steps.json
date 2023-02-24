@@ -124,7 +124,92 @@
             "id": "join-implement-repo-method",
             "name": "JOIN: Implement repo method",
             "description": null
+        },
+        {
+            "id": "select-specific-fields-create-count-method",
+            "name": "Select specific fields: Create count method",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-implement-count-method",
+            "name": "Select specific fields: Implement count method",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-add-debug-statement",
+            "name": "Select specific fields: Add debug statement",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-inject-repo",
+            "name": "Select specific fields: Inject repo",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-print-count-number",
+            "name": "Select specific fields: Print count number",
+            "description": null
+        },
+        {
+            "id": "delete-me",
+            "name": "DELETE ME",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-return-specific-array-key-value",
+            "name": "Select specific fields: Return specific array key value",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-use-getsinglescalarresult-instead",
+            "name": "Select specific fields: Use getSingleScalarResult() instead",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-type-cast-to-int",
+            "name": "Select specific fields: Type cast to int",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-remove-debug-statement",
+            "name": "Select specific fields: Remove debug statement",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-add-avg-select",
+            "name": "Select specific fields: Add AVG select",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-add-category-name-select",
+            "name": "Select specific fields: Add category name select",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-add-debug-statement-again",
+            "name": "Select specific fields: Add debug statement again",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-add-category-inner-join",
+            "name": "Select specific fields: Add category inner join",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-change-to-getsingleresult",
+            "name": "Select specific fields: Change to getSingleResult()",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-remove-the-debug-statement-again",
+            "name": "Select specific fields: Remove the debug statement again",
+            "description": null
+        },
+        {
+            "id": "select-specific-fields-rename-vars-in-controller",
+            "name": "Select specific fields: Rename vars in controller",
+            "description": null
         }
     ],
-    "sha": "35ff52bade32b79d2d5aba1c70d4ea49e755fab0"
+    "sha": "27178066685514c3aa9869012e060f0b29f7531e"
 }

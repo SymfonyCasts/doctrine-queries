@@ -1,0 +1,30 @@
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index a239f54..6685ae8 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -34,9 +34,11 @@ class FortuneController extends AbstractController
+         if (!$category) {
+             throw $this->createNotFoundException('Category not found!');
+         }
++        $fortunesPrinted = $fortuneCookieRepository->countNumberPrintedForCategory($category);
+ 
+         return $this->render('fortune/showCategory.html.twig',[
+-            'category' => $category
++            'category' => $category,
++            'fortunesPrinted' => $fortunesPrinted,
+         ]);
+     }
+ }
+diff --git a/templates/fortune/showCategory.html.twig b/templates/fortune/showCategory.html.twig
+index 96ffaa5..8670985 100644
+--- a/templates/fortune/showCategory.html.twig
++++ b/templates/fortune/showCategory.html.twig
+@@ -13,7 +13,7 @@
+                         Fortunes
+                     </th>
+                     <th class="border p-4">
+-                        Print History
++                        Print History ({{ fortunesPrinted|number_format }} total)
+                     </th>
+                 </tr>
+             </thead>
