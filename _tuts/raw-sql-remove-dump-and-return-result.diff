@@ -1,0 +1,15 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index c8257d9..800b11a 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -39,9 +39,8 @@ class FortuneCookieRepository extends ServiceEntityRepository
+         $stmt = $conn->prepare($sql);
+         $stmt->bindValue('category', $category->getId());
+         $result = $stmt->executeQuery();
+-        dd($result->fetchAssociative());
+ 
+-        return $result;
++        return $result->fetchAssociative();
+     }
+ 
+     public function save(FortuneCookie $entity, bool $flush = false): void

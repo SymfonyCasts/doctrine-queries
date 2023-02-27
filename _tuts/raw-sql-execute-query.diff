@@ -1,0 +1,12 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index b77603c..e3d9d3b 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -37,6 +37,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+         $conn = $this->getEntityManager()->getConnection();
+         $sql = 'SELECT * FROM fortune_cookie';
+         $stmt = $conn->prepare($sql);
++        $result = $stmt->executeQuery();
+ 
+         return $result;
+     }

@@ -1,0 +1,13 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index c6bb856..ee767b3 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -35,7 +35,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+ //            ->getSingleResult();
+ 
+         $conn = $this->getEntityManager()->getConnection();
+-        $sql = 'SELECT * FROM fortune_cookie';
++        $sql = 'SELECT SUM(fortune_cookie.number_printed) AS fortunesPrinted, AVG(fortune_cookie.number_printed) fortunesAverage, category.name FROM fortune_cookie INNER JOIN category ON category.id = fortune_cookie.category_id WHERE fortune_cookie.category_id = :category';
+         $stmt = $conn->prepare($sql);
+         $result = $stmt->executeQuery();
+         dd($result->fetchAllAssociative());

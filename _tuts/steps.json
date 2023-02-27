@@ -209,7 +209,72 @@
             "id": "select-specific-fields-rename-vars-in-controller",
             "name": "Select specific fields: Rename vars in controller",
             "description": null
+        },
+        {
+            "id": "raw-sql-comment-qb",
+            "name": "Raw SQL: Comment QB",
+            "description": null
+        },
+        {
+            "id": "raw-sql-get-db-connection",
+            "name": "Raw SQL: Get DB connection",
+            "description": null
+        },
+        {
+            "id": "raw-sql-add-debug-statement",
+            "name": "Raw SQL: Add debug statement",
+            "description": null
+        },
+        {
+            "id": "raw-sql-remove-debug-statement",
+            "name": "Raw SQL: Remove debug statement",
+            "description": null
+        },
+        {
+            "id": "raw-sql-write-simple-query",
+            "name": "Raw SQL: Write simple query",
+            "description": null
+        },
+        {
+            "id": "raw-sql-prepare-the-statement",
+            "name": "Raw SQL: Prepare the statement",
+            "description": null
+        },
+        {
+            "id": "raw-sql-execute-query",
+            "name": "Raw SQL: Execute query",
+            "description": null
+        },
+        {
+            "id": "raw-sql-dump-the-result",
+            "name": "Raw SQL: Dump the result",
+            "description": null
+        },
+        {
+            "id": "raw-sql-rewrite-qb-query",
+            "name": "Raw SQL: Rewrite QB query",
+            "description": null
+        },
+        {
+            "id": "raw-sql-pass-value-to-executequery",
+            "name": "Raw SQL: Pass value to executeQuery()",
+            "description": null
+        },
+        {
+            "id": "raw-sql-bind-value-instead",
+            "name": "Raw SQL: Bind value instead",
+            "description": null
+        },
+        {
+            "id": "raw-sql-use-fetchassociative",
+            "name": "Raw SQL: Use fetchAssociative()",
+            "description": null
+        },
+        {
+            "id": "raw-sql-remove-dump-and-return-result",
+            "name": "Raw SQL: Remove dump and return result",
+            "description": null
         }
     ],
-    "sha": "27178066685514c3aa9869012e060f0b29f7531e"
+    "sha": "af3464c759411269596f7b80e8f18d49c3f29291"
 }
