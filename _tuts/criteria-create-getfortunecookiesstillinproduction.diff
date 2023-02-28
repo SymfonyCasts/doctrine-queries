@@ -1,0 +1,19 @@
+diff --git a/src/Entity/Category.php b/src/Entity/Category.php
+index b22e59e..6039527 100644
+--- a/src/Entity/Category.php
++++ b/src/Entity/Category.php
+@@ -58,6 +58,14 @@ class Category
+         return $this;
+     }
+ 
++    /**
++     * @return Collection<int, FortuneCookie>
++     */
++    public function getFortuneCookiesStillInProduction(): Collection
++    {
++
++    }
++
+     /**
+      * @return Collection<int, FortuneCookie>
+      */

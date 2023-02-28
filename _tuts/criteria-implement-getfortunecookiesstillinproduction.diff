@@ -1,0 +1,23 @@
+diff --git a/src/Entity/Category.php b/src/Entity/Category.php
+index 6039527..3252630 100644
+--- a/src/Entity/Category.php
++++ b/src/Entity/Category.php
+@@ -5,6 +5,7 @@ namespace App\Entity;
+ use App\Repository\CategoryRepository;
+ use Doctrine\Common\Collections\ArrayCollection;
+ use Doctrine\Common\Collections\Collection;
++use Doctrine\Common\Collections\Criteria;
+ use Doctrine\ORM\Mapping as ORM;
+ 
+ #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+@@ -63,7 +64,10 @@ class Category
+      */
+     public function getFortuneCookiesStillInProduction(): Collection
+     {
++        $criteria = Criteria::create()
++            ->andWhere(Criteria::expr()->eq('discontinued', false));
+ 
++        return $this->fortuneCookies->matching($criteria);
+     }
+ 
+     /**

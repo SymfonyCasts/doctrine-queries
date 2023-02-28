@@ -314,7 +314,32 @@
             "id": "reuse-query-use-in-methods",
             "name": "Reuse query: Use in methods",
             "description": null
+        },
+        {
+            "id": "criteria-create-getfortunecookiesstillinproduction",
+            "name": "Criteria: Create getFortuneCookiesStillInProduction()",
+            "description": null
+        },
+        {
+            "id": "criteria-implement-getfortunecookiesstillinproduction",
+            "name": "Criteria: Implement getFortuneCookiesStillInProduction()",
+            "description": null
+        },
+        {
+            "id": "criteria-use-in-template",
+            "name": "Criteria: Use in template",
+            "description": null
+        },
+        {
+            "id": "criteria-move-logic-to-the-repo",
+            "name": "Criteria: Move logic to the repo",
+            "description": null
+        },
+        {
+            "id": "criteria-fix-count-on-homepage",
+            "name": "Criteria: Fix count on homepage",
+            "description": null
         }
     ],
-    "sha": "af08d9f6916f56da0e6780a2aa4935cdd900ab68"
+    "sha": "87dc6b46dfcae02196432fcb681e3787ef620993"
 }

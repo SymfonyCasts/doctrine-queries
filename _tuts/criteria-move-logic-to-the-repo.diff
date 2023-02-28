@@ -1,0 +1,47 @@
+diff --git a/src/Entity/Category.php b/src/Entity/Category.php
+index 3252630..908c1ab 100644
+--- a/src/Entity/Category.php
++++ b/src/Entity/Category.php
+@@ -3,6 +3,7 @@
+ namespace App\Entity;
+ 
+ use App\Repository\CategoryRepository;
++use App\Repository\FortuneCookieRepository;
+ use Doctrine\Common\Collections\ArrayCollection;
+ use Doctrine\Common\Collections\Collection;
+ use Doctrine\Common\Collections\Criteria;
+@@ -64,8 +65,7 @@ class Category
+      */
+     public function getFortuneCookiesStillInProduction(): Collection
+     {
+-        $criteria = Criteria::create()
+-            ->andWhere(Criteria::expr()->eq('discontinued', false));
++        $criteria = FortuneCookieRepository::createFortuneCookiesStillInProductionCriteria();
+ 
+         return $this->fortuneCookies->matching($criteria);
+     }
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index 800b11a..5bb2c42 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -5,6 +5,7 @@ namespace App\Repository;
+ use App\Entity\Category;
+ use App\Entity\FortuneCookie;
+ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
++use Doctrine\Common\Collections\Criteria;
+ use Doctrine\Persistence\ManagerRegistry;
+ 
+ /**
+@@ -22,6 +23,12 @@ class FortuneCookieRepository extends ServiceEntityRepository
+         parent::__construct($registry, FortuneCookie::class);
+     }
+ 
++    public static function createFortuneCookiesStillInProductionCriteria(): Criteria
++    {
++        return Criteria::create()
++            ->andWhere(Criteria::expr()->eq('discontinued', false));
++    }
++
+     public function countNumberPrintedForCategory(Category $category): array
+     {
+ //        $result = $this->createQueryBuilder('fortuneCookie')
