@@ -274,7 +274,47 @@
             "id": "raw-sql-remove-dump-and-return-result",
             "name": "Raw SQL: Remove dump and return result",
             "description": null
+        },
+        {
+            "id": "reuse-query-create-addfortunecookiejoinandselect",
+            "name": "Reuse query: Create addFortuneCookieJoinAndSelect()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-implement-addfortunecookiejoinandselect",
+            "name": "Reuse query: Implement addFortuneCookieJoinAndSelect()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-use-in-findallordered",
+            "name": "Reuse query: Use in findAllOrdered()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-use-in-search",
+            "name": "Reuse query: Use in search()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-use-in-findwithfortunesjoin",
+            "name": "Reuse query: Use in findWithFortunesJoin()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-create-addorderbycategoryname",
+            "name": "Reuse query: Create addOrderByCategoryName()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-implement-addorderbycategoryname",
+            "name": "Reuse query: Implement addOrderByCategoryName()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-use-in-methods",
+            "name": "Reuse query: Use in methods",
+            "description": null
         }
     ],
-    "sha": "af3464c759411269596f7b80e8f18d49c3f29291"
+    "sha": "af08d9f6916f56da0e6780a2aa4935cdd900ab68"
 }

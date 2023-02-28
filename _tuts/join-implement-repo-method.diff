@@ -1,14 +1,15 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index c15307e..140329b 100644
+index c15307e..4f33a77 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -54,7 +54,11 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -54,7 +54,12 @@ class CategoryRepository extends ServiceEntityRepository
  
      public function findWithFortunesJoin(int $id): ?Category
      {
 -        
 +        return $this->createQueryBuilder('category')
-+            ->addSelect('fortuneCookie')->leftJoin('category.fortuneCookies', 'fortuneCookie')
++            ->addSelect('fortuneCookie')
++            ->leftJoin('category.fortuneCookies', 'fortuneCookie')
 +            ->andWhere('category.id = :id')->setParameter('id', $id)
 +            ->getQuery()
 +            ->getOneOrNullResult();

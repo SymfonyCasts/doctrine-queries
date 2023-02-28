@@ -1,0 +1,18 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 68bd4a2..b5c90a0 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -29,10 +29,9 @@ class CategoryRepository extends ServiceEntityRepository
+     public function findAllOrdered(): array
+     {
+ //        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
+-        $qb = $this->createQueryBuilder('category')
+-            ->addSelect('fortuneCookie')
+-            ->leftJoin('category.fortuneCookies', 'fortuneCookie')
+-            ->addOrderBy('category.name', Criteria::DESC);
++        $qb = $this->createQueryBuilder('category');
++        static::addFortuneCookieJoinAndSelect($qb);
++        $qb->addOrderBy('category.name', Criteria::DESC);
+         $query = $qb->getQuery();
+ 
+         return $query->getResult();

@@ -1,0 +1,15 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 6e524cc..68bd4a2 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -83,7 +83,9 @@ class CategoryRepository extends ServiceEntityRepository
+ 
+     private static function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
+     {
+-
++        return $qb
++            ->addSelect('fortuneCookie')
++            ->leftJoin('category.fortuneCookies', 'fortuneCookie');
+     }
+ 
+ //    /**

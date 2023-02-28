@@ -1,0 +1,24 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 4f33a77..6e524cc 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -5,6 +5,7 @@ namespace App\Repository;
+ use App\Entity\Category;
+ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+ use Doctrine\Common\Collections\Criteria;
++use Doctrine\ORM\QueryBuilder;
+ use Doctrine\Persistence\ManagerRegistry;
+ 
+ /**
+@@ -80,6 +81,11 @@ class CategoryRepository extends ServiceEntityRepository
+         }
+     }
+ 
++    private static function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
++    {
++
++    }
++
+ //    /**
+ //     * @return Category[] Returns an array of Category objects
+ //     */

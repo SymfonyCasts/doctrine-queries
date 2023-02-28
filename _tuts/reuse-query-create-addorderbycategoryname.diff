@@ -1,0 +1,16 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index c6b817b..77dfb9c 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -89,6 +89,11 @@ class CategoryRepository extends ServiceEntityRepository
+             ->leftJoin('category.fortuneCookies', 'fortuneCookie');
+     }
+ 
++    private static function addOrderByCategoryName(QueryBuilder $qb): QueryBuilder
++    {
++
++    }
++
+ //    /**
+ //     * @return Category[] Returns an array of Category objects
+ //     */
