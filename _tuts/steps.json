@@ -339,7 +339,72 @@
             "id": "criteria-fix-count-on-homepage",
             "name": "Criteria: Fix count on homepage",
             "description": null
+        },
+        {
+            "id": "filter-revert-using-fortunecookiesstillinproduction-in-template",
+            "name": "Filter: Revert using fortuneCookiesStillInProduction in template",
+            "description": null
+        },
+        {
+            "id": "filter-create-discontinuedfilter",
+            "name": "Filter: Create DiscontinuedFilter",
+            "description": null
+        },
+        {
+            "id": "filter-extend-sqlfilter",
+            "name": "Filter: Extend SQLFilter",
+            "description": null
+        },
+        {
+            "id": "filter-add-debug-statement",
+            "name": "Filter: Add debug statement",
+            "description": null
+        },
+        {
+            "id": "filter-register-filter",
+            "name": "Filter: Register filter",
+            "description": null
+        },
+        {
+            "id": "filter-inject-entity-manager",
+            "name": "Filter: Inject entity manager",
+            "description": null
+        },
+        {
+            "id": "filter-enable-filter",
+            "name": "Filter: Enable filter",
+            "description": null
+        },
+        {
+            "id": "filter-remove-debug-statement",
+            "name": "Filter: Remove debug statement",
+            "description": null
+        },
+        {
+            "id": "filter-implement-filter",
+            "name": "Filter: Implement filter",
+            "description": null
+        },
+        {
+            "id": "filter-use-filter-parameter",
+            "name": "Filter: Use filter parameter",
+            "description": null
+        },
+        {
+            "id": "filter-pass-parameter-from-controller",
+            "name": "Filter: Pass parameter from controller",
+            "description": null
+        },
+        {
+            "id": "filter-change-discontinued-to-true",
+            "name": "Filter: Change discontinued to true",
+            "description": null
+        },
+        {
+            "id": "filter-enable-globally",
+            "name": "Filter: Enable globally",
+            "description": null
         }
     ],
-    "sha": "87dc6b46dfcae02196432fcb681e3787ef620993"
+    "sha": "6921ec9d1a52385f78824c4034aa24478b212503"
 }

@@ -1,0 +1,13 @@
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index f526fad..ba3b464 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -16,6 +16,8 @@ class FortuneController extends AbstractController
+     #[Route('/', name: 'app_homepage')]
+     public function index(Request $request, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response
+     {
++        $entityManager->getFilters()
++            ->enable('fortuneCookie_discontinued');
+         $searchTerm = $request->query->get('q');
+         if ($searchTerm) {
+             $categories = $categoryRepository->search($searchTerm);

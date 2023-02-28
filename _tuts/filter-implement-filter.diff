@@ -1,0 +1,24 @@
+diff --git a/src/Doctrine/DiscontinuedFilter.php b/src/Doctrine/DiscontinuedFilter.php
+index 3a69604..6f3f367 100644
+--- a/src/Doctrine/DiscontinuedFilter.php
++++ b/src/Doctrine/DiscontinuedFilter.php
+@@ -2,6 +2,7 @@
+ 
+ namespace App\Doctrine;
+ 
++use App\Entity\FortuneCookie;
+ use Doctrine\ORM\Mapping\ClassMetadata;
+ use Doctrine\ORM\Query\Filter\SQLFilter;
+ 
+@@ -9,6 +10,10 @@ class DiscontinuedFilter extends SQLFilter
+ {
+     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
+     {
+-        
++        if ($targetEntity->getReflectionClass()->name !== FortuneCookie::class) {
++            return '';
++        }
++
++        return sprintf('%s.discontinued = false', $targetTableAlias);
+     }
+ }

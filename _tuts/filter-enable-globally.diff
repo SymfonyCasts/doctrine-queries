@@ -1,0 +1,35 @@
+diff --git a/config/packages/doctrine.yaml b/config/packages/doctrine.yaml
+index 8f69a35..0a331e6 100644
+--- a/config/packages/doctrine.yaml
++++ b/config/packages/doctrine.yaml
+@@ -17,7 +17,11 @@ doctrine:
+                 prefix: 'App\Entity'
+                 alias: App
+         filters:
+-            fortuneCookie_discontinued: App\Doctrine\DiscontinuedFilter
++            fortuneCookie_discontinued:
++                class: App\Doctrine\DiscontinuedFilter
++                enabled: true
++                parameters:
++                    discontinued: false
+ 
+ when@test:
+     doctrine:
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index a68f71c..a9e0d45 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -16,9 +16,10 @@ class FortuneController extends AbstractController
+     #[Route('/', name: 'app_homepage')]
+     public function index(Request $request, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response
+     {
+-        $entityManager->getFilters()
+-            ->enable('fortuneCookie_discontinued')
+-            ->setParameter('discontinued', true);
++        // Enabled globally in the doctrine.yaml config
++        //$entityManager->getFilters()
++        //    ->enable('fortuneCookie_discontinued')
++        //    ->setParameter('discontinued', true);
+         $searchTerm = $request->query->get('q');
+         if ($searchTerm) {
+             $categories = $categoryRepository->search($searchTerm);

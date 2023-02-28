@@ -1,0 +1,12 @@
+diff --git a/src/Doctrine/DiscontinuedFilter.php b/src/Doctrine/DiscontinuedFilter.php
+index 6f3f367..a03ad04 100644
+--- a/src/Doctrine/DiscontinuedFilter.php
++++ b/src/Doctrine/DiscontinuedFilter.php
+@@ -14,6 +14,6 @@ class DiscontinuedFilter extends SQLFilter
+             return '';
+         }
+ 
+-        return sprintf('%s.discontinued = false', $targetTableAlias);
++        return sprintf('%s.discontinued = %s', $targetTableAlias, $this->getParameter('discontinued'));
+     }
+ }

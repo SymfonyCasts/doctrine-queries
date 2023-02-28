@@ -1,0 +1,20 @@
+diff --git a/src/Doctrine/DiscontinuedFilter.php b/src/Doctrine/DiscontinuedFilter.php
+index c8aba5d..8017a07 100644
+--- a/src/Doctrine/DiscontinuedFilter.php
++++ b/src/Doctrine/DiscontinuedFilter.php
+@@ -2,7 +2,13 @@
+ 
+ namespace App\Doctrine;
+ 
+-class DiscontinuedFilter
+-{
++use Doctrine\ORM\Mapping\ClassMetadata;
++use Doctrine\ORM\Query\Filter\SQLFilter;
+ 
++class DiscontinuedFilter extends SQLFilter
++{
++    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
++    {
++        // TODO: Implement addFilterConstraint() method.
++    }
+ }

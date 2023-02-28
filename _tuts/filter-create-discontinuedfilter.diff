@@ -1,0 +1,14 @@
+diff --git a/src/Doctrine/DiscontinuedFilter.php b/src/Doctrine/DiscontinuedFilter.php
+new file mode 100644
+index 0000000..c8aba5d
+--- /dev/null
++++ b/src/Doctrine/DiscontinuedFilter.php
+@@ -0,0 +1,8 @@
++<?php
++
++namespace App\Doctrine;
++
++class DiscontinuedFilter
++{
++
++}

@@ -1,0 +1,13 @@
+diff --git a/config/packages/doctrine.yaml b/config/packages/doctrine.yaml
+index bdff96f..8f69a35 100644
+--- a/config/packages/doctrine.yaml
++++ b/config/packages/doctrine.yaml
+@@ -16,6 +16,8 @@ doctrine:
+                 dir: '%kernel.project_dir%/src/Entity'
+                 prefix: 'App\Entity'
+                 alias: App
++        filters:
++            fortuneCookie_discontinued: App\Doctrine\DiscontinuedFilter
+ 
+ when@test:
+     doctrine:
