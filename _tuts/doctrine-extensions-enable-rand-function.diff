@@ -1,0 +1,14 @@
+diff --git a/config/packages/doctrine.yaml b/config/packages/doctrine.yaml
+index 0a331e6..ce765a2 100644
+--- a/config/packages/doctrine.yaml
++++ b/config/packages/doctrine.yaml
+@@ -22,6 +22,9 @@ doctrine:
+                 enabled: true
+                 parameters:
+                     discontinued: false
++        dql:
++            numeric_functions:
++                rand: DoctrineExtensions\Query\Mysql\Rand
+ 
+ when@test:
+     doctrine:

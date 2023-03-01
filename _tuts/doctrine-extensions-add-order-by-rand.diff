@@ -1,0 +1,12 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 05395cd..2250561 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -63,6 +63,7 @@ class CategoryRepository extends ServiceEntityRepository
+ 
+         return $qb
+             ->andWhere('category.id = :id')->setParameter('id', $id)
++            ->orderBy('RAND()', Criteria::ASC)
+             ->getQuery()
+             ->getOneOrNullResult();
+     }

@@ -404,7 +404,32 @@
             "id": "filter-enable-globally",
             "name": "Filter: Enable globally",
             "description": null
+        },
+        {
+            "id": "in-explode-search-terms",
+            "name": "IN: Explode search terms",
+            "description": null
+        },
+        {
+            "id": "in-use-terms-in-query",
+            "name": "IN: Use terms in query",
+            "description": null
+        },
+        {
+            "id": "doctrine-extensions-add-order-by-rand",
+            "name": "Doctrine Extensions: Add order by RAND()",
+            "description": null
+        },
+        {
+            "id": "doctrine-extensions-install-library",
+            "name": "Doctrine Extensions: Install library",
+            "description": null
+        },
+        {
+            "id": "doctrine-extensions-enable-rand-function",
+            "name": "Doctrine Extensions: Enable RAND() function",
+            "description": null
         }
     ],
-    "sha": "6921ec9d1a52385f78824c4034aa24478b212503"
+    "sha": "12f7130105d76c2b7b24a416bec3c71f8b6afd65"
 }

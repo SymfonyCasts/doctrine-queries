@@ -1,0 +1,15 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index d24b1e6..05395cd 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -48,8 +48,9 @@ class CategoryRepository extends ServiceEntityRepository
+         static::addOrderByCategoryName($qb);
+ 
+         return $qb
+-            ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm OR fortuneCookie.fortune LIKE :searchTerm')
++            ->andWhere('category.name LIKE :searchTerm OR category.name IN (:termList) OR category.iconKey LIKE :searchTerm OR fortuneCookie.fortune LIKE :searchTerm')
+             ->setParameter('searchTerm', '%'.$term.'%')
++            ->setParameter('termList', $termList)
+             ->addOrderBy('category.name', Criteria::DESC)
+             ->getQuery()
+             ->getResult();
