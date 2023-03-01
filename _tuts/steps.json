@@ -429,7 +429,62 @@
             "id": "doctrine-extensions-enable-rand-function",
             "name": "Doctrine Extensions: Enable RAND() function",
             "description": null
+        },
+        {
+            "id": "group-by-comment-out-addfortunecookiejoinandselect",
+            "name": "GROUP BY: Comment out addFortuneCookieJoinAndSelect()",
+            "description": null
+        },
+        {
+            "id": "group-by-add-select-join-and-group-by",
+            "name": "GROUP BY: Add select, join and group by",
+            "description": null
+        },
+        {
+            "id": "group-by-use-fortunecookiestotal-in-template",
+            "name": "GROUP BY: Use fortuneCookiesTotal in template",
+            "description": null
+        },
+        {
+            "id": "group-by-create-addgroupbycategory",
+            "name": "GROUP BY: Create addGroupByCategory()",
+            "description": null
+        },
+        {
+            "id": "group-by-extract-to-separate-method",
+            "name": "GROUP BY: Extract to separate method",
+            "description": null
+        },
+        {
+            "id": "group-by-use-in-findallordered",
+            "name": "GROUP BY: Use in findAllOrdered()",
+            "description": null
+        },
+        {
+            "id": "group-by-use-in-search",
+            "name": "GROUP BY: Use in search()",
+            "description": null
+        },
+        {
+            "id": "group-by-fetch-the-whole-category-object",
+            "name": "GROUP BY: Fetch the whole category object",
+            "description": null
+        },
+        {
+            "id": "group-by-dump-the-result",
+            "name": "GROUP BY: Dump the result",
+            "description": null
+        },
+        {
+            "id": "group-by-remove-dump",
+            "name": "GROUP BY: Remove dump",
+            "description": null
+        },
+        {
+            "id": "group-by-fix-template",
+            "name": "GROUP BY: Fix template",
+            "description": null
         }
     ],
-    "sha": "12f7130105d76c2b7b24a416bec3c71f8b6afd65"
+    "sha": "4bca43d516197c9503fd075129a101096d417c37"
 }

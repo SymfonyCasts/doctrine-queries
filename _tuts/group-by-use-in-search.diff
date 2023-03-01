@@ -1,0 +1,14 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index ba6b5ba..c2f819e 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -45,7 +45,8 @@ class CategoryRepository extends ServiceEntityRepository
+     {
+         $termList = explode(' ', $term);
+         $qb = $this->createQueryBuilder('category');
+-        static::addFortuneCookieJoinAndSelect($qb);
++//        static::addFortuneCookieJoinAndSelect($qb);
++        static::addGroupByCategory($qb);
+         static::addOrderByCategoryName($qb);
+ 
+         return $qb

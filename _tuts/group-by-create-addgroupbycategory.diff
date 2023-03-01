@@ -1,0 +1,16 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 380352d..2d46a20 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -90,6 +90,11 @@ class CategoryRepository extends ServiceEntityRepository
+         }
+     }
+ 
++    private static function addGroupByCategory(QueryBuilder $qb): QueryBuilder
++    {
++
++    }
++
+     private static function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
+     {
+         return $qb

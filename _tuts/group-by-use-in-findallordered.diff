@@ -1,0 +1,12 @@
+diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
+index 814cd0c..ba6b5ba 100644
+--- a/src/Repository/CategoryRepository.php
++++ b/src/Repository/CategoryRepository.php
+@@ -31,6 +31,7 @@ class CategoryRepository extends ServiceEntityRepository
+ //        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
+         $qb = $this->createQueryBuilder('category');
+ //        static::addFortuneCookieJoinAndSelect($qb);
++        static::addGroupByCategory($qb);
+         static::addOrderByCategoryName($qb);
+         $query = $qb->getQuery();
+ 
