@@ -1,5 +1,5 @@
 diff --git a/src/Entity/Category.php b/src/Entity/Category.php
-index 3252630..908c1ab 100644
+index 4d84733..52589de 100644
 --- a/src/Entity/Category.php
 +++ b/src/Entity/Category.php
 @@ -3,6 +3,7 @@
@@ -21,18 +21,18 @@ index 3252630..908c1ab 100644
          return $this->fortuneCookies->matching($criteria);
      }
 diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
-index 800b11a..5bb2c42 100644
+index a5ec35c..62513cd 100644
 --- a/src/Repository/FortuneCookieRepository.php
 +++ b/src/Repository/FortuneCookieRepository.php
-@@ -5,6 +5,7 @@ namespace App\Repository;
- use App\Entity\Category;
+@@ -6,6 +6,7 @@ use App\Entity\Category;
  use App\Entity\FortuneCookie;
+ use App\Model\CategoryFortuneStats;
  use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 +use Doctrine\Common\Collections\Criteria;
  use Doctrine\Persistence\ManagerRegistry;
  
  /**
-@@ -22,6 +23,12 @@ class FortuneCookieRepository extends ServiceEntityRepository
+@@ -23,6 +24,12 @@ class FortuneCookieRepository extends ServiceEntityRepository
          parent::__construct($registry, FortuneCookie::class);
      }
  
@@ -42,6 +42,6 @@ index 800b11a..5bb2c42 100644
 +            ->andWhere(Criteria::expr()->eq('discontinued', false));
 +    }
 +
-     public function countNumberPrintedForCategory(Category $category): array
+     public function countNumberPrintedForCategory(Category $category): CategoryFortuneStats
      {
  //        $result = $this->createQueryBuilder('fortuneCookie')

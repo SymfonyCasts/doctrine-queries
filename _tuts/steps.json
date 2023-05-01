@@ -96,13 +96,18 @@
             "description": null
         },
         {
-            "id": "join-add-leftjoin-in-findallordered",
-            "name": "JOIN: Add leftJoin() in findAllOrdered()",
+            "id": "join-use-fetch-extra-lazy-for-count",
+            "name": "JOIN: Use fetch EXTRA_LAZY for count",
             "description": null
         },
         {
-            "id": "join-add-addselect-in-findallordered",
-            "name": "JOIN: Add addSelect() in findAllOrdered()",
+            "id": "delete-me-1",
+            "name": "delete me 1",
+            "description": null
+        },
+        {
+            "id": "delete-me-2",
+            "name": "delete me 2",
             "description": null
         },
         {
@@ -211,6 +216,26 @@
             "description": null
         },
         {
+            "id": "fetch-info-object-create-new-model-class",
+            "name": "Fetch info Object: create new Model class",
+            "description": null
+        },
+        {
+            "id": "fetch-info-object-select-into-object",
+            "name": "Fetch info Object: Select into object",
+            "description": null
+        },
+        {
+            "id": "fetch-info-object-remove-select-aliases",
+            "name": "Fetch info Object: remove select aliases",
+            "description": null
+        },
+        {
+            "id": "fetch-info-object-update-code-to-use-object",
+            "name": "Fetch info Object: update code to use object",
+            "description": null
+        },
+        {
             "id": "raw-sql-comment-qb",
             "name": "Raw SQL: Comment QB",
             "description": null
@@ -286,8 +311,8 @@
             "description": null
         },
         {
-            "id": "reuse-query-use-in-findallordered",
-            "name": "Reuse query: Use in findAllOrdered()",
+            "id": "delete-me-3",
+            "name": "delete me 3",
             "description": null
         },
         {
@@ -298,6 +323,11 @@
         {
             "id": "reuse-query-use-in-findwithfortunesjoin",
             "name": "Reuse query: Use in findWithFortunesJoin()",
+            "description": null
+        },
+        {
+            "id": "reuse-query-make-qb-arg-optional",
+            "name": "Reuse query: make QB arg optional",
             "description": null
         },
         {
@@ -353,6 +383,11 @@
         {
             "id": "filter-extend-sqlfilter",
             "name": "Filter: Extend SQLFilter",
+            "description": null
+        },
+        {
+            "id": "filter-add-string-return-type",
+            "name": "Filter: add string return type",
             "description": null
         },
         {
@@ -431,8 +466,8 @@
             "description": null
         },
         {
-            "id": "group-by-comment-out-addfortunecookiejoinandselect",
-            "name": "GROUP BY: Comment out addFortuneCookieJoinAndSelect()",
+            "id": "delete-me-4",
+            "name": "delete me 4",
             "description": null
         },
         {
@@ -456,8 +491,8 @@
             "description": null
         },
         {
-            "id": "group-by-use-in-findallordered",
-            "name": "GROUP BY: Use in findAllOrdered()",
+            "id": "delete-me-5",
+            "name": "delete me 5",
             "description": null
         },
         {
@@ -466,25 +501,30 @@
             "description": null
         },
         {
-            "id": "group-by-fetch-the-whole-category-object",
-            "name": "GROUP BY: Fetch the whole category object",
+            "id": "group-by-remove-duplicate-join",
+            "name": "GROUP BY: Remove duplicate join",
             "description": null
         },
         {
-            "id": "group-by-dump-the-result",
-            "name": "GROUP BY: Dump the result",
+            "id": "delete-me-6",
+            "name": "delete me 6",
             "description": null
         },
         {
-            "id": "group-by-remove-dump",
-            "name": "GROUP BY: Remove dump",
+            "id": "delete-me-7",
+            "name": "delete me 7",
             "description": null
         },
         {
-            "id": "group-by-fix-template",
-            "name": "GROUP BY: Fix template",
+            "id": "delete-me-8",
+            "name": "delete me 8",
+            "description": null
+        },
+        {
+            "id": "delete-me-9",
+            "name": "delete me 9",
             "description": null
         }
     ],
-    "sha": "4bca43d516197c9503fd075129a101096d417c37"
+    "sha": "a2aa822207286f5ae0fd9d3f8366a5df13b6ca11"
 }

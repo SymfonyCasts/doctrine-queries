@@ -1,10 +1,10 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 6e524cc..68bd4a2 100644
+index 0578c60..e3bec58 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -83,7 +83,9 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -81,7 +81,9 @@ class CategoryRepository extends ServiceEntityRepository
  
-     private static function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
+     private function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
      {
 -
 +        return $qb

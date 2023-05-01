@@ -1,5 +1,5 @@
 diff --git a/src/Entity/Category.php b/src/Entity/Category.php
-index b22e59e..6039527 100644
+index 09e1203..18392a1 100644
 --- a/src/Entity/Category.php
 +++ b/src/Entity/Category.php
 @@ -58,6 +58,14 @@ class Category

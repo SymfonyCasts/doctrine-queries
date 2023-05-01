@@ -1,0 +1,13 @@
+diff --git a/src/Entity/Category.php b/src/Entity/Category.php
+index b22e59e..09e1203 100644
+--- a/src/Entity/Category.php
++++ b/src/Entity/Category.php
+@@ -21,7 +21,7 @@ class Category
+     #[ORM\Column(length: 20)]
+     private ?string $iconKey = null;
+ 
+-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: FortuneCookie::class)]
++    #[ORM\OneToMany(mappedBy: 'category', targetEntity: FortuneCookie::class, fetch: 'EXTRA_LAZY')]
+     private Collection $fortuneCookies;
+ 
+     public function __construct()

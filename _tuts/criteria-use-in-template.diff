@@ -1,5 +1,5 @@
 diff --git a/templates/fortune/showCategory.html.twig b/templates/fortune/showCategory.html.twig
-index 37df2fb..4b0c054 100644
+index 20e488b..bb8c498 100644
 --- a/templates/fortune/showCategory.html.twig
 +++ b/templates/fortune/showCategory.html.twig
 @@ -18,7 +18,7 @@

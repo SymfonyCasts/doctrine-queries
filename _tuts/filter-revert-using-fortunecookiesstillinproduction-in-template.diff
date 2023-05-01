@@ -1,18 +1,18 @@
 diff --git a/templates/fortune/homepage.html.twig b/templates/fortune/homepage.html.twig
-index b65d566..054f1c9 100644
+index 40332ec..8700a0f 100644
 --- a/templates/fortune/homepage.html.twig
 +++ b/templates/fortune/homepage.html.twig
 @@ -7,7 +7,7 @@
  <div class="xl:container xl:mx-auto grid grid-cols-2 gap-6 px-10 mt-8 mb-10">
      {% for category in categories %}
-     <a class="bg-orange-400 hover:bg-orange-500 text-white text-center rounded-full p-4" href="{{ path('app_category_show', {'id':  category.id}) }}">
--        <span class="fa {{ category.iconKey }}"></span> <span class="font-bold text-lg">{{ category.name }}</span>  ({{ category.fortuneCookiesStillInProduction|length }})
-+        <span class="fa {{ category.iconKey }}"></span> <span class="font-bold text-lg">{{ category.name }}</span>  ({{ category.fortuneCookies|length }})
-     </a>
+         <a class="bg-orange-400 hover:bg-orange-500 text-white text-center rounded-full p-4" href="{{ path('app_category_show', {'id':  category.id}) }}">
+-            <span class="fa {{ category.iconKey }}"></span> <span class="font-bold text-lg">{{ category.name }}</span>  ({{ category.fortuneCookiesStillInProduction|length }})
++            <span class="fa {{ category.iconKey }}"></span> <span class="font-bold text-lg">{{ category.name }}</span>  ({{ category.fortuneCookies|length }})
+         </a>
      {% else %}
          <h3>Hmm... there don't seem to be any fortunes</h3>
 diff --git a/templates/fortune/showCategory.html.twig b/templates/fortune/showCategory.html.twig
-index 4b0c054..37df2fb 100644
+index bb8c498..20e488b 100644
 --- a/templates/fortune/showCategory.html.twig
 +++ b/templates/fortune/showCategory.html.twig
 @@ -18,7 +18,7 @@

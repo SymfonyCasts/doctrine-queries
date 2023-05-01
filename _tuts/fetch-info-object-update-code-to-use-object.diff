@@ -1,0 +1,43 @@
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index 293d59b..21c0f5f 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -34,13 +34,13 @@ class FortuneController extends AbstractController
+         if (!$category) {
+             throw $this->createNotFoundException('Category not found!');
+         }
+-        $result = $fortuneCookieRepository->countNumberPrintedForCategory($category);
++        $stats = $fortuneCookieRepository->countNumberPrintedForCategory($category);
+ 
+         return $this->render('fortune/showCategory.html.twig',[
+             'category' => $category,
+-            'fortunesPrinted' => $result['fortunesPrinted'],
+-            'fortunesAverage' => $result['fortunesAverage'],
+-            'categoryName' => $result['name'],
++            'fortunesPrinted' => $stats->fortunesPrinted,
++            'fortunesAverage' => $stats->fortunesAverage,
++            'categoryName' => $stats->categoryName,
+         ]);
+     }
+ }
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index 01256de..697f494 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -23,7 +23,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+         parent::__construct($registry, FortuneCookie::class);
+     }
+ 
+-    public function countNumberPrintedForCategory(Category $category): array
++    public function countNumberPrintedForCategory(Category $category): CategoryFortuneStats
+     {
+         $result = $this->createQueryBuilder('fortuneCookie')
+             ->select(sprintf(
+@@ -39,7 +39,6 @@ class FortuneCookieRepository extends ServiceEntityRepository
+             ->setParameter('category', $category)
+             ->getQuery()
+             ->getSingleResult();
+-        dd($result);
+ 
+         return $result;
+     }

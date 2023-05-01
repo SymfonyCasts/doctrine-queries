@@ -1,15 +1,18 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index a92a9b0..380352d 100644
+index aee8206..e10436e 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -32,6 +32,10 @@ class CategoryRepository extends ServiceEntityRepository
-         $qb = $this->createQueryBuilder('category');
- //        static::addFortuneCookieJoinAndSelect($qb);
-         static::addOrderByCategoryName($qb);
-+        $qb
-+            ->addSelect('category.id, category.name, category.iconKey, COUNT(fortuneCookie.id) AS fortuneCookiesTotal')
+@@ -30,8 +30,12 @@ class CategoryRepository extends ServiceEntityRepository
+     {
+ //        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
+         $qb = $this->createQueryBuilder('category')
+-            ->addOrderBy('category.name', Criteria::DESC);
++            ->addOrderBy('category.name', Criteria::DESC)
++            ->addSelect('COUNT(fortuneCookie.id) AS fortuneCookiesTotal')
 +            ->leftJoin('category.fortuneCookies', 'fortuneCookie')
 +            ->addGroupBy('category.id');
          $query = $qb->getQuery();
++        dd($query->getResult());
  
          return $query->getResult();
+     }

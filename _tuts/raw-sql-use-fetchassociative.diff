@@ -1,8 +1,8 @@
 diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
-index 235caa9..c8257d9 100644
+index 17c82e6..74ce356 100644
 --- a/src/Repository/FortuneCookieRepository.php
 +++ b/src/Repository/FortuneCookieRepository.php
-@@ -39,7 +39,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
+@@ -45,7 +45,7 @@ class FortuneCookieRepository extends ServiceEntityRepository
          $stmt = $conn->prepare($sql);
          $stmt->bindValue('category', $category->getId());
          $result = $stmt->executeQuery();

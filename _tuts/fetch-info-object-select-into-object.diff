@@ -1,0 +1,36 @@
+diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
+index 0c8656a..d19a43c 100644
+--- a/src/Repository/FortuneCookieRepository.php
++++ b/src/Repository/FortuneCookieRepository.php
+@@ -4,6 +4,7 @@ namespace App\Repository;
+ 
+ use App\Entity\Category;
+ use App\Entity\FortuneCookie;
++use App\Model\CategoryFortuneStats;
+ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+ use Doctrine\Persistence\ManagerRegistry;
+ 
+@@ -25,14 +26,20 @@ class FortuneCookieRepository extends ServiceEntityRepository
+     public function countNumberPrintedForCategory(Category $category): array
+     {
+         $result = $this->createQueryBuilder('fortuneCookie')
+-            ->select('SUM(fortuneCookie.numberPrinted) AS fortunesPrinted')
+-            ->addSelect('AVG(fortuneCookie.numberPrinted) fortunesAverage')
+-            ->addSelect('category.name')
++            ->select(sprintf(
++                'NEW %s(
++                    SUM(fortuneCookie.numberPrinted) AS fortunesPrinted,
++                    AVG(fortuneCookie.numberPrinted) fortunesAverage,
++                    category.name
++                )',
++                CategoryFortuneStats::class
++            ))
+             ->innerJoin('fortuneCookie.category', 'category')
+             ->andWhere('fortuneCookie.category = :category')
+             ->setParameter('category', $category)
+             ->getQuery()
+             ->getSingleResult();
++        dd($result);
+ 
+         return $result;
+     }

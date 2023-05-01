@@ -1,8 +1,8 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 9d2353f..c6b817b 100644
+index 0d43be8..49e7c20 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -55,9 +55,10 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -53,9 +53,9 @@ class CategoryRepository extends ServiceEntityRepository
  
      public function findWithFortunesJoin(int $id): ?Category
      {
@@ -10,9 +10,8 @@ index 9d2353f..c6b817b 100644
 -            ->addSelect('fortuneCookie')
 -            ->leftJoin('category.fortuneCookies', 'fortuneCookie')
 +        $qb = $this->createQueryBuilder('category');
-+        static::addFortuneCookieJoinAndSelect($qb);
 +
-+        return $qb
++        return $this->addFortuneCookieJoinAndSelect($qb)
              ->andWhere('category.id = :id')->setParameter('id', $id)
              ->getQuery()
              ->getOneOrNullResult();

@@ -1,8 +1,8 @@
 diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
-index cfd4569..8fcc52d 100644
+index fe06c0c..be0a503 100644
 --- a/src/Repository/FortuneCookieRepository.php
 +++ b/src/Repository/FortuneCookieRepository.php
-@@ -34,6 +34,8 @@ class FortuneCookieRepository extends ServiceEntityRepository
+@@ -40,6 +40,8 @@ class FortuneCookieRepository extends ServiceEntityRepository
  //            ->getQuery()
  //            ->getSingleResult();
  

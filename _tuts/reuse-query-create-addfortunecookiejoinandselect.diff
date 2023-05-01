@@ -1,5 +1,5 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 4f33a77..6e524cc 100644
+index 0300d77..0578c60 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
 @@ -5,6 +5,7 @@ namespace App\Repository;
@@ -10,11 +10,11 @@ index 4f33a77..6e524cc 100644
  use Doctrine\Persistence\ManagerRegistry;
  
  /**
-@@ -80,6 +81,11 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -78,6 +79,11 @@ class CategoryRepository extends ServiceEntityRepository
          }
      }
  
-+    private static function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
++    private function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
 +    {
 +
 +    }

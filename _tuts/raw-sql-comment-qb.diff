@@ -1,24 +1,34 @@
 diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
-index 0c8656a..cfd4569 100644
+index 697f494..fe06c0c 100644
 --- a/src/Repository/FortuneCookieRepository.php
 +++ b/src/Repository/FortuneCookieRepository.php
-@@ -24,15 +24,15 @@ class FortuneCookieRepository extends ServiceEntityRepository
+@@ -25,20 +25,20 @@ class FortuneCookieRepository extends ServiceEntityRepository
  
-     public function countNumberPrintedForCategory(Category $category): array
+     public function countNumberPrintedForCategory(Category $category): CategoryFortuneStats
      {
 -        $result = $this->createQueryBuilder('fortuneCookie')
--            ->select('SUM(fortuneCookie.numberPrinted) AS fortunesPrinted')
--            ->addSelect('AVG(fortuneCookie.numberPrinted) fortunesAverage')
--            ->addSelect('category.name')
+-            ->select(sprintf(
+-                'NEW %s(
+-                    SUM(fortuneCookie.numberPrinted),
+-                    AVG(fortuneCookie.numberPrinted),
+-                    category.name
+-                )',
+-                CategoryFortuneStats::class
+-            ))
 -            ->innerJoin('fortuneCookie.category', 'category')
 -            ->andWhere('fortuneCookie.category = :category')
 -            ->setParameter('category', $category)
 -            ->getQuery()
 -            ->getSingleResult();
 +//        $result = $this->createQueryBuilder('fortuneCookie')
-+//            ->select('SUM(fortuneCookie.numberPrinted) AS fortunesPrinted')
-+//            ->addSelect('AVG(fortuneCookie.numberPrinted) fortunesAverage')
-+//            ->addSelect('category.name')
++//            ->select(sprintf(
++//                'NEW %s(
++//                    SUM(fortuneCookie.numberPrinted),
++//                    AVG(fortuneCookie.numberPrinted),
++//                    category.name
++//                )',
++//                CategoryFortuneStats::class
++//            ))
 +//            ->innerJoin('fortuneCookie.category', 'category')
 +//            ->andWhere('fortuneCookie.category = :category')
 +//            ->setParameter('category', $category)

@@ -1,15 +1,20 @@
 diff --git a/src/Repository/FortuneCookieRepository.php b/src/Repository/FortuneCookieRepository.php
-index c8257d9..800b11a 100644
+index 74ce356..a5ec35c 100644
 --- a/src/Repository/FortuneCookieRepository.php
 +++ b/src/Repository/FortuneCookieRepository.php
-@@ -39,9 +39,8 @@ class FortuneCookieRepository extends ServiceEntityRepository
+@@ -41,13 +41,12 @@ class FortuneCookieRepository extends ServiceEntityRepository
+ //            ->getSingleResult();
+ 
+         $conn = $this->getEntityManager()->getConnection();
+-        $sql = 'SELECT SUM(fortune_cookie.number_printed) AS fortunesPrinted, AVG(fortune_cookie.number_printed) fortunesAverage, category.name FROM fortune_cookie INNER JOIN category ON category.id = fortune_cookie.category_id WHERE fortune_cookie.category_id = :category';
++        $sql = 'SELECT SUM(fortune_cookie.number_printed) AS fortunesPrinted, AVG(fortune_cookie.number_printed) fortunesAverage, category.name as categoryName FROM fortune_cookie INNER JOIN category ON category.id = fortune_cookie.category_id WHERE fortune_cookie.category_id = :category';
          $stmt = $conn->prepare($sql);
          $stmt->bindValue('category', $category->getId());
          $result = $stmt->executeQuery();
 -        dd($result->fetchAssociative());
  
 -        return $result;
-+        return $result->fetchAssociative();
++        return new CategoryFortuneStats(...$result->fetchAssociative());
      }
  
      public function save(FortuneCookie $entity, bool $flush = false): void

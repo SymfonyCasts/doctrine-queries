@@ -1,5 +1,5 @@
 diff --git a/src/Doctrine/DiscontinuedFilter.php b/src/Doctrine/DiscontinuedFilter.php
-index c8aba5d..8017a07 100644
+index c8aba5d..c31ca92 100644
 --- a/src/Doctrine/DiscontinuedFilter.php
 +++ b/src/Doctrine/DiscontinuedFilter.php
 @@ -2,7 +2,13 @@
@@ -13,7 +13,7 @@ index c8aba5d..8017a07 100644
  
 +class DiscontinuedFilter extends SQLFilter
 +{
-+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
++    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
 +    {
 +        // TODO: Implement addFilterConstraint() method.
 +    }

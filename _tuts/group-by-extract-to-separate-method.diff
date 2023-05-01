@@ -1,27 +1,33 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 2d46a20..814cd0c 100644
+index 8d917a9..8d585c4 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -32,10 +32,6 @@ class CategoryRepository extends ServiceEntityRepository
-         $qb = $this->createQueryBuilder('category');
- //        static::addFortuneCookieJoinAndSelect($qb);
-         static::addOrderByCategoryName($qb);
--        $qb
--            ->addSelect('category.id, category.name, category.iconKey, COUNT(fortuneCookie.id) AS fortuneCookiesTotal')
+@@ -29,11 +29,8 @@ class CategoryRepository extends ServiceEntityRepository
+     public function findAllOrdered(): array
+     {
+ //        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
+-        $qb = $this->createQueryBuilder('category')
+-            ->addOrderBy('category.name', Criteria::DESC)
+-            ->addSelect('COUNT(fortuneCookie.id) AS fortuneCookiesTotal')
 -            ->leftJoin('category.fortuneCookies', 'fortuneCookie')
 -            ->addGroupBy('category.id');
++        $qb = $this->addGroupByCategory()
++            ->addOrderBy('category.name', Criteria::DESC);
          $query = $qb->getQuery();
  
          return $query->getResult();
-@@ -92,7 +88,10 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -83,9 +80,12 @@ class CategoryRepository extends ServiceEntityRepository
+         }
+     }
  
-     private static function addGroupByCategory(QueryBuilder $qb): QueryBuilder
+-    private function addGroupByCategory(QueryBuilder $qb): QueryBuilder
++    private function addGroupByCategory(QueryBuilder $qb = null): QueryBuilder
      {
 -
-+        return $qb
-+            ->addSelect('category.id, category.name, category.iconKey, COUNT(fortuneCookie.id) AS fortuneCookiesTotal')
++        return ($qb ?? $this->createQueryBuilder('category'))
++            ->addSelect('COUNT(fortuneCookie.id) AS fortuneCookiesTotal')
 +            ->leftJoin('category.fortuneCookies', 'fortuneCookie')
 +            ->addGroupBy('category.id');
      }
  
-     private static function addFortuneCookieJoinAndSelect(QueryBuilder $qb): QueryBuilder
+     private function addFortuneCookieJoinAndSelect(QueryBuilder $qb = null): QueryBuilder

@@ -1,21 +1,15 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index f1671b9..a2c8a18 100644
+index bbc3443..340ccb4 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -31,7 +31,7 @@ class CategoryRepository extends ServiceEntityRepository
- //        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
-         $qb = $this->createQueryBuilder('category');
-         static::addFortuneCookieJoinAndSelect($qb);
--        $qb->addOrderBy('category.name', Criteria::DESC);
-+        static::addOrderByCategoryName($qb);
-         $query = $qb->getQuery();
- 
-         return $query->getResult();
-@@ -44,6 +44,7 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -41,7 +41,9 @@ class CategoryRepository extends ServiceEntityRepository
+      */
+     public function search(string $term): array
      {
-         $qb = $this->createQueryBuilder('category');
-         static::addFortuneCookieJoinAndSelect($qb);
-+        static::addOrderByCategoryName($qb);
- 
-         return $qb
+-        return $this->addFortuneCookieJoinAndSelect()
++        $qb = $this->addOrderByCategoryName();
++
++        return $this->addFortuneCookieJoinAndSelect($qb)
              ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm OR fortuneCookie.fortune LIKE :searchTerm')
+             ->setParameter('searchTerm', '%'.$term.'%')
+             ->addOrderBy('category.name', Criteria::DESC)
