@@ -101,16 +101,6 @@
             "description": null
         },
         {
-            "id": "delete-me-1",
-            "name": "delete me 1",
-            "description": null
-        },
-        {
-            "id": "delete-me-2",
-            "name": "delete me 2",
-            "description": null
-        },
-        {
             "id": "join-change-showcategory-signature",
             "name": "JOIN: Change showCategory() signature",
             "description": null
@@ -153,11 +143,6 @@
         {
             "id": "select-specific-fields-print-count-number",
             "name": "Select specific fields: Print count number",
-            "description": null
-        },
-        {
-            "id": "delete-me",
-            "name": "DELETE ME",
             "description": null
         },
         {
@@ -311,11 +296,6 @@
             "description": null
         },
         {
-            "id": "delete-me-3",
-            "name": "delete me 3",
-            "description": null
-        },
-        {
             "id": "reuse-query-use-in-search",
             "name": "Reuse query: Use in search()",
             "description": null
@@ -466,11 +446,6 @@
             "description": null
         },
         {
-            "id": "delete-me-4",
-            "name": "delete me 4",
-            "description": null
-        },
-        {
             "id": "group-by-add-select-join-and-group-by",
             "name": "GROUP BY: Add select, join and group by",
             "description": null
@@ -491,11 +466,6 @@
             "description": null
         },
         {
-            "id": "delete-me-5",
-            "name": "delete me 5",
-            "description": null
-        },
-        {
             "id": "group-by-use-in-search",
             "name": "GROUP BY: Use in search()",
             "description": null
@@ -503,26 +473,6 @@
         {
             "id": "group-by-remove-duplicate-join",
             "name": "GROUP BY: Remove duplicate join",
-            "description": null
-        },
-        {
-            "id": "delete-me-6",
-            "name": "delete me 6",
-            "description": null
-        },
-        {
-            "id": "delete-me-7",
-            "name": "delete me 7",
-            "description": null
-        },
-        {
-            "id": "delete-me-8",
-            "name": "delete me 8",
-            "description": null
-        },
-        {
-            "id": "delete-me-9",
-            "name": "delete me 9",
             "description": null
         }
     ],
