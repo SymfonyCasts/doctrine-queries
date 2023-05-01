@@ -1,7 +1,7 @@
-# Tutorials, Friendship & Symfony6
+# Tutorials, Fortune Cookies & Doctrine Queries
 
 Well hi there! This repository holds the code and script
-for the [Symfony6 Tutorials](https://symfonycasts.com/tracks/symfony) on SymfonyCasts.
+for the [Doctrine Queries Tutorials](https://symfonycasts.com/screencast/doctrine-queries) on SymfonyCasts.
 
 ## Setup
 
