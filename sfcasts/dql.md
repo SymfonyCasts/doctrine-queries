@@ -1,29 +1,123 @@
 # Doctrine DQL
 
-Hey there! Welcome to a tutorial that's all about the nerdery around running queries in Doctrine. It sounds simple, but when you start talking about doing joins and groups, grabbing entire objects, or just counts or sums... things can get *pretty* complicated. In this tutorial, we're going to deep dive into Doctrine queries. We'll talk about running native SQL queries, the Doctrine Query Language, filtering collections, fixing the "N + 1" problem, and a *ton* more. So... let's do it!
+Hey there friends! And thanks for joining me for to a tutorial that's all about the
+nerdery around running queries in Doctrine. It sounds simple... and it is for a while.
+But then you start adding joins, grouping, grabbing only specific data instead of
+full objects, counts... and... well... it gets interesting! This tutorial is about
+deep-diving into all that good stuff - including running native SQL queries, the Doctrine
+Query Language, filtering collections, fixing the "N + 1" problem, and a *ton* more.
 
-I *highly* recommend coding along with me. You can download the course code from this page. After you unzip it, you'll have a start directory with the same code that you see here. There's also a nifty `README.md` file that has all the setup instructions to get your database going. The *last* step will be to spin over to your terminal, move into the project, and run
+Woh, I'm pumped. So let's get rolling!
+
+## Project Setup
+
+To INSERT the most query knowledge into your brain I *highly* recommend coding along
+with me. You can download the course code from this page. After you unzip it, you'll
+have a `start/` directory with the same code that you see here. There's also a nifty
+`README.md` file with all the setup instructions. The *final* step will be to spin
+over to your terminal, move into the project, and run:
 
 ```terminal
-symphony serve -d
+symfony serve -d
 ```
 
-to start a built-in web server at `https://127.0.0.1:8000`. I'll cheat, click that, and... say "hello" to our latest innovation - *Fortune Queries* - a site that keeps track of *all* of the fortunes that a fortune cookie company has made, because *of course* they need to keep track of that, *and* their categories. It's exactly two pages right now. These are the categories, and you can click into them to see the fortunes behind them and how many have been printed. This is a Symphony 6.2 project, and at this point, it really couldn't be simpler. We have a `Category.php` entity, a `FortuneCookie.php` entity, and exactly *one* controller. No fancy queries here!
+to start a built-in web server at `https://127.0.0.1:8000`. I'll cheat, click that,
+and... say "hello" to our latest initiative - *Fortune Queries*. You see, we have
+this side business running a multi-national fortune cookie distribution business...
+and this fancy app helps us track all the fortunes we've *bestowed* onto our customers.
 
-*As a side note, this project uses MySQL, but pretty much everything we're going to talk about will work even if you're using Postgres.
+It's exactly 2 pages: these are the categories, and you can click *into* one
+to see its fortunes... including how many have been printed. This is a Symfony
+6.2 project, and at this point, it couldn't be simpler. We have a `Category`
+entity, a `FortuneCookie` entity, exactly *one* controller and no fancy queries.
 
-Speaking of that one controller, here on the home page, you can see that we're autowiring the `CategoryRepository`, and we're using the *easiest* way to query for something in Doctrine - calling `findAll()`. Our first trick is going to be super simple, but kind of interesting. I want to re-order these categories alphabetically by name. One *easy* way to do this is by changing `findAll()` to `findBy()`. This returns an array that matches certain criteria, so we could say something like `['name' => 'foo']` here.
+Side note: this project uses MySQL... but almost everything we're going to
+talk about will work on Postgres or anything else.
 
-Another approach is to just leave that empty, and add a second array that's an `orderBy`, so we could say something like `['name' => 'DESC']`. *But* any time I make a custom query, I like to create custom repository methods as well, so I can centralize everything. Head over to the `/Repository` directory, open up `CategoryRepository.php`, and inside, we can add whatever methods we want. Let's create a new one called `public function findAllOrdered()`. This will return an `array`, and I'll even advertise here that it's going to return an array of categories. Before I fill this in, back here... let's *call* it by saying `findAllOrdered()`. Beautiful!
+## Creating our First Custom Repository Method
 
-If you've worked with Doctrine before, you're probably expecting me to use the Query Builder. We *will* talk about the Query Builder in a moment, but I'm going to start even *simpler*. Doctrine works with a lot of database systems like MySQL, Postgres, MSSQL, and others. Each of these has a SQL language, but they're not all the same, so Doctrine had to *invent* its own SQL-like language called "DQL", or "Doctrine Query Language". It's fun! It *looks* like SQL, except that we refer to classes and properties instead of tables and columns.
+Speaking of that one controller, here on the home page, you can see that we're
+autowiring `CategoryRepository` and using the *easiest* way to query for something
+in Doctrine: `findAll()`. Our first trick will be super simple, but interesting.
+I want to re-order these categories alphabetically by name.
+One *simple* way to do this is by changing `findAll()` to `findBy()`. This is normally
+used to find items WHERE they match a criteria - something like `['name' => 'foo']`.
 
-Check this out! We're going to write a DQL query by hand. Say `$dql = 'SELECT category FROM App\Entity\Category as category'`. We're aliasing the class to `category` using DQL in much the same way we would alias a table to something with SQL. And over here, we're selecting *everything* from `category`, which means it's going to give us category objects. And that's it! To execute this, we can create something called a "query object" by saying `$query = $this->getEntityManager()->createQuery($dql);`. To run that, say `return $query->getResult()`. There's also a `$query->execute()`, and while it doesn't really matter, I prefer using `getResult()`.
+But... you can also just leave this empty and take advantage of the second argument:
+an order by array. So we could say something like `['name' => 'DESC']`.
 
-When we go over and try that... nothing changes! It *is* working, though. We just used DQL *directly* to make that query. So... what does it look like to add the `ORDER BY` on there? Very simply, we'll just say `ORDER BY`. Ta-da! The interesting thing here is, when we order by `name`, we don't need to think about which column that is in the database. Our `Category` entity has a `$name` property, so we don't *care* what the column is called. It's *probably* called `name`, but it *could be* called "I like pizza". The name doesn't matter. Because this is a `$name` property, over here, we can say `ORDER BY category.name`. In SQL, using the alias is *optional*, so you can say `ORDER BY name`. In *DQL*, you're *always* going to have the alias, so we say `category.name`. Finally, we'll say `DESC`. If we reload the page now... it's alphabetical!
+*But*... when I need a custom query, I like to create custom repository methods
+to centralize everything. Head over to the `src/Repository/` directory and open up
+`CategoryRepository.php`. Inside, we can add whatever methods we want. Let's create
+a new one called `public function findAllOrdered()`. This will return an `array`...
+and I'll even advertise that this is an array of `Category` objects.
 
-So when we write DQL, behind the scenes, it's converting that to SQL and then executing it. It looks to see which database layer you're using and translates that into the SQL language for that database system, and we can see that SQL if we say `dd()` (for "dump and die") `getSQL()`. And... there it is! That's the *actual* SQL query being executed. It has this ugly `c0_` as its alias, but it makes sense. It's grabbing every single column from that table and returning it. Pretty cool!
+Before we fill this in, back here... *call* it: `->findAllOrdered()`.
 
-By the way, you can also see that inside of your profiler. If we remove that debug and refresh... down here, you can see we're making *seven* queries. We'll talk about *why* there's seven in a little bit. And if we open that up... boom! There's the first query! You can also see a pretty version of it, as well as a version you can *run*. If you have any variables like `WHERE` clauses, the runnable version will actually fill in the values for you.
+Delightful!
 
-Next: We normally *don't* write DQL by hand, relying on the Query Builder to give us DQL instead. Let's see what *that* looks like.
+## Hello DQL (Doctrine Query Language)
+
+If you've worked with Doctrine before, you're probably expecting me to use the Query
+Builder. We *will* talk about that in a minute. But I want to start even *simpler*.
+Doctrine works with a lot of database systems like MySQL, Postgres, MSSQL, and others.
+Each of these has an SQL language, but they're not all the same. So Doctrine had to
+invent its *own* SQL-like language called "DQL", or "Doctrine Query Language". It's
+fun! It looks a *lot* like SQL. The biggest difference is probably that we refer
+to classes and properties instead of tables and columns.
+
+Let's write a DQL query by hand. Say `$dql` equals
+`SELECT category FROM App\Entity\Category as category`. We're aliasing the
+`App\Entity\Category` class to the string `category` in much the same way we might
+alias a table name to something in SQL. And over here, by just selecting `category`,
+we're selecting *everything*, which means it will return `Category` *objects*.
+
+And that's it! To execute this,  create a `Query` object with
+`$query = $this->getEntityManager()->createQuery($dql);`. Then run it with
+`return $query->getResult()`.
+
+There's also a `$query->execute()`, and while it doesn't really matter, I prefer
+`getResult()`.
+
+When we go over and try that... nothing changes! It *is* working! We just used DQL
+*directly* to make that query!
+
+## Adding the DQL ORDER BY
+
+So... what does it look like to add the `ORDER BY`? You can probably guess how
+it starts `ORDER BY`! 
+
+The interesting thing is, to order by `name`, we're *not* going to refer to
+the `name` *column* in the database. Nope, our `Category` entity has a `$name`
+*property*, and *that's* what we're going to refer to. The column is *probably*
+also called `name`... but it *could be* called `unnecessarily_long_column_name`
+and we would still order by the `name` *property*.
+
+The point is, because we have a `$name` property, over here, we can say
+`ORDER BY category.name`.
+
+Oh, and in SQL, using the alias is *optional* - you can say `ORDER BY name`. But
+in *DQL*, it's required, so we *must* say `category.name`. Finally, add `DESC`.
+
+If we reload the page now... it's alphabetical!
+
+## The DQL -> SQL Transformation
+
+When we write DQL, behind the scenes, Doctrine converts that to SQL and then
+executes it. It looks to see which database system we're using and translates it
+into the SQL language *for* that system. We can *see* the SQL with `dd()` (for "dump
+and die") `$query->getSQL()`.
+
+And... there it is! That's the *actual* SQL query being executed! It has this ugly
+`c0_` alias, but it's what we expect: it grabs every column from that
+table and returns it. Pretty cool!
+
+By the way, you can also see the query inside our profiler. If we remove that
+debug and refresh... down here, we can see that we're making *seven* queries. We'll
+talk about *why* there's seven in a bit. But if we click that little icon... boom!
+There's the first query! You can also see a pretty version of it, as well as a version
+you can *run*. If you have any variables inside `WHERE` clauses, the runnable version
+will fill those in for you.
+
+Next: We normally *don't* write DQL by hand. Instead, we *build* it with the Query
+Builder. Let's see what that looks like.
