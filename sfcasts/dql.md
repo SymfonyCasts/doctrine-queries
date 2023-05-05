@@ -2,7 +2,7 @@
 
 Hey there! Welcome to a tutorial that's all about the nerdery around running queries in Doctrine. It sounds simple, but when you start talking about doing joins and groups, grabbing entire objects, or just counts or sums... things can get *pretty* complicated. In this tutorial, we're going to deep dive into Doctrine queries. We'll talk about running native SQL queries, the Doctrine Query Language, filtering collections, fixing the "N + 1" problem, and a *ton* more. So... let's do it!
 
-I *highly* recommend coding along with me. You can download the course code from this page. After you unzip it, you'll have a start directory with the same code that you see here. There's also a nifty `readme.md` file that has all the setup instructions to get your database going. The *last* step will be to spin over to your terminal, move into the project, and run
+I *highly* recommend coding along with me. You can download the course code from this page. After you unzip it, you'll have a start directory with the same code that you see here. There's also a nifty `README.md` file that has all the setup instructions to get your database going. The *last* step will be to spin over to your terminal, move into the project, and run
 
 ```terminal
 symphony serve -d
