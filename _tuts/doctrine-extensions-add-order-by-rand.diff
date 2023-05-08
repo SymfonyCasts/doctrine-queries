@@ -1,11 +1,11 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 4049eb7..aee8206 100644
+index 09c7b9c..1e46053 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -57,6 +57,7 @@ class CategoryRepository extends ServiceEntityRepository
-     {
+@@ -58,6 +58,7 @@ class CategoryRepository extends ServiceEntityRepository
          return $this->addFortuneCookieJoinAndSelect()
-             ->andWhere('category.id = :id')->setParameter('id', $id)
+             ->andWhere('category.id = :id')
+             ->setParameter('id', $id)
 +            ->orderBy('RAND()', Criteria::ASC)
              ->getQuery()
              ->getOneOrNullResult();

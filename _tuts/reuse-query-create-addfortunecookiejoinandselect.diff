@@ -1,5 +1,5 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 0300d77..0578c60 100644
+index aaea5aa..cffed14 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
 @@ -5,6 +5,7 @@ namespace App\Repository;
@@ -10,7 +10,7 @@ index 0300d77..0578c60 100644
  use Doctrine\Persistence\ManagerRegistry;
  
  /**
-@@ -78,6 +79,11 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -79,6 +80,11 @@ class CategoryRepository extends ServiceEntityRepository
          }
      }
  

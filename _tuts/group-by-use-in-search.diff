@@ -1,5 +1,5 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 8d585c4..bf4fe10 100644
+index 713aeff..76b28f7 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
 @@ -43,6 +43,7 @@ class CategoryRepository extends ServiceEntityRepository

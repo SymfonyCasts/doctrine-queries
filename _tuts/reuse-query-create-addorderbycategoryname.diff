@@ -1,8 +1,8 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 55a29f1..1898afb 100644
+index 2037cc3..c4c74d1 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -82,6 +82,11 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -83,6 +83,11 @@ class CategoryRepository extends ServiceEntityRepository
              ->leftJoin('category.fortuneCookies', 'fortuneCookie');
      }
  

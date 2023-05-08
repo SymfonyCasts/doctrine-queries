@@ -1,8 +1,8 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 1898afb..bbc3443 100644
+index c4c74d1..2ffe8c0 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -84,7 +84,8 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -85,7 +85,8 @@ class CategoryRepository extends ServiceEntityRepository
  
      private function addOrderByCategoryName(QueryBuilder $qb = null): QueryBuilder
      {

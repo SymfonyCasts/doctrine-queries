@@ -1,5 +1,5 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 0d43be8..49e7c20 100644
+index 58d81e7..68de5b2 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
 @@ -53,9 +53,9 @@ class CategoryRepository extends ServiceEntityRepository
@@ -12,6 +12,6 @@ index 0d43be8..49e7c20 100644
 +        $qb = $this->createQueryBuilder('category');
 +
 +        return $this->addFortuneCookieJoinAndSelect($qb)
-             ->andWhere('category.id = :id')->setParameter('id', $id)
+             ->andWhere('category.id = :id')
+             ->setParameter('id', $id)
              ->getQuery()
-             ->getOneOrNullResult();
