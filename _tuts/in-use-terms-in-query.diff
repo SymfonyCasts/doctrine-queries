@@ -1,5 +1,5 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index e7fc67e..09c7b9c 100644
+index 79e0eba..334f752 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
 @@ -45,8 +45,9 @@ class CategoryRepository extends ServiceEntityRepository
@@ -10,6 +10,6 @@ index e7fc67e..09c7b9c 100644
 +            ->andWhere('category.name LIKE :searchTerm OR category.name IN (:termList) OR category.iconKey LIKE :searchTerm OR fortuneCookie.fortune LIKE :searchTerm')
              ->setParameter('searchTerm', '%'.$term.'%')
 +            ->setParameter('termList', $termList)
-             ->addOrderBy('category.name', Criteria::DESC)
              ->getQuery()
              ->getResult();
+     }

@@ -1,8 +1,8 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 2ffe8c0..673a36c 100644
+index 2ffe8c0..84b11ea 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -41,7 +41,9 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -41,10 +41,11 @@ class CategoryRepository extends ServiceEntityRepository
       */
      public function search(string $term): array
      {
@@ -12,4 +12,7 @@ index 2ffe8c0..673a36c 100644
 +        return $this->addFortuneCookieJoinAndSelect($qb)
              ->andWhere('category.name LIKE :searchTerm OR category.iconKey LIKE :searchTerm OR fortuneCookie.fortune LIKE :searchTerm')
              ->setParameter('searchTerm', '%'.$term.'%')
-             ->addOrderBy('category.name', Criteria::DESC)
+-            ->addOrderBy('category.name', Criteria::DESC)
+             ->getQuery()
+             ->getResult();
+     }
