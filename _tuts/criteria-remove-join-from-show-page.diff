@@ -1,0 +1,13 @@
+diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
+index 21c0f5f..b1811fe 100644
+--- a/src/Controller/FortuneController.php
++++ b/src/Controller/FortuneController.php
+@@ -30,7 +30,7 @@ class FortuneController extends AbstractController
+     #[Route('/category/{id}', name: 'app_category_show')]
+     public function showCategory(int $id, CategoryRepository $categoryRepository, FortuneCookieRepository $fortuneCookieRepository): Response
+     {
+-        $category = $categoryRepository->findWithFortunesJoin($id);
++        $category = $categoryRepository->find($id);
+         if (!$category) {
+             throw $this->createNotFoundException('Category not found!');
+         }

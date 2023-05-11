@@ -326,6 +326,11 @@
             "description": null
         },
         {
+            "id": "criteria-remove-join-from-show-page",
+            "name": "Criteria: Remove join from show page",
+            "description": null
+        },
+        {
             "id": "criteria-create-getfortunecookiesstillinproduction",
             "name": "Criteria: Create getFortuneCookiesStillInProduction()",
             "description": null
@@ -476,5 +481,5 @@
             "description": null
         }
     ],
-    "sha": "ef482bb7bb27737f41b5bec898f9380e6ec79291"
+    "sha": "dd53caf337e34025f829bfa1796b0c777933cbe3"
 }

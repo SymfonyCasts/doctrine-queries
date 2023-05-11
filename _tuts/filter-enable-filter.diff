@@ -1,5 +1,5 @@
 diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
-index eff5405..6ee68d0 100644
+index 8995450..ac96282 100644
 --- a/src/Controller/FortuneController.php
 +++ b/src/Controller/FortuneController.php
 @@ -16,6 +16,8 @@ class FortuneController extends AbstractController

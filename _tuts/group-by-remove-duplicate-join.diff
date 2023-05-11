@@ -1,12 +1,12 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 7956bff..f2affdc 100644
+index 89b7c57..a8bea29 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -43,9 +43,8 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -37,9 +37,8 @@ class CategoryRepository extends ServiceEntityRepository
      {
          $termList = explode(' ', $term);
          $qb = $this->addOrderByCategoryName();
--        $qb = $this->addGroupByCategory();
+-        $qb = $this->addGroupByCategory($qb);
  
 -        return $this->addFortuneCookieJoinAndSelect($qb)
 +        return $this->addGroupByCategory($qb)

@@ -1,12 +1,19 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 4146190..7956bff 100644
+index b12db25..89b7c57 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -43,6 +43,7 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -33,13 +33,11 @@ class CategoryRepository extends ServiceEntityRepository
+         return $query->getResult();
+     }
+ 
+-    /**
+-     * @return Category[]
+-     */
+     public function search(string $term): array
      {
          $termList = explode(' ', $term);
          $qb = $this->addOrderByCategoryName();
-+        $qb = $this->addGroupByCategory();
++        $qb = $this->addGroupByCategory($qb);
  
          return $this->addFortuneCookieJoinAndSelect($qb)
              ->andWhere('category.name LIKE :searchTerm OR category.name IN (:termList) OR category.iconKey LIKE :searchTerm OR fortuneCookie.fortune LIKE :searchTerm')

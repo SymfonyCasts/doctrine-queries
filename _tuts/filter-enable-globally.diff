@@ -16,7 +16,7 @@ index 8f69a35..0a331e6 100644
  when@test:
      doctrine:
 diff --git a/src/Controller/FortuneController.php b/src/Controller/FortuneController.php
-index 0f0ee17..5f5c69a 100644
+index d298947..a7fa001 100644
 --- a/src/Controller/FortuneController.php
 +++ b/src/Controller/FortuneController.php
 @@ -16,9 +16,10 @@ class FortuneController extends AbstractController

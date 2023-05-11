@@ -1,8 +1,18 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index ed36bc4..719e647 100644
+index ed36bc4..2c20104 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -35,7 +35,6 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -23,9 +23,6 @@ class CategoryRepository extends ServiceEntityRepository
+         parent::__construct($registry, Category::class);
+     }
+ 
+-    /**
+-     * @return Category[]
+-     */
+     public function findAllOrdered(): array
+     {
+ //        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
+@@ -35,7 +32,6 @@ class CategoryRepository extends ServiceEntityRepository
              ->leftJoin('category.fortuneCookies', 'fortuneCookie')
              ->addGroupBy('category.id');
          $query = $qb->getQuery();

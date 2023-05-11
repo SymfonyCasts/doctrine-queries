@@ -1,8 +1,8 @@
 diff --git a/src/Repository/CategoryRepository.php b/src/Repository/CategoryRepository.php
-index 8ddffca..4146190 100644
+index 62c55e3..b12db25 100644
 --- a/src/Repository/CategoryRepository.php
 +++ b/src/Repository/CategoryRepository.php
-@@ -29,11 +29,8 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -26,11 +26,8 @@ class CategoryRepository extends ServiceEntityRepository
      public function findAllOrdered(): array
      {
  //        $dql = 'SELECT category FROM App\Entity\Category as category ORDER BY category.name DESC';
@@ -16,7 +16,7 @@ index 8ddffca..4146190 100644
          $query = $qb->getQuery();
  
          return $query->getResult();
-@@ -83,9 +80,12 @@ class CategoryRepository extends ServiceEntityRepository
+@@ -80,9 +77,12 @@ class CategoryRepository extends ServiceEntityRepository
          }
      }
  
