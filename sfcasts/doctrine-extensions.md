@@ -1,0 +1,3 @@
+# Using RAND() or Other Non-Supported Functions
+
+Coming soon...

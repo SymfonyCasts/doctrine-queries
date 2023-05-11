@@ -2,3 +2,15 @@ chapters:
   - dql
   - query-builder
   - and-where-or-where
+  - joins
+  - joins-reduce-queries
+  - select-sum
+  - select-specific-fields
+  - select-new-object
+  - raw-sql-queries
+  - reusing-queries-query-builder
+  - criteria
+  - filters
+  - where-in
+  - doctrine-extensions
+  - group-by
