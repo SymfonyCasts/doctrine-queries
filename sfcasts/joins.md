@@ -1,11 +1,55 @@
 # JOINs
 
-We've got this cool `->andWhere()` method where we're searching on `name` *or* the `iconKey` inside of our `Category.php` entity. But could we *also* search on the fortunes themselves *inside* of a category? Good question! Let's see how that relationship is set up. In `Category.php`, you can see that there's a `OneToMany` relationship on a property called `$fortuneCookies` over to the `FortuneCookie` entity.
+We've got this cool `->andWhere()` method that searches on the `name` *or*
+`iconKey` properties of the `Category` entity. But could we *also* search on the
+fortune cookie data *inside* each category? Sure!
 
-If you think about this from a database perspective, if we want to modify our `WHERE` clause to be able to say `->andWhere fortuneCookie.fortune =` something, we need to `JOIN` over to that table. We're going to do the same thing with Doctrine, except, once again, we're not going to worry about joining across tables. We're going to `JOIN` across *entity classes*, which is a little weird but also really cool. In this case, we're going to `JOIN` across this `fortuneCookies` property over to the `FortuneCookie` entity, and then we'll be able to add our `WHERE` clause.
+Let's see how that relation is set up. In `Category`, we have a `OneToMany`
+relationship on a property called `$fortuneCookies` over to the `FortuneCookie` entity.
 
-Up here in `CategoryRepository.php`... it doesn't matter where, but I'll go to the top... we're going to say `->leftJoin()`. We're joining from one category over to *many* fortune cookies so, as usual, we'll say `category,fortuneCookies` and, for the second argument, `fortuneCookie`, which is going to be the alias for that entity. We're saying `category` like normal, but when we say `fortuneCookies`, we're actually referring to the name of our property, which says we want to `JOIN` across this property. The cool thing about this is that we don't need the normal `ON` that we would normally see with a query. We don't need to include that because Doctrine already has that information internally from this mapping. We're just *joining* across this property.
+## Thinking about JOINs in Doctrine
 
-One thing to keep in mind, which we'll talk more about in a second, is that, by joining over to something, we're not selecting more data. We're just making the properties on our `fortuneCookie` *available8 inside our query. This means I'm going to take my `->andWhere()` and make it *even longer*. Now we can say `OR fortuneCookie` (using our new alias right here) `.fortune` (because `$fortune` is the name of the property on our entity that actually stores the text) `LIKE :searchTerm`. It's that easy!
+If we think about the problem from a database perspective, in order to update our
+`WHERE` clause to include `WHERE fortune_cookie.fortune = :searchTerm`, we first
+need to `JOIN` to the `fortune_cookie` table.
 
-If we head back to our site, you can see we have the word "conclusion" in one of our fortunes, so if we spin over to the homepage and search for "conclusion"... got it! It looks like we have at least one match in our "Proverbs" category. And as usual, on the web debug toolbar, we can see the queries. Click to open that up in a new window... and you can see that there are *two* queries here. The first one is for the category, because we see `FROM category`, and the second query is actually `FROM fortune_cookie`. If we repeated this and went to the homepage, we see there are now *seven* queries in total: One for all of the categories and then an additional one to find all of the fortune cookies in each category - first, second, and third. Let's find out why that's happening and how we can fix it next.
+And that *is* what we're going to do in Doctrine... except with a twist. Instead
+of thinking about joining across *tables*, we're going to think about joining
+across *entity classes*. This might feel weird at first, but it's super cool.
+In this case, we want to `JOIN` across this `fortuneCookies` property over to the
+`FortuneCookie` entity.
+
+## Using leftJoin()
+
+Let's do it! Back over in `CategoryRepository`... we can add the join anywhere in
+the query. Unlike SQL, the QueryBuilder doesn't care what order you do things.
+Add `->leftJoin()` because we're joining from one category to *many* fortune cookies.
+Pass this `category.fortuneCookies` then `fortuneCookie`, which will be the *alias*
+for the joined entity.
+
+When we say `category.fortuneCookies`, we're referring to the `fortuneCookies`
+*property*. The *cool* thing is that... this is all we need! We don't need to tell
+Doctrine which entity or table we're joining to... and we don't need the
+`ON fortune_cookie.category_id = category.id` that we would normally see in SQL.
+We don't need *any* of this because Doctrine already has that info on the
+`OneToMany` mapping. We just say "join across this property" and it does the rest!
+
+One thing to keep in mind, which we'll talk more about in a minute, is that, by
+joining over to something, we're not *selecting* more data. We're just making the
+properties on `FortuneCookie` *available* inside our query. This means we can make
+the `->andWhere()` *even longer*. Add `OR fortuneCookie` (using the new alias from
+the join) `.fortune` (because `fortune` is the name of the property on `FortuneCookie`
+that stores the text) `LIKE :searchTerm`.
+
+Done! Head back to the site. One of my fortunes has the word "conclusion".
+Spin over to the homepage, search for "conclusion" and... got it! It looks like we
+have at least one match in our "Proverbs" category! Missing accomplished!
+
+But if you click on the database icon of the web debug toolbar... this page has
+*two* queries. The first is for the category - it has `FROM category` and includes
+the `LEFT JOIN` we just added. The second is `FROM fortune_cookie`.
+
+And if we go to the homepage without searching, there are *seven* queries in total:
+one to fetch all the categories... and then an *additional* 6 to find the
+fortune cookies for each of the six categories. This is called the N+1 query problem.
+Let's talk about it next and fix it with joins.
