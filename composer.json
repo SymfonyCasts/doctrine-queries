@@ -29,6 +29,9 @@
         "zenstruck/foundry": "^1.22"
     },
     "config": {
+        "platform": {
+            "php": "8.1"
+        },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "symfony/flex": true,
