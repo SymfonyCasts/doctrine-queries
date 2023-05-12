@@ -1,5 +1,5 @@
 diff --git a/composer.json b/composer.json
-index 81e77b9..73a1619 100644
+index d5f59a0..5307d87 100644
 --- a/composer.json
 +++ b/composer.json
 @@ -7,6 +7,7 @@
@@ -11,15 +11,15 @@ index 81e77b9..73a1619 100644
          "doctrine/doctrine-migrations-bundle": "^3.2",
          "doctrine/orm": "^2.13",
 diff --git a/composer.lock b/composer.lock
-index 8ff356a..4a05420 100644
+index eff160f..760b54a 100644
 --- a/composer.lock
 +++ b/composer.lock
 @@ -4,8 +4,65 @@
          "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
          "This file is @generated automatically"
      ],
--    "content-hash": "62dd641759f121157fd060afbad0b9c2",
-+    "content-hash": "71d46b81f4ad096a42cfa727fd7364e4",
+-    "content-hash": "a10cb6a54d0a4031096186c553dc75a9",
++    "content-hash": "09e68b3c43acc58140ad3c7240cefb19",
      "packages": [
 +        {
 +            "name": "beberlei/doctrineextensions",
