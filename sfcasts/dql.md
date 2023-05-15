@@ -38,7 +38,11 @@ talk about will work on Postgres or anything else.
 
 Speaking of that one controller, here on the home page, you can see that we're
 autowiring `CategoryRepository` and using the *easiest* way to query for something
-in Doctrine: `findAll()`. Our first trick will be super simple, but interesting.
+in Doctrine: `findAll()`. 
+
+[[[ code('a28ee965b9') ]]]
+
+Our first trick will be super simple, but interesting.
 I want to re-order these categories alphabetically by name.
 One *simple* way to do this is by changing `findAll()` to `findBy()`. This is normally
 used to find items WHERE they match a criteria - something like `['name' => 'foo']`.
@@ -52,7 +56,11 @@ to centralize everything. Head over to the `src/Repository/` directory and open 
 a new one called `public function findAllOrdered()`. This will return an `array`...
 and I'll even advertise that this is an array of `Category` objects.
 
+[[[ code('12b0cf5ed9') ]]]
+
 Before we fill this in, back here... *call* it: `->findAllOrdered()`.
+
+[[[ code('96068f769d') ]]]
 
 Delightful!
 
@@ -75,6 +83,8 @@ we're selecting *everything*, which means it will return `Category` *objects*.
 And that's it! To execute this,  create a `Query` object with
 `$query = $this->getEntityManager()->createQuery($dql);`. Then run it with
 `return $query->getResult()`.
+
+[[[ code('542dd24d88') ]]]
 
 There's also a `$query->execute()`, and while it doesn't really matter, I prefer
 `getResult()`.
@@ -99,6 +109,8 @@ The point is, because we have a `$name` property, over here, we can say
 Oh, and in SQL, using the alias is *optional* - you can say `ORDER BY name`. But
 in *DQL*, it's required, so we *must* say `category.name`. Finally, add `DESC`.
 
+[[[ code('5e0bbb1f38') ]]]
+
 If we reload the page now... it's alphabetical!
 
 ## The DQL -> SQL Transformation
@@ -107,6 +119,8 @@ When we write DQL, behind the scenes, Doctrine converts that to SQL and then
 executes it. It looks to see which database system we're using and translates it
 into the SQL language *for* that system. We can *see* the SQL with `dd()` (for "dump
 and die") `$query->getSQL()`.
+
+[[[ code('5e0bbb1f38') ]]]
 
 And... there it is! That's the *actual* SQL query being executed! It has this ugly
 `c0_` alias, but it's what we expect: it grabs every column from that
