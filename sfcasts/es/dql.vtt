@@ -1,0 +1,408 @@
+WEBVTT
+
+00:00:00.096 --> 00:00:03.536 align:middle
+¡Hola amigos!
+
+00:00:03.536 --> 00:00:08.346 align:middle
+Gracias por acompañarme en este tutorial,
+que trata sobre los entresijos de la
+
+00:00:08.346 --> 00:00:10.296 align:middle
+ejecución de consultas en Doctrine.
+
+00:00:10.856 --> 00:00:11.636 align:middle
+Parece sencillo...
+
+00:00:11.906 --> 00:00:13.396 align:middle
+y lo es durante un tiempo.
+
+00:00:13.926 --> 00:00:16.496 align:middle
+Pero entonces empiezas a
+añadir uniones, agrupaciones,
+
+00:00:16.646 --> 00:00:21.056 align:middle
+coger sólo datos específicos en lugar
+de objetos completos, recuentos...
+
+00:00:21.456 --> 00:00:22.286 align:middle
+y... bueno...
+
+00:00:22.516 --> 00:00:23.826 align:middle
+¡se pone interesante!
+
+00:00:24.586 --> 00:00:28.226 align:middle
+Este tutorial trata de profundizar
+en todas esas cosas buenas,
+
+00:00:28.656 --> 00:00:34.046 align:middle
+incluida la ejecución de consultas SQL nativas, el lenguaje
+de consulta Doctrine , el filtrado de colecciones, la
+
+00:00:34.296 --> 00:00:37.596 align:middle
+solución del problema "N + 1" y mucho más.
+
+00:00:38.256 --> 00:00:39.426 align:middle
+Estoy entusiasmado.
+
+00:00:39.726 --> 00:00:40.706 align:middle
+Así que ¡manos a la obra!
+
+00:00:41.316 --> 00:00:46.816 align:middle
+Para INSERTAR la mayor cantidad de conocimientos de consulta en
+tu cerebro, te recomiendo encarecidamente que codifiques conmigo.
+
+00:00:47.466 --> 00:00:49.356 align:middle
+Puedes descargar el código
+del curso desde esta página.
+
+00:00:49.776 --> 00:00:53.896 align:middle
+Después de descomprimirlo, tendrás un directorio
+start/ con el mismo código que ves aquí.
+
+00:00:54.556 --> 00:00:58.646 align:middle
+También hay un ingenioso archivo README.md
+con todas las instrucciones de configuración.
+
+00:00:59.416 --> 00:01:04.736 align:middle
+El último paso será ir a tu terminal,
+entrar en el proyecto y ejecutar
+
+00:01:04.736 --> 00:01:12.166 align:middle
+symfony serve -d para iniciar un servidor
+web integrado en https://127.0.0.1:8000.
+
+00:01:12.816 --> 00:01:15.466 align:middle
+Haré trampas, haré clic en eso y...
+
+00:01:16.016 --> 00:01:20.246 align:middle
+di "hola" a nuestra última
+iniciativa: Consultas sobre Fortuna.
+
+00:01:20.816 --> 00:01:25.556 align:middle
+Verás, tenemos un negocio paralelo de distribución
+multinacional de galletas de la suerte...
+
+00:01:27.636 --> 00:01:33.926 align:middle
+y esta elegante aplicación nos ayuda a hacer un seguimiento de
+todas las fortunas que hemos concedido a nuestros clientes. Son
+
+00:01:34.456 --> 00:01:37.956 align:middle
+exactamente 2 páginas:
+éstas son las categorías,
+
+00:01:38.386 --> 00:01:41.186 align:middle
+y puedes hacer clic en
+una para ver su fortuna...
+
+00:01:41.436 --> 00:01:43.456 align:middle
+incluyendo cuántos se han impreso.
+
+00:01:44.256 --> 00:01:49.696 align:middle
+Se trata de un proyecto Symfony 6.2, y en
+este punto, no podría ser más sencillo.
+
+00:01:50.286 --> 00:01:53.696 align:middle
+Tenemos una entidad Category,
+una entidad FortuneCookie,
+
+00:01:54.006 --> 00:01:57.776 align:middle
+exactamente un controlador y
+ninguna consulta extravagante.
+
+00:01:58.626 --> 00:02:01.756 align:middle
+Nota al margen: este proyecto utiliza MySQL...
+
+00:02:02.096 --> 00:02:06.716 align:middle
+pero casi todo de lo que vamos a hablar
+funcionará con Postgres o cualquier otra cosa.
+
+00:02:07.356 --> 00:02:11.056 align:middle
+Hablando de ese único controlador,
+aquí en la página de inicio,
+
+00:02:11.426 --> 00:02:16.536 align:middle
+puedes ver que estamos autocableando
+CategoryRepository y utilizando la forma más sencilla
+
+00:02:16.536 --> 00:02:19.836 align:middle
+de consultar algo en Doctrine : findAll().
+
+00:02:20.536 --> 00:02:23.726 align:middle
+Nuestro primer truco será super
+sencillo, pero interesante.
+
+00:02:24.266 --> 00:02:27.756 align:middle
+Quiero reordenar estas categorías
+alfabéticamente por nombre.
+
+00:02:28.526 --> 00:02:32.916 align:middle
+Una forma sencilla de hacerlo es
+cambiando findAll() por findBy().
+
+00:02:33.796 --> 00:02:38.216 align:middle
+Esto se utiliza normalmente para encontrar
+artículos DONDE coinciden con un criterio -
+
+00:02:38.776 --> 00:02:40.976 align:middle
+algo como ['name' => 'foo'].
+
+00:02:41.696 --> 00:02:45.656 align:middle
+Pero... también puedes
+dejarlo vacío y aprovechar
+
+00:02:45.656 --> 00:02:48.726 align:middle
+el segundo argumento: una matriz de orden por.
+
+00:02:49.326 --> 00:02:52.716 align:middle
+Así que podríamos decir algo
+como ['name' => 'DESC'] . Pero..
+
+00:02:53.476 --> 00:02:55.696 align:middle
+. cuando necesito una consulta personalizada,
+
+00:02:56.096 --> 00:02:59.896 align:middle
+me gusta crear métodos de repositorio
+personalizados para centralizarlo todo.
+
+00:03:00.656 --> 00:03:06.876 align:middle
+Dirígete al directorio src/Repository/
+y abre CategoryRepository.php.
+
+00:03:06.876 --> 00:03:09.996 align:middle
+Dentro, podemos añadir
+los métodos que queramos.
+
+00:03:10.576 --> 00:03:13.936 align:middle
+Vamos a crear uno nuevo llamado
+public function findAllOrdered().
+
+00:03:14.586 --> 00:03:16.116 align:middle
+Este devolverá un array...
+
+00:03:16.626 --> 00:03:21.486 align:middle
+e incluso anunciaré que se trata
+de una matriz de objetos Category.
+
+00:03:22.186 --> 00:03:24.316 align:middle
+Antes de rellenar esto, aquí atrás...
+
+00:03:24.726 --> 00:03:27.336 align:middle
+llámalo: ->findAllOrdered().
+
+00:03:28.186 --> 00:03:29.256 align:middle
+¡Encantado!
+
+00:03:29.976 --> 00:03:35.326 align:middle
+Si has trabajado antes con Doctrine, probablemente
+esperas que utilice el Constructor de consultas.
+
+00:03:35.916 --> 00:03:37.606 align:middle
+Hablaremos de ello dentro de un momento.
+
+00:03:37.996 --> 00:03:39.796 align:middle
+Pero quiero empezar de
+forma aún más sencilla.
+
+00:03:40.506 --> 00:03:46.936 align:middle
+Doctrine funciona con muchos sistemas de bases
+de datos, como MySQL, Postgres, MSSQL y otros.
+
+00:03:47.636 --> 00:03:52.166 align:middle
+Cada uno de ellos tiene un lenguaje
+SQL, pero no todos son iguales.
+
+00:03:52.746 --> 00:03:57.536 align:middle
+Así que Doc trine tuvo que inventar su
+propio lenguaje similar a SQL llamado
+
+00:03:57.536 --> 00:04:00.306 align:middle
+"DQL", o "Doctrine Query Language".
+
+00:04:00.826 --> 00:04:03.866 align:middle
+¡Es divertido! Se parece mucho a SQL.
+
+00:04:04.486 --> 00:04:08.066 align:middle
+La mayor diferencia es probablemente que nos
+referimos a clases y propiedades en lugar de a
+
+00:04:08.066 --> 00:04:10.816 align:middle
+tablas y columnas.
+
+00:04:11.446 --> 00:04:13.476 align:middle
+Escribamos una consulta DQL a mano.
+
+00:04:14.006 --> 00:04:21.796 align:middle
+Digamos que $dql es igual a SELECT category
+FROM App\Entity\Category as category. Estamos
+
+00:04:22.596 --> 00:04:28.026 align:middle
+asociando la clase App\Entity\Category a
+la cadena category de la misma forma que
+
+00:04:28.376 --> 00:04:33.016 align:middle
+asociaríamos el nombre de
+una tabla a algo en SQL.
+
+00:04:33.766 --> 00:04:38.596 align:middle
+Y aquí, con sólo seleccionar category,
+estamos seleccionando todo, lo que
+
+00:04:38.986 --> 00:04:42.216 align:middle
+significa que devolverá objetos Category.
+
+00:04:42.906 --> 00:04:44.016 align:middle
+Y ya está
+
+00:04:44.616 --> 00:04:47.256 align:middle
+Para ejecutarlo, crea un objeto Query con
+
+00:04:47.256 --> 00:04:52.636 align:middle
+$query =
+$this->getEntityManager()->createQuery($dql);.
+
+00:04:53.456 --> 00:04:56.226 align:middle
+Luego ejecútalo con return
+$query->getResult().
+
+00:04:56.856 --> 00:05:02.506 align:middle
+También hay un $query->execute(), y aunque
+realmente no importa, yo prefiero getResult().
+
+00:05:03.296 --> 00:05:04.956 align:middle
+Cuando vayamos a probarlo...
+
+00:05:05.766 --> 00:05:06.836 align:middle
+¡no cambia nada!
+
+00:05:07.216 --> 00:05:08.726 align:middle
+¡Funciona!
+
+00:05:09.226 --> 00:05:12.396 align:middle
+¡Acabamos de utilizar DQL
+directamente para hacer esa consulta!
+
+00:05:13.146 --> 00:05:15.936 align:middle
+Entonces... ¿qué aspecto
+tiene añadir el ORDER BY ?
+
+00:05:16.516 --> 00:05:19.126 align:middle
+¡Probablemente puedas adivinar
+cómo empieza ORDER BY !
+
+00:05:19.826 --> 00:05:24.856 align:middle
+Lo interesante es que, para
+ordenar por name, no vamos a hacer
+
+00:05:24.856 --> 00:05:27.576 align:middle
+referencia a la columna
+name de la base de datos.
+
+00:05:28.286 --> 00:05:34.476 align:middle
+No, nuestra entidad Category tiene una propiedad
+$name, y es a ella a la que nos vamos a referir.
+
+00:05:35.196 --> 00:05:37.726 align:middle
+Es probable que la columna
+también se llame name...
+
+00:05:38.126 --> 00:05:42.376 align:middle
+pero podría llamarse
+unnecessarily_long_column_name
+
+00:05:42.786 --> 00:05:46.226 align:middle
+y seguiríamos ordenándola
+por la propiedad name.
+
+00:05:46.886 --> 00:05:53.896 align:middle
+La cuestión es que, como tenemos una propiedad
+$name, aquí podemos decir ORDER BY category.name.
+
+00:05:54.756 --> 00:06:00.566 align:middle
+Ah, y en SQL, utilizar el alias es
+opcional: puedes decir ORDER BY name.
+
+00:06:01.156 --> 00:06:06.626 align:middle
+Pero en DQL, es obligatorio, así
+que debemos decir category.name.
+
+00:06:07.456 --> 00:06:09.166 align:middle
+Por último, añade DESC.
+
+00:06:10.036 --> 00:06:11.806 align:middle
+Si ahora recargamos la página...
+
+00:06:12.176 --> 00:06:13.826 align:middle
+¡está en orden alfabético!
+
+00:06:14.526 --> 00:06:20.746 align:middle
+Cuando escribimos DQL, entre bastidores, Doctrine
+lo convierte en SQL y luego lo ejecuta. Busca
+
+00:06:21.536 --> 00:06:25.746 align:middle
+qué sistema de base de datos
+estamos utilizando y lo traduce
+
+00:06:25.806 --> 00:06:28.956 align:middle
+al lenguaje SQL de ese sistema.
+
+00:06:29.646 --> 00:06:35.796 align:middle
+Podemos ver el SQL con dd() (por
+"volcar y morir") $query->getSQL().
+
+00:06:36.826 --> 00:06:39.386 align:middle
+Y... ¡ahí está!
+
+00:06:39.696 --> 00:06:42.866 align:middle
+¡Esa es la consulta SQL
+real que se está ejecutando!
+
+00:06:43.456 --> 00:06:49.126 align:middle
+Tiene este feo alias c0_,
+pero es lo que esperamos:
+
+00:06:49.606 --> 00:06:52.976 align:middle
+coge todas las columnas de
+esa tabla y las devuelve.
+
+00:06:53.486 --> 00:06:54.496 align:middle
+¡Es genial!
+
+00:06:55.396 --> 00:06:58.636 align:middle
+Por cierto, también puedes ver la
+consulta dentro de nuestro perfilador.
+
+00:06:59.356 --> 00:07:02.726 align:middle
+Si quitamos esa depuración y refrescamos...
+
+00:07:03.316 --> 00:07:06.986 align:middle
+aquí abajo, podemos ver que
+estamos haciendo siete consultas.
+
+00:07:07.516 --> 00:07:09.876 align:middle
+Hablaremos de por qué hay
+siete dentro de un rato.
+
+00:07:10.456 --> 00:07:12.356 align:middle
+Pero si hacemos clic en ese pequeño icono...
+
+00:07:13.166 --> 00:07:15.596 align:middle
+¡boom! ¡Ahí está la primera consulta!
+
+00:07:16.296 --> 00:07:20.766 align:middle
+También puedes ver una versión bonita de la
+misma, así como una versión que puedes ejecutar.
+
+00:07:21.256 --> 00:07:27.296 align:middle
+Si tienes alguna variable dentro de las cláusulas
+WHERE, la versión ejecutable las rellenará por ti.
+
+00:07:28.246 --> 00:07:31.496 align:middle
+Siguiente: Normalmente
+no escribimos DQL a mano.
+
+00:07:31.996 --> 00:07:35.036 align:middle
+En lugar de eso, lo construimos
+con el Generador de consultas.
+
+00:07:35.656 --> 00:07:37.096 align:middle
+Veamos qué aspecto tiene.
