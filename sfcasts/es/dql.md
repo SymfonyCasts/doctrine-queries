@@ -50,11 +50,11 @@ Y ya está Para ejecutarlo, crea un objeto `Query` con`$query = $this->getEntity
 
 También hay un `$query->execute()`, y aunque realmente no importa, yo prefiero`getResult()`.
 
-Cuando vayamos y probemos eso... ¡nada cambia! ¡Funciona! ¡Acabamos de utilizar DQL directamente para hacer esa consulta!
+Cuando vayamos a probarlo... ¡no cambia nada! ¡Funciona! ¡Acabamos de utilizar DQL directamente para hacer esa consulta!
 
 ## Añadiendo el DQL ORDER BY
 
-Así que... ¿qué aspecto tiene añadir el `ORDER BY`? ¡Probablemente puedas adivinar cómo empieza `ORDER BY`! 
+Entonces... ¿qué aspecto tiene añadir el `ORDER BY`? ¡Probablemente puedas adivinar cómo empieza `ORDER BY`! 
 
 Lo interesante es que, para ordenar por `name`, no vamos a hacer referencia a la columna `name` de la base de datos. No, nuestra entidad `Category` tiene una propiedad `$name`, y es a ella a la que nos vamos a referir. Probablemente la columna también se llame `name`... pero podría llamarse `unnecessarily_long_column_name`y seguiríamos ordenando por la propiedad `name`.
 
