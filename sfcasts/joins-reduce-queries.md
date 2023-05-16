@@ -1,31 +1,86 @@
 # JOINs and addSelect Reduce Queries
 
-When we're on the homepage, we see *seven* queries down here. We have one query to get all of the categories, and then additional queries to get all of the fortunes for each category, for a grand total of seven. You can see that in our profiler. This is our main query that's selecting `FROM category`, and then each of these down here are selecting fortune data for a specific category: Three, four, two, six, and so on. So... *why*?
+When we're on the homepage, we see *seven* queries. We have one to get all of the
+categories... then additional queries to get all of the fortune cookies for each
+category. We can see this in the profiler. This is the main query `FROM category`...
+then each of these down here is selecting fortune cookie data for a specific category:
+3, 4, 2, 6, and so on.
 
-If you use Doctrine, you probably recognize what's happening here. Doctrine loads its relationships *lazily*. If we follow the logic, in our `FortuneController.php`, we start by querying for an array of `$categories`. In that query, if you look at it, it's *just* selecting category data, *not* fortune cookie data. But if we go into our template - `/templates/fortune/homepage.html.twig` - when we loop over those categories, at one point we call `category.fortuneCookies|length`. In PHP land, we're calling the `getFortuneCookies()` method on `category`. At the moment, Doctrine hasn't queried for the `FortuneCookie` data for this category, but as soon as we call that method, *that's* when it queries out to Doctrine and says "Give me all of the `FortuneCookie` data for this category", which it *then* sets onto this property and sends it back to us. So it's *this moment* inside Twig when that second, third, fourth, fifth, sixth, and seventh query is fired off. This is called the "N+1 Problem", where you have "N" number of queries for items on your page, and "plus one" for the main query. In our case, six plus one equals seven. This isn't *necessarily* a problem. You don't *need* to run and fix this, but it *can* be fixed by a `JOIN`. After all, when we query for these categories, we're already joining over to the fortune cookie table. So if we just grab the data in the first query, couldn't we build this whole page with *one* query? The answer is... yes!
+## Lazy-Loading Relationships
 
-To see this fix in action, I'll search for something first. There we go. I'm doing this because this will trigger our `search()` method that already has our `JOIN` on it. And over here, you can see that, since we have five results, we have *six* queries. Okay, so we're *already* joining over to `fortuneCookie`. We're just not *selecting* its data.
+If you use Doctrine, you probably recognize what's happening. Doctrine loads its
+relationships *lazily*. Let's follow the logic. In our `FortuneController`, we
+start by querying for an array of `$categories`. In that query, if we look at it,
+it's *just* selecting *category* data, *not* fortune cookie data. But if we go into
+the template - `templates/fortune/homepage.html.twig` - we loop over the categories
+at eventually `category.fortuneCookies|length`.
 
-The solution is really simple. Once again, the order doesn't matter here. Say `->addSelect()` and then `fortuneCookie`. That's it! And when we go over and refresh... the queries went down to one and the page still works. If you open that up... and actually view the format of query... yes! You can see it's joining over to `fortune_cookie`, but it's also grabbing the `fortune_cookie` data at the same time. The "N+1" problem *solved*! 
+## The N+1 Problem
 
-But I want to point out a few things. First, because we're inside of `CategoryRepository.php`, when we call `$this->createQueryBuilder('category')`, that's basically saying that it includes a `->select('category')`. We're actually selecting all of the `category` *and* `fortuneCookie` data now. But our page still works... which means that even though we're now selecting from *two* tables, our method is, apparently, *still* returning an array of `Category` objects and not a mixture of `category` and `fortuneCookie` data. And that's *exactly* how it works. Since we're selecting from the main `category` entity here, we still get back `Category` objects. 
+In PHP land, we're calling the `getFortuneCookies()` method on `Category`. But so
+far, Doctrine has not *yet* queried for the `FortuneCookie` data for this Category.
+However, as *soon* as we access the `$this->fortuneCookies` property, it magically
+makes that query, basically saying:
 
-Behind the scenes, when we have this `->addSelect()`, Doctrine basically grabs this `fortuneCookie` data and stores it for later. Then, if we ever call `category->getFortuneCookies()`, it realizes that it *already* has that data. So instead of making a query, it uses the data from the *original* query. The really important thing here is that when we do this `->addSelect()`, it doesn't *change* what our method returns. It just means that Doctrine has more data in the background to avoid those extra queries. 
+> Give me all the `FortuneCookie` data for this category
 
-Okay, if we click back to the homepage where we don't have the search yet, you can see that we still have seven queries here because we're still using our very simple `findAllOrdered()` and we don't have the `JOIN`. So... we should add the `JOIN` here too, right? Yep! Well... *probably*. I want to show you an *alternative* solution.
+Which... it then *sets* onto the property and returns back to us. So it's
+*this moment* inside of Twig when that second, third, fourth, fifth, sixth, and
+seventh query is executed.
 
-Our homepage is kind of unique because we don't really need all the `fortuneCookie` data for each category. The only thing we need is the `COUNT`. What I mean by that is, in our template, it's not like we're looping over `category.fortuneCookies` and then rendering the actual `fortuneCookie` data. We simply grab this and *count* them. So if you think about it, having a gigantic query that grabs all of the `fortuneCookie` data just to count it isn't the *greatest* thing for efficiency. If you find yourself in this situation, what you can do is go into your `Category.php` entity, find your `OneToMany` relationship with `$fortuneCookies`, and at the end of it, add `fetch:` with a string, `EXTRA_LAZY`. Let's go see what this does.
+This is called the "N+1 Problem", where you have "N" number of queries for the
+related items on your page "plus one" for the main query. In our case, it's 1
+main query for the categories plus more 6 queries to get the fortune cookie data
+for those 6 categories.
 
-When you refresh, watch the query count. It *stays* at seven. But if we open that up, the queries *themselves* have changed. The first one is still the same. It's *still* querying for `category`. But down here... check this out! We have `SELECT COUNT(*) FROM fortune_cookie` over and over. So we *do* have seven queries, but now they're only selecting the `COUNT`. When you have `fetch: 'EXTRA_LAZY'` and you're simply counting a collection, Doctrine is smart enough to select *just* the `COUNT` instead of querying for the whole item. If we were to loop over this collection and start printing out `fortune_cookie` data, then it would make a *full* query for the *full* data. But if all you need to do is count it, then `fetch: 'EXTRA_LAZY'` can be a great solution. You can decide which solution is best for you based on your situation.
+This isn't *necessarily* a problem. It *might* hurt performance on your page...
+or be no big deal. But if it *is* slowing things down, we *can* fix it with a `JOIN`.
+After all, when we query for thee categories, we're *already* joining over to the
+fortune cookie table. So... if we just grab the forutne cookie data in the first
+query, couldn't we build this whole page *with* that *one* query? The answer is...
+totally!
 
-All right, I'm going to click into one of these categories. Down here, you can see that we have two queries. This is a, sort of, "miniature" N+1 problem. The first query is selecting a single category, and the second one is selecting all of the fortune cookies for that one category because there's no `JOIN`. Let's see if we can flex our `JOIN` skills here to get this down to one query.
+## Selecting the Joined Fields
 
-In this case, over in `FortuneController.php`, we'll work on the `showCategory()` action. Here, by typehinting `Category`, we're having Symfony query for this category by the ID. Normally, that's fine. *However*, in this case, we want to add a `JOIN` from `Category` over to `fortuneCookies`, so we need to take control of that query ourselves. Let's change this to just have it pass us the `int $id` directly. Then, we can autowire in `CategoryRepository $categoryRepository`. Nice! Down here, we'll do the query ourselves by saying `$category = $categoryRepository->`, and we'll use a new method here - `findWithFortunesJoin($id)`. Before we create that, we also need to add a little `if (!$category)` and `throw $this->createNotFoundException()`. You can give that a message if you want to as well. I'll say `Category not found!`. *Perfect*.
+To see this fix in action, search for something first. I'm doing this because this
+will trigger the `search()` method in our repository, which already has the `JOIN`.
+Over here, since we have five results, we have *six* queries.
 
-Copy that method name and hop over to `CategoryRepository.php`. Let's create a new `public function findWithFortunesJoin(int $id): ?Category`. That means it will return a `Category` if it finds one and, if not, it will return null. I'll fix that typo in a minute. The query will start pretty much the same way we're used to. I *could* steal some from up here, but we're still practicing, so let's do this by hand. I'll say `return $this->createQueryBuilder()` which will use our normal `category` alias. The most important part of this is to then grab the `->andWhere('category.id = :id')` (I'll fix that typo in a moment as well), and then fill in those wildcards with `->setParameter()` and whatever we called it - in this case `id`, we'll pass that to `$id`. Ah, there it is. That looks better now. And after that, `->getQuery()`. *Sweet*.
+Okay, we're already *joining* over to `fortuneCookie`. So how can we select its
+data? It's delightfully simple. Again, order doesn't matter: say `->addSelect()`
+passing `fortuneCookie`.
 
-Okay, we've been getting an array of results. If you're returning a *collection* of results, you would use `->getResult()`. In this situation, we want either one - the one that matched the database - or null, so we can be more specific and say `->getOneOrNullResult()`. And that's it! That should get things working. I'll do a little sanity check over here, and... *oh*... it would probably help if I typed things correctly. But isn't that great? It recognized that it didn't know what that alias was, and it gave us a very clear error that that it wasn't defined. And now... it *works*, and we still have two queries.
+That's it! Try this thing! The queries went down to one and the page still works!
+If you open the profiler... and actually view the formatted query... yes! It's
+joining over to `fortune_cookie` *and* grabbing the `fortune_cookie` data at the
+same time. The "N+1" problem is *solved*!
 
-Now let's add the `JOIN`. We're going from one category to many fortune cookies, so let's say `->leftJoin()` on `category.` and the property name, which is `fortuneCookies`. Once again, the order doesn't matter, but I'll add this above - `->addSelect('fortuneCookie')`. Oh, and I also need to add `fortuneCookie` as a second argument inside of the `->leftJoin()`, which is our alias. So we're aliasing that `JOIN` entity to `fortuneCookie`, we'll `SELECT` `fortuneCookie`, and now, down here, we should see this query number go from two to one. And... got it! The takeaway here is that, while there's no need to over-optimize that, if you happen to have the N+1 problem, that's the solution. Just `JOIN` and grab all of the data at once. 
+## Where does the Join Data Hide?
 
-So far, no matter what we've been doing, we've either had Doctrine return a collection of `Category` objects or a single `Category` object. That's cool, but what if we just need some data, like a couple of columns, a `COUNT`, or a `SUM`? Let's dig into that *next*.
+But I want to point out one key thing. Because we're inside of
+`CategoryRepository`, when we call `$this->createQueryBuilder('category')`, that
+automatically adds a `->select('category')` to the query. We know that.
+
+However *now* we're selecting all of the `category` *and* `fortuneCookie` data.
+But our page still works! This means that even though we're selecting data from *two*
+tables, our query is, apparently, *still* returning an array of `Category` objects:
+not a mixture of `category` and `fortuneCookie` data.
+
+This point can be a little confusing, so let me break it down. When we call
+`createQueryBuilder()`, that automatically adds 2 things to our query:
+`FROM App\Entity\Category as category` and `SELECT category`. Thanks to that,
+`Category` is our "root alias" and, unless we start doing something more complex,
+Doctrine will try to return `Category` objects. When we
+`->addSelect('fortuneCookie')`, instead of returning a mixture of categories and
+fortune cookies, Doctrine basically grabs the `fortuneCookie` data and stores it
+for later. Then, if we ever call `$category->getFortuneCookies()`, it realizes that
+it *already* has that data, so instead of making a query, it uses it.
+
+The really important thing here is that when use `->addSelect()` to grab the
+data from a JOIN, it does *not* change what our method returns. Though later, we
+*will* see times when using `select()` or `addSelect()` *does* change what our
+query returns.
+
+Ok, so we just used a JOIN to reduce our queries from 7 to 1. However, because
+we're only *counting* the number of fortune cookies for each category, there *is*
+an alternative solution. Let's talk about EXTRA_LAZY relationships next.
