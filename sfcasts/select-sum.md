@@ -1,27 +1,100 @@
 # SELECT the SUM (or COUNT)
 
-New goal team! If we look over at our `FortuneCookie` entity, one of the items on it is the `$numberPrinted`, which is the number of times we've ever printed that particular fortune. On the `/category` page, up here, I want to print the total number of fortunes that we've ever printed for this specific category. We *could* solve this by doing something like looping over `$category->getFortuneCookies()` and we have some sort of `$count` that we increment by calling `->getNumberPrinted()`. That might work if we always have a small number of fortune cookies, but our business is *growing* and, eventually, that number could be *big*, like 500. What will we do then?
+New goal team! Look over at the `FortuneCookie` entity. One of its properties
+is `$numberPrinted`, which is the number of times that we've *ever* printed that
+particular fortune. On the category page, up here, I want to print the *total* number
+printed for *all* fortunes in this category.
 
-If we had *that* many fortunes, we would probably use pagination on this page to show them all, displaying maybe 10 fortunes at a time. But if we're only showing 10 fortunes at a time, we can't just loop over those 10 to get the count, and we *definitely* don't want to query for and loop over all 500 just to get a count. Surely there's a better way, right? You bet! We're going to build a *sum query*.
+We *could* solve this by looping over `$category->getFortuneCookies()`... calling
+`->getNumberPrinted()` and adding it to some `$count` variable. And that *would*
+work... as long as we always have a small number of fortune cookies. But the cookie
+business is *booming*... and since we'll have *hundreds* of cookies in each category.
+It would be a *huge* slowdown if we, for example, queried for 500 fortune cookies
+*just* to calculate this sum. Actually, we'd probably run out of memory first!
 
-In this project, the data we're trying to get is from the `FortuneCookie` entity, so we're going to open up `FortuneCookieRepository.php` and add a new method there. Let's say `public function countNumberPrintedForCategory(Category $category): int`. Nice.
+Surely there's a better way, right? You bet! We're going to build a *sum query*.
 
-This query will start pretty similar. Say `$result = $this->createQueryBuilder('fortuneCookie')`. This alias could be anything. Personally, I try to make it long enough that it's unique for my entity, and then I'll use it consistently in all of my methods. And remember, when we create this QueryBuilder, it's going to select *all* of the data from `fortuneCookie`. We *don't* want that, so below, say `->select()` to override that. Previously, in `CategoryRepository.php`, we used `->addSelect()`, which basically says:
+## Overriding the Selected Fields
 
-`Take whatever you're selecting, and also select these things`.
+Let's think: the data we're querying for will ultimately come from the `FortuneCookie`
+entity... so up `FortuneCookieRepository` so we can add a new method there. How
+about: `public function countNumberPrintedForCategory(Category $category): int`.
 
-For our QueryBuilder, I'm purposely using `->select()` so that it overrides that and *only* selects the data here. Inside, it's going to look a lot like a normal SQL query. We'll use the `SUM()` function, which you're probably familiar with, followed by `fortuneCookie.` and the name of the property we want to use - `numberPrinted`. You don't have to do this, but I'm going to add `AS fortunesPrinted`, which will name that result as it's returned. We'll see that in a second.
+The query starts pretty much like they all do. Say
+`$result = $this->createQueryBuilder('fortuneCookie')`. By the way, the alias can
+be anything. Personally, I try to make them long enough to be unique in my project...
+but short enough to not be annoying. More importantly, as soon as you choose an
+alias for an entity, stick with it.
 
-That takes care of the `->select()`. Now we need an `->andWhere()` (I *always* use `andWhere`), with `fortuneCookie.category = :category`. Below that, we'll add `->setParameter()` to fill that in, `category`, and pass the `$category` object.
+Ok, we know that when we create a QueryBuilder, it will select *all* of the data
+from `FortuneCookie`. In this case, we don't want that! So, below, say `->select()`
+to override that.
 
-This is really interesting. In the database, we would normally say something like `WHERE fortuneCookie.categoryId =` and the integer ID. In Doctrine, we don't think about the database, and instead, focus on entities. In this situation, when we say `fortuneCookie.category`, we're referencing the `$category` property in `FortuneCookie.php`, and instead of passing *just* the integer ID, we're passing the entire `$category` object. It *is* possible to also pass the ID, but most of the time, you're actually going to pass the entire `$category` object like this.
+Earlier, in `CategoryRepository`, we used `->addSelect()`, which basically says:
 
-Okay, let's finish this! Convert this to a query with `->getQuery()`. Below that, if you think about it, we really only want *one* row of results, so let's say `->getOneOrNullResult()`. Last, but not least, `return $result`.
+> Take whatever we're selecting and *also* select this other stuff.
 
-So far, all of our queries have been returning objects. Since were just selecting this one thing, does anything change? Let's find out! Add `dd($result)` and then head over to `FortuneController.php` to use this. This is our show page, so inside this, add `FortuneCookieRepository $fortuneCookieRepository`. Below, say `$fortunesPrinted = $fortuneCookieRepository->countNumberPrintedForCategory()` and pass it the `$category`. Beautiful! Now we can take that `fortunesPrinted` variable and pass that into Twig as a *new* variable called `$fortunesPrinted`. Finally, let's go find this template - `showCategory.html.twig` - and, down here, you can see that we have a little table header tag with "Print History". Here, I'll add some parentheses with `{{ fortunesPrinted }}`. That's really all we need, assuming that's just going to be a number, but let's make it even cooler by saying `|number_format` and, over here, `total`. Awesome!
+But in this case, I'm purposely using `->select()` so that it *overrides* that and
+*only* selects what we put here. Inside, we'll write DQL: `SUM()` a function that
+you're probably familiar with followed by `fortuneCookie.` and the name of the
+property we want to use - `numberPrinted`. And you don't *have* to do this, but I'm
+going to add `AS fortunesPrinted`, which will *name* that result as it's returned.
+We'll see that in a minute.
 
-Since we have that `dd()`, let's refresh and... look at that! We get an array back with one key called `fortunesPrinted`. Back over here in `FortuneCookieRepository.php`, as soon as we actually start selecting specific data, we *just* get back that specific data. It's exactly like you'd expect with a normal SQL query. To see this a little closer, if we had said `->select('fortuneCookie')` (which is redundant because that's what this already does), that would have given us a `fortuneCookie` object. But as soon as we're selecting one specific thing, it gets rid of the object and it just returns a nice associative array.
+## andWhere() with an Entire Entity
 
-We would really like this to return an int, so what we *could* do here is say `return $result['fortunesPrinted']`. But whenever you have a situation where you're only selecting one row of data and, really, only one column of data in that row, there's a shortcut. Instead of `->getOneOrNullResult()`, you can actually just say `->getSingleScalarResult()`, and we should be able to *just* return that. I'll actually keep the `dd()` on first so we can see it, and... awesome! We get back *just* the number. You may have noticed that this is a string. We get back strings from the database, so I don't *have* to do this, but down here, I'll add `(int)`. And now... got it! We have a nicely formatted number up here in our table that totals these up. Looking good!
+Ok, that takes care of the `->select()`. Now we need an `->andWhere()` with
+`fortuneCookie.category = :category`... calling `->setParameter()` to fill in the
+dynamic `category` with the `$category` object.
 
-Next: Let's select even *more* data.
+This is actually interesting. In SQL, we would normally say something like
+`WHERE fortuneCookie.categoryId =` and then integer ID. But in Doctrine, we don't
+think about the tables or columns: we focus on the entities. And, there *is* no
+`categoryId` property on `FortuneCookie`.Instead, when we say
+`fortuneCookie.category` we're referencing the `$category` property in
+`FortuneCookie`. And instead of passing *just* the integer ID, we pass the entire
+`Category` object. It actually *is* possible to also pass the ID, but most of the
+time you'll pass the entire `Category` object like this.
+
+Okay, let's finish this! Convert this to a query with `->getQuery()`. Below, if you
+think about it, we really only want *one* row of results. So let's say
+`->getOneOrNullResult()`. Finally, `return $result`.
+
+Until now, all of our queries have returned *objects*. Since were selecting just
+*one* thing... does that change? Let's find out! Add `dd($result)` and then head
+over to `FortuneController` to use this. For the show page controller, add an argument
+`FortuneCookieRepository $fortuneCookieRepository`. Then below, say `$fortunesPrinted`
+equals `$fortuneCookieRepository->countNumberPrintedForCategory()` passing
+`$category`.
+
+Beautiful! Yake that `$fortunesPrinted` variable and pass it into Twig as
+`fortunesPrinted`.
+
+Finally, find the template - `showCategory.html.twig` - and... find the table header
+that says "Print History". Add some parentheses with `{{ fortunesPrinted }}`.
+Oh, and it's optional, but add `|number_format` to format it better then the word
+`total`.
+
+Awesome! Since we have that `dd()`, let's refresh and... look at that! We get an
+array back with 1 key called `fortunesPrinted`! Yup, as soon as we start
+selecting specific data, we *just* get back that specific data. It's exactly like
+you'd expect with a normal SQL query.
+
+If we had said `->select('fortuneCookie')` (which is redundant because that's what
+this already does), that would have given us a `FortuneCookie` object. But as soon
+as we're selecting one specific thing, it gets rid of the object and just returns
+an associative array.
+
+## Using getSingleScalarResult()
+
+Because our method should return an `int`, we *could* complete this by saying
+`return $result['fortunesPrinted']`. But if you have a situation where you're
+selecting one row of data and only one *column* of data, there's a shortcut to
+get that one column: `->getSingleScalarResult()`. We should be able to *just* return
+that.
+
+I'll keep the `dd()` on first so we can see it. And... awesome! It returns *just*
+the number. Though, it *is* a string. If you want to be strict, you can add `(int)`.
+And now... got it! We have a nicely formatted total number!
+
+Next: Let's select even *more* data and see how that complicates things.
