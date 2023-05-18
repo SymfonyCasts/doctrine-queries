@@ -1,0 +1,380 @@
+WEBVTT
+
+00:00:01.066 --> 00:00:03.856 align:middle
+Nuestro sitio tiene este ingenioso
+cuadro de búsqueda, que...
+
+00:00:03.906 --> 00:00:04.716 align:middle
+no funciona.
+
+00:00:05.036 --> 00:00:11.726 align:middle
+Si pulso "enter" para buscar "almuerzo",
+añade ?q=lunch al final de la URL...
+
+00:00:12.036 --> 00:00:13.426 align:middle
+pero los resultados no cambian.
+
+00:00:13.846 --> 00:00:15.516 align:middle
+¡Vamos a conectar esto!
+
+00:00:16.016 --> 00:00:18.976 align:middle
+Gira y encuentra nuestro
+controlador: FortuneController.
+
+00:00:19.856 --> 00:00:23.336 align:middle
+Para leer el parámetro de consulta,
+necesitamos el objeto Request de Symfony.
+
+00:00:23.986 --> 00:00:29.626 align:middle
+Añade un nuevo argumento -no importa si es
+el primero o el último-, escribe Request -el
+
+00:00:29.836 --> 00:00:34.936 align:middle
+de Symfony-, pulsa "tab" para añadir
+esa declaración use, y di $request.
+
+00:00:35.826 --> 00:00:42.146 align:middle
+Podemos poner el término de búsqueda aquí abajo
+con $searchTerm = $request->query->get('q').
+
+00:00:42.796 --> 00:00:43.966 align:middle
+Estamos utilizando q...
+
+00:00:44.286 --> 00:00:47.366 align:middle
+sólo porque es lo que
+elegí en mi plantilla...
+
+00:00:47.786 --> 00:00:51.686 align:middle
+puedes verlo aquí abajo en
+templates/base.html.twig.
+
+00:00:52.816 --> 00:00:58.596 align:middle
+Esto se construye con un formulario muy simple
+que incluye <input type="text", name="q".
+
+00:00:59.106 --> 00:01:03.656 align:middle
+Así que estamos leyendo el parámetro de
+consulta q y estableciéndolo en $searchTerm.
+
+00:01:04.686 --> 00:01:12.276 align:middle
+Debajo, if tenemos un $searchTerm, establecemos $categories
+en $categoryRepository->search() (un método que vamos
+
+00:01:12.276 --> 00:01:14.576 align:middle
+a crear) y pasamos $searchTerm.
+
+00:01:15.586 --> 00:01:20.056 align:middle
+Si no tenemos un $searchTerm, reutiliza la
+lógica de consulta que teníamos antes.
+
+00:01:21.506 --> 00:01:23.996 align:middle
+¡Estupendo! ¡Vamos a
+crear ese método search()!
+
+00:01:24.966 --> 00:01:28.256 align:middle
+En nuestro repositorio, digamos
+public function search().
+
+00:01:28.976 --> 00:01:32.936 align:middle
+Éste tomará un argumento string
+$term y devolverá un array.
+
+00:01:34.016 --> 00:01:40.086 align:middle
+Como la última vez, añadiré algo de PHPDoc que
+diga que esto devuelve un array de objetos Category[].
+
+00:01:41.076 --> 00:01:42.086 align:middle
+Elimina el @param...
+
+00:01:42.256 --> 00:01:44.216 align:middle
+porque no añade nada.
+
+00:01:44.856 --> 00:01:47.536 align:middle
+Vale: nuestra consulta empezará como antes...
+
+00:01:47.796 --> 00:01:51.606 align:middle
+aunque podemos ponernos más
+sofisticados y return inmediatamente.
+
+00:01:52.466 --> 00:01:57.016 align:middle
+Digamos $this->createQueryBuilder()
+y utilicemos el mismo alias category. Es
+
+00:01:57.816 --> 00:02:03.416 align:middle
+buena idea utilizar siempre el mismo alias
+para una entidad: nos ayudará más adelante
+
+00:02:03.416 --> 00:02:05.766 align:middle
+a reutilizar partes de un
+constructor de consultas.
+
+00:02:06.556 --> 00:02:09.936 align:middle
+Para la cláusula WHERE,
+utiliza ->andWhere().
+
+00:02:10.536 --> 00:02:12.836 align:middle
+También existe un método where()...
+
+00:02:13.376 --> 00:02:15.706 align:middle
+¡pero creo que nunca lo he utilizado!
+
+00:02:16.176 --> 00:02:17.976 align:middle
+Y... tú tampoco deberías.
+
+00:02:18.466 --> 00:02:23.456 align:middle
+Utilizar andWhere() siempre está bien,
+aunque sea la primera cláusula WHERE...
+
+00:02:23.656 --> 00:02:26.076 align:middle
+y en realidad no necesitamos la parte "y".
+
+00:02:26.536 --> 00:02:28.716 align:middle
+Doctrine es lo suficientemente inteligente
+como para darse cuenta de ello.
+
+00:02:29.336 --> 00:02:30.946 align:middle
+¿Qué pasa con ->where()?
+
+00:02:31.476 --> 00:02:35.116 align:middle
+Bueno, si antes has añadido una
+cláusula WHERE a tu QueryBuilder,
+
+00:02:35.516 --> 00:02:40.716 align:middle
+llamar a ->where() la eliminaría
+y la sustituiría por lo nuevo...
+
+00:02:40.966 --> 00:02:42.776 align:middle
+que probablemente no es lo que quieres.
+
+00:02:43.356 --> 00:02:45.706 align:middle
+->andWhere() siempre
+se añade a la consulta.
+
+00:02:46.736 --> 00:02:52.976 align:middle
+Dentro di category, y como quiero buscar en
+la propiedad name de la entidad Category,
+
+00:02:53.196 --> 00:02:58.796 align:middle
+di category.name =. Esta
+parte es muy importante.
+
+00:02:59.166 --> 00:03:04.576 align:middle
+Nunca, nunca, nunca añadas la parte dinámica
+directamente a tu cadena de consulta.
+
+00:03:05.206 --> 00:03:08.716 align:middle
+Esto te expone a ataques de inyección SQL.
+
+00:03:08.946 --> 00:03:13.786 align:middle
+Vaya. En lugar de eso, cada vez que necesites
+poner una parte dinámica en una consulta,
+
+00:03:13.986 --> 00:03:18.116 align:middle
+pon en su lugar un marcador de
+posición: como :searchTerm.
+
+00:03:19.306 --> 00:03:21.336 align:middle
+La palabra searchTerm
+podría ser cualquier cosa...
+
+00:03:21.596 --> 00:03:27.986 align:middle
+y tú la rellenas diciendo
+->setParameter('searchTerm', $term).
+
+00:03:28.056 --> 00:03:33.896 align:middle
+¡Perfecto! El final es fácil: ->getQuery()
+para convertir eso en un objeto Query
+
+00:03:34.286 --> 00:03:40.176 align:middle
+y luego ->getResult() para ejecutar esa
+consulta y devolver la matriz de objetos Category.
+
+00:03:40.566 --> 00:03:43.956 align:middle
+¡Estupendo! Si nos
+dirigimos y probamos esto...
+
+00:03:45.126 --> 00:03:49.666 align:middle
+¡ya está! Pero si quitamos unas
+cuantas letras y volvemos a buscar...
+
+00:03:49.986 --> 00:03:51.476 align:middle
+¡no obtenemos nada!
+
+00:03:52.106 --> 00:03:56.576 align:middle
+Idealmente, queremos que la búsqueda sea difusa:
+que coincida con cualquier parte del nombre.
+
+00:03:56.576 --> 00:03:58.296 align:middle
+Y eso es fácil de hacer.
+
+00:03:59.016 --> 00:04:02.086 align:middle
+Cambia nuestro ->andWhere() de = a LIKE...
+
+00:04:02.516 --> 00:04:04.296 align:middle
+y aquí abajo, para searchTerm...
+
+00:04:04.626 --> 00:04:11.386 align:middle
+esto parece un poco raro, pero añade un porcentaje
+antes y después para que sea difuso en ambos lados.
+
+00:04:13.376 --> 00:04:14.496 align:middle
+Si lo probamos ahora...
+
+00:04:15.186 --> 00:04:18.156 align:middle
+¡eureka! ¡Pero pongámonos más difíciles!
+
+00:04:18.736 --> 00:04:22.516 align:middle
+Cada categoría tiene su propio
+icono, como fa-quote-left
+
+00:04:22.926 --> 00:04:25.396 align:middle
+o el que tiene debajo fa-utensils.
+
+00:04:25.776 --> 00:04:29.086 align:middle
+¡Esto también es una cadena que
+se almacena en la base de datos!
+
+00:04:29.826 --> 00:04:33.346 align:middle
+¿Podríamos hacer que nuestra búsqueda
+también buscara en esa propiedad?
+
+00:04:33.766 --> 00:04:37.066 align:middle
+¡Por supuesto! Sólo tenemos que
+añadir un OR a nuestra consulta.
+
+00:04:37.856 --> 00:04:44.006 align:middle
+Aquí abajo, podrías tener la tentación de
+utilizar este bonito ->orWhere() pasando category.
+
+00:04:44.006 --> 00:04:47.076 align:middle
+con el nombre de esa propiedad...
+
+00:04:47.366 --> 00:04:50.766 align:middle
+que... si miramos en Category rápidamente...
+
+00:04:51.266 --> 00:04:52.366 align:middle
+es $iconKey.
+
+00:04:53.256 --> 00:04:56.396 align:middle
+Así que category.iconKey LIKE :searchTerm.
+
+00:04:57.166 --> 00:04:59.536 align:middle
+Y sí, podríamos hacerlo.
+
+00:04:59.986 --> 00:05:00.706 align:middle
+Pero ¡no lo hagas!
+
+00:05:01.156 --> 00:05:03.676 align:middle
+Recomiendo no utilizar nunca orWhere().
+
+00:05:04.256 --> 00:05:05.586 align:middle
+¿Por qué? Porque...
+
+00:05:05.736 --> 00:05:07.526 align:middle
+las cosas se pueden poner raras.
+
+00:05:08.166 --> 00:05:13.196 align:middle
+Imagina que tuviéramos una consulta como ésta ->andWhere('category.name
+LIKE :searchTerm') ->orWhere('category.iconKey LIKE :searchTerm')
+
+00:05:13.466 --> 00:05:20.156 align:middle
+->andWhere('category.active = true').
+
+00:05:20.796 --> 00:05:22.526 align:middle
+¿Ves el problema?
+
+00:05:23.236 --> 00:05:27.206 align:middle
+Lo que probablemente estoy intentando
+hacer es buscar categorías...
+
+00:05:27.616 --> 00:05:30.396 align:middle
+pero sólo todas las que
+coincidan con categorías activas.
+
+00:05:31.146 --> 00:05:34.986 align:middle
+En realidad, si el searchTerm
+coincide con iconKey,
+
+00:05:35.216 --> 00:05:39.006 align:middle
+se devolverá un Category, esté activo o no.
+
+00:05:39.646 --> 00:05:43.206 align:middle
+Si escribiéramos esto en
+SQL, incluiríamos paréntesis
+
+00:05:43.206 --> 00:05:45.756 align:middle
+alrededor de las dos primeras
+partes para que se comportara.
+
+00:05:45.846 --> 00:05:49.526 align:middle
+Pero cuando utilizas
+->orWhere(), eso no ocurre.
+
+00:05:50.076 --> 00:05:51.566 align:middle
+Entonces, ¿cuál es la solución?
+
+00:05:52.026 --> 00:05:53.816 align:middle
+Utiliza siempre andWhere()...
+
+00:05:54.226 --> 00:05:58.116 align:middle
+y si necesitas un OR, ¡ponlo justo dentro!
+
+00:05:59.066 --> 00:06:07.836 align:middle
+Sí, lo que pasas a andWhere() es DQL, así que
+podemos decir OR category.iconKey LIKE :searchTerm.
+
+00:06:08.596 --> 00:06:09.106 align:middle
+¡Y ya está!
+
+00:06:09.466 --> 00:06:13.956 align:middle
+En el SQL final, Doctrine pondrá
+paréntesis alrededor de este WHERE.
+
+00:06:14.776 --> 00:06:15.386 align:middle
+¡Vamos a probarlo!
+
+00:06:15.866 --> 00:06:18.496 align:middle
+Gira e intenta buscar "utensilios".
+
+00:06:19.036 --> 00:06:21.236 align:middle
+Escribiré parte de la palabra y...
+
+00:06:21.706 --> 00:06:24.496 align:middle
+¡lo tengo! ¡Coincidimos en el iconKey!
+
+00:06:25.266 --> 00:06:28.316 align:middle
+Ah, y para mantener la coherencia
+con la página de inicio normal,
+
+00:06:28.886 --> 00:06:33.236 align:middle
+incluyamos
+->addOrderBy('category.name', 'DESC').
+
+00:06:35.336 --> 00:06:42.046 align:middle
+Ahora, si vamos a la página principal y escribimos
+la letra "p" en la barra de búsqueda, ¡sí!
+
+00:06:42.366 --> 00:06:43.806 align:middle
+Se ordena alfabéticamente.
+
+00:06:44.466 --> 00:06:47.876 align:middle
+Y si tienes dudas sobre tu
+consulta, siempre puedes
+
+00:06:47.876 --> 00:06:51.386 align:middle
+ir al perfilador de Doctrine
+para ver la versión formateada.
+
+00:06:51.746 --> 00:06:53.806 align:middle
+Es exactamente lo que esperábamos.
+
+00:06:54.626 --> 00:06:57.976 align:middle
+A continuación: Vamos a ampliar nuestra
+consulta, para que podamos buscar
+
+00:06:57.976 --> 00:07:02.056 align:middle
+en las galletas de la suerte que
+hay dentro de cada categoría.
+
+00:07:02.866 --> 00:07:05.476 align:middle
+Para ello, necesitaremos un JOIN.
