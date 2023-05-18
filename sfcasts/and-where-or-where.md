@@ -12,6 +12,8 @@ matter if it's first or last - type-hinted with `Request` - the one from Symfony
 hit "tab" to add that `use` statement, and say `$request`. We can get the search
 term down here with `$searchTerm = $request->query->get('q')`.
 
+[[[ code('7dd250d94f') ]]]
+
 We're using `q`... just because that's what I chose in my template... you can see
 it down here in `templates/base.html.twig`. This is built with a very simple form
 that includes `<input type="text"`, `name="q"`. So we're reading the `q` query
@@ -22,6 +24,8 @@ Below, `if` we have a `$searchTerm`, set `$categories` to
 `$searchTerm`. If we *don't* have a `$searchTerm`, reuse the query logic that
 we had before.
 
+[[[ code('ac8b4116f6') ]]]
+
 ## Adding a WHERE Clause
 
 Awesome! Let's go create that `search()` method!
@@ -31,10 +35,14 @@ $term` argument and return an `array`. Like last time, I'll add some
 PHPDoc that says this returns an array of `Category[]` objects. Remove the `@param`...
 because that doesn't add anything.
 
+[[[ code('00e5e3be99') ]]]
+
 Ok: our query will start like before... though we can get fancier and `return`
 *immediately*. Say `$this->createQueryBuilder()` and use the same `category` alias.
 It's a good idea to always use the same alias for an entity: it'll help us later
 to *reuse* parts of a query builder.
+
+[[[ code('8b322fc1c0') ]]]
 
 For the `WHERE` clause, use `->andWhere()`. There *is* also a `where()` method... but
 I don't think I've ever used it! And... you shouldn't either. Using `andWhere()`
@@ -56,9 +64,13 @@ a query, put a placeholder instead: like `:searchTerm`. The word `searchTerm`
 could be anything... and you fill it in by saying
 `->setParameter('searchTerm', $term)`.
 
+[[[ code('b36f6e5355') ]]]
+
 Perfecto! The ending is easy: `->getQuery()` to turn that into a `Query` object
 and then `->getResult()` to *execute* that query and return the array of `Category`
 objects.
+
+[[[ code('3e388c01c6') ]]]
 
 *Sweet*! If we head over and try this... got it!
 
@@ -70,6 +82,8 @@ Ideally, we want the search to be fuzzy: matching *any* part of the name.
 And that's easy to do. Change our `->andWhere()` from `=` to `LIKE`... and down here,
 for `searchTerm`... this looks a bit weird, but add a percent before and after
 to make it fuzzy on both sides.
+
+[[[ code('cc256f265b') ]]]
 
 If we try it now... eureka!
 
@@ -101,6 +115,8 @@ So what's the solution? Always use `andWhere()`... and if you need an `OR`, put
 it right inside that! Yup, what you pass to `andWhere()` is DQL, so we can say
 `OR category.iconKey LIKE :searchTerm`.
 
+[[[ code('3ef066fb97') ]]]
+
 That's it! In the final SQL, Doctrine will put parentheses around this `WHERE`.
 
 Let's try it! Spin over and try searching for "utensils". I'll type part of the
@@ -108,6 +124,8 @@ word  and... got it! We're matching on the `iconKey`!
 
 Oh, and to keep this consistent with the normal homepage, let's include
 `->addOrderBy('category.name', 'DESC')`.
+
+[[[ code('f49e79613c') ]]]
 
 Now, if we go to the homepage and just type the letter "p" in the search bar, yup!
 It's sorting alphabetically.
