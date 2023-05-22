@@ -4,6 +4,7 @@ chapters:
   - and-where-or-where
   - joins
   - joins-reduce-queries
+  - extra-lazy
   - select-sum
   - select-specific-fields
   - select-new-object
