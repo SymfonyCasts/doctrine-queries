@@ -27,6 +27,8 @@ Add `->leftJoin()` because we're joining from one category to *many* fortune coo
 Pass this `category.fortuneCookies` then `fortuneCookie`, which will be the *alias*
 for the joined entity.
 
+[[[ code('97e150d684') ]]]
+
 When we say `category.fortuneCookies`, we're referring to the `fortuneCookies`
 *property*. The *cool* thing is that... this is all we need! We don't need to tell
 Doctrine which entity or table we're joining to... and we don't need the
@@ -40,6 +42,8 @@ properties on `FortuneCookie` *available* inside our query. This means we can ma
 the `->andWhere()` *even longer*. Add `OR fortuneCookie` (using the new alias from
 the join) `.fortune` (because `fortune` is the name of the property on `FortuneCookie`
 that stores the text) `LIKE :searchTerm`.
+
+[[[ code('f1d38c9b46') ]]]
 
 Done! Head back to the site. One of my fortunes has the word "conclusion".
 Spin over to the homepage, search for "conclusion" and... got it! It looks like we
