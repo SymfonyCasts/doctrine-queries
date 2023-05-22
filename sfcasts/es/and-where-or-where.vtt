@@ -274,10 +274,11 @@ Recomiendo no utilizar nunca orWhere().
 las cosas se pueden poner raras.
 
 00:05:08.166 --> 00:05:13.196 align:middle
-Imagina que tuviéramos una consulta como ésta ->andWhere('category.name
-LIKE :searchTerm') ->orWhere('category.iconKey LIKE :searchTerm')
+Imagina que tuviéramos una consulta como ésta 
+->andWhere('category.name LIKE :searchTerm'),
 
 00:05:13.466 --> 00:05:20.156 align:middle
+->orWhere('category.iconKey LIKE :searchTerm')
 ->andWhere('category.active = true').
 
 00:05:20.796 --> 00:05:22.526 align:middle
