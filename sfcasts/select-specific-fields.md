@@ -1,27 +1,90 @@
 # Selecting Specific Fields
 
-Having a bunch of useful information all in one place is *nice*, so let's add more to our page. How about the average number of fortune cookies that have been printed in this category? To do that, we need to head back to our query. It's called `countNumberPrintedForCategory()`, but we're going to tweak it a little. We *could* add a comma here and then use the `AVG()` function to select more. *Or* we can just use `addSelect()` and just move that onto two lines. Let's go with this, but inside, we'll add the `AVG()` function with `fortuneCookie.numberPrinted`, and then `fortunesAverage`. you may have noticed that I didn't use the word `AS` here. I'm just doing this to demonstrate that this is totally optional. In fact, this *entire* thing is optional. We could just leave this off, but by giving it a name, it gives me control over which key will be returned in the array, which we'll see in a second.
+Let's add some more stuff to this page! How about the *average* number of fortune
+cookies that have been printed for this category? To do that, head back to our query:
+it lives in `countNumberPrintedForCategory()`.
 
-While we're here, we can grab whatever data we want. Maybe, instead of printing out this name from the `$category` object, let's see if we can grab the category name right here. I'll say `->addSelect('category.name')`. You *probably* see a problem with that, and you'd be correct. Let's ignore that for a second just to see what this gives us. I'll add `dd($result)`. Before, this was just returning the `fortunesPrinted`, but *now*, we're selecting *three* things, not just one. So what's it going to return this time? The answer is... a gigantic error. It says:
+## SELECTing the AVG
 
-`Error: 'category' is not defined.`
+To get the average, we *could* add a comma then use the `AVG()` function. *Or* we
+can use `addSelect()`... which looks a bit better to me. We want the `AVG()` of
+`fortuneCookie.numberPrinted` aliased to `fortunesAverage`.
 
-If you were watching closely, you probably noticed that we're referencing `category`, but we haven't *joined* over to that. Remember, we're querying from the `fortuneCookie` entity and it has a `$category` property. We're going to `JOIN` from the one-or-many fortune cookies to one `$category`. In this case, we want an `->innerJoin()`. I'll say `->innerJoin('fortuneCookie.category', 'category')`.
+This time, I did *not* use the word `AS`... just doing to demonstrate that the word
+`AS` is optional. In Fact, the *entire* `fortunesAverage` or `AS fortunesPrinted`
+part is average. But by giving each column a name, it gives us control over the
+keys in the final, which we'll see in a minute.
+
+While we're here, instead of printing out the name from the `$category` object,
+let's see if we can grab the category name right inside this query. I'll say
+`->addSelect('category.name')`.
+
+If you spot a problem with this, you're right! But let's ignore that and see what
+happens. `dd($result)` at the bottom.
+
+Previously, this was returning *only* the `fortunesPrinted`. But *now*, we're
+selecting *three* things, instead of one. So what will it return now?
+
+The answer is... a gigantic error!
+
+> Error: 'category' is not defined.
+
+Yup - I referenced `category`... but we never *joined* over to that. Let's add that.
+Remember: we're querying from the `FortuneCookie` entity and it has a `category`
+property. So we're joining over to *one* object. Do that with `->innerJoin()`
+passing `->innerJoin('fortuneCookie.category', 'category')`.
+
+## Returning Multiple Columns of Results
 
 If we go refresh the page now... *this* is the error I was expecting:
 
-`The query returned a row containing multiple columns.`
+> The query returned a row containing multiple columns.
 
-This `->getSingleScalarResult()` is perfect when you're just returning a single row and a single column. As soon as you're returning *multiple* columns, `->getSingleScalarResult()` is *not* going to work. To fix that, we're going to change this to `->getSingleResult()`. This is basically saying:
+This `->getSingleScalarResult()` is perfect when you're returning a single row
+*and* a single column. As soon as you return *multiple* columns,
+`->getSingleScalarResult()` won't work. To fix that, change to `->getSingleResult()`.
+This is basically saying:
 
-`Give me the one row of data that's going to come back.`
+> Give me the one row of data that's going to come back.
 
-If we try this one more time... that's what we expect! This gave us the exact three colums we were selecting. Sweet! Now let's change this method a little bit. We'll change this `int` to an `array` and, down here, we'll remove this `(int)` entirely so this just returns `$result`. We can also remove our `dd`. And you could just put the `return` up here if you wanted to.
+Try this one more time. *That's* what we want! It return the exact three columns we
+selected!
 
-Our method is good to go, so now, let's go back and fix our controller. This `$fortunesPrinted` is not quite right. Let's change that to `$result` instead. We'll add it again down here with some array keys - `$result['fortunesPrinted']` - and then we can copy and paste that below and change this to `$result['fortunesAverage']`. Finally, say `categoryName => $result[]` (we didn't really need a query for that, but we got it) with `name` inside.
+And now... we need to change this method a bit. Update the `int` return to an `array`...
+and, down here, remove the `(int)` case entirely and return `$result`.
+We can also remove our `dd()`... and you *could* put the `return` up here if you
+wanted to.
 
-Over in our `showCategory.html.twig` template, if you'll remember, we're passing the *entire* `$category` object in, which is how we're printing `category.name`. But *now*, we're also passing in a `categoryName` *variable*, so I'm going to replace this `category.name` with `categoryName`. There's no actual reason for me to do that, but if I had also selected `iconKey`, then we wouldn't even *need* the `categoryName` variable anymore. If that were the case, we could change this first query here to one that just queries for the fortune cookies and not the category data, since we'll have grabbed the category data in this *other* query. That's just a little optimization, but don't worry about that too much. Since I *did* query for the `categoryName` here, I just wanted you to see that we're going to be able to use that *directly*.
+## Updating our Project to use the Results
 
-Down here, for the "Print History", hit "enter" and then we'll say `{{ fortunesAverage|number_format }}` and `average`. *Awesome*. We'll try this again, and if I didn't make any mistakes... got it! Everything *works*, and we've got our two queries here: The one for the `category` that's joined over to our fortune cookies, and the one that we just made, where we're garbbing the `SUM`, `AVG`, and the `name` with our `JOIN`. Love it!
+Our method is good to go! So let's go back and fix our controller. This
+`$fortunesPrinted` isn't right anymore. Change it to `$result` instead. Then...
+read that out below with - `$result['fortunesPrinted']`. Copy that, paste, and
+send a `fortunesAverage` variable to the template set to the `fortunesAverage` key.
+Also pass `categoryName` set to `$result['name']`.
 
-Getting objects back from Doctrine is the most ideal situation because objects are just really nice to work with. But at the end of the day, if you ever need to query for certain random data or fields, you can *totally* do that, and Doctrine is going to return a very simple associative array. *But* we can go one step further with that and ask Doctrine to return this random data *inside* an object. Let's talk about that *next*.
+Template time! Over in `showCategory.html.twig`, we have access to the *entire*
+`$category` object... which is how we're printing `category.name`. But *now*, we
+also have a `categoryName` *variable*. So replace `category.name` with `categoryName`.
+
+There's... no *actual* reason to do that - I'm just proving that we *are* able to
+grab extra data in our new query. Though, if we had *also* selected `iconKey`,
+then we *could* potentially avoid querying for the `Category` object at all... though
+that's probably overkill and makes our code a bit more confusing. Using objects
+is best!
+
+Ok, below for the "Print History", hit "enter" and add
+`{{ fortunesAverage|number_format }}` then `average`.
+
+*Awesome*. Try this again. If I didn't make any mistakes... got it! Everything
+*works*! We have two queries: one for the `category` that's joined over to
+`fortune_cookies` and the one that we just made that grabs the `SUM`, `AVG`, and
+the `name` with a `JOIN`. Love it!
+
+Getting full entity objects back from Doctrine is the *ideal* situation because...
+objects are just really nice to work with. But at the end of the day, if you need
+to query for specific data or columns, you can *totally* do that. As we just saw,
+Doctrine will return a very simple associative array.
+
+*However*, we *can* go one step further and ask Doctrine to *return* this specific
+data *inside* of an object. Let's talk about that *next*.
