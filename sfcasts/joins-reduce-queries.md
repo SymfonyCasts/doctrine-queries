@@ -10,10 +10,15 @@ then each of these down here is selecting fortune cookie data for a specific cat
 
 If you've used Doctrine, you probably recognize what's happening. Doctrine loads its
 relationships *lazily*. Let's follow the logic. In `FortuneController`, we
-start by querying for an array of `$categories`. In that query, if we look at it,
-it's *only* selecting *category* data: *not* fortune cookie data. But if we go into
-the template - `templates/fortune/homepage.html.twig` - we loop over the categories
-and eventually call `category.fortuneCookies|length`.
+start by querying for an array of `$categories`. 
+
+[[[ code('18107dd0f4') ]]]
+
+In that query, if we look at it, it's *only* selecting *category* data: *not* fortune 
+cookie data. But if we go into the template - `templates/fortune/homepage.html.twig` - we loop 
+over the categories and eventually call `category.fortuneCookies|length`.
+
+[[[ code('68b4c5bddc') ]]]
 
 ## The N+1 Problem
 
@@ -49,6 +54,8 @@ Over here, since we have five results, it made *six* queries.
 Okay, we're already *joining* over to `fortuneCookie`. So how can we select its
 data? It's delightfully simple. And again, order doesn't matter:
 `->addSelect('fortuneCookie')`.
+
+[[[ code('83b2d224ff') ]]]
 
 That's it! Try this thing! The queries went down to one and the page still works!
 If you open the profiler... and view the formatted query... yes! It's
