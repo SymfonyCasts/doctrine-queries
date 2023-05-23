@@ -1,0 +1,287 @@
+WEBVTT
+
+00:00:01.086 --> 00:00:03.386 align:middle
+Cuando estamos en la página de
+inicio, vemos siete consultas.
+
+00:00:03.666 --> 00:00:05.466 align:middle
+Tenemos una para obtener
+todas las categorías...
+
+00:00:05.706 --> 00:00:09.856 align:middle
+y luego otras consultas para obtener todas
+las galletas de la suerte de cada categoría.
+
+00:00:10.556 --> 00:00:11.976 align:middle
+Podemos ver esto en el perfilador.
+
+00:00:12.326 --> 00:00:14.666 align:middle
+Esta es la consulta principal FROM category...
+
+00:00:14.996 --> 00:00:18.166 align:middle
+luego cada una de estas de aquí abajo está
+seleccionando datos de galletas de la suerte
+
+00:00:18.166 --> 00:00:23.306 align:middle
+para una categoría
+específica: 3, 4, 2, 6, etc.
+
+00:00:24.036 --> 00:00:26.866 align:middle
+Si has utilizado Doctrine, probablemente
+reconozcas lo que está ocurriendo.
+
+00:00:27.356 --> 00:00:29.816 align:middle
+Doctrine carga sus relaciones perezosamente.
+
+00:00:30.506 --> 00:00:31.996 align:middle
+Sigamos la lógica.
+
+00:00:32.606 --> 00:00:36.456 align:middle
+En FortuneController, empezamos por
+consultar una matriz de $categories.
+
+00:00:37.716 --> 00:00:40.286 align:middle
+En esa consulta, si nos fijamos,
+
+00:00:41.566 --> 00:00:45.716 align:middle
+sólo está seleccionando datos de
+categorías: no datos de galletas de la suerte.
+
+00:00:46.296 --> 00:00:50.826 align:middle
+Pero si entramos en la plantilla -
+templates/fortune/homepage.html.twig -
+
+00:00:52.156 --> 00:00:58.256 align:middle
+hacemos un bucle sobre las categorías y finalmente
+llamamos a category.fortuneCookies|length.
+
+00:00:59.666 --> 00:01:04.216 align:middle
+En la tierra de PHP, estamos llamando al
+método getFortuneCookies() en Category.
+
+00:01:04.616 --> 00:01:10.646 align:middle
+Pero hasta ahora, Doctrine aún no ha consultado
+los datos de FortuneCookie para esta Categoría.
+
+00:01:11.146 --> 00:01:16.546 align:middle
+Sin embargo, en cuanto accedemos a la
+propiedad $this->fortuneCookies,
+
+00:01:16.976 --> 00:01:20.526 align:middle
+mágicamente realiza esa
+consulta, diciendo básicamente:
+
+00:01:20.836 --> 00:01:25.146 align:middle
+Dame todos los datos de FortuneCookie
+para esta categoría Que...
+
+00:01:25.146 --> 00:01:29.056 align:middle
+a continuación, los coloca en
+la propiedad y nos los devuelve.
+
+00:01:29.526 --> 00:01:34.656 align:middle
+Así que es en este momento dentro de Twig cuando
+se ejecuta esa segunda, tercera, cuarta, quinta,
+
+00:01:34.656 --> 00:01:37.536 align:middle
+sexta y séptima consulta.
+
+00:01:38.306 --> 00:01:45.106 align:middle
+Esto se llama el "Problema N+1", en el que tienes "N"
+número de consultas para los elementos relacionados
+
+00:01:45.106 --> 00:01:48.126 align:middle
+de tu página "más uno"
+para la consulta principal.
+
+00:01:48.706 --> 00:01:54.396 align:middle
+En nuestro caso, es 1 consulta principal
+para las categorías más 6 consultas más
+
+00:01:54.576 --> 00:01:57.686 align:middle
+para obtener los datos de las galletas
+de la suerte de esas 6 categorías.
+
+00:01:58.216 --> 00:02:00.596 align:middle
+Esto no es necesariamente un problema.
+
+00:02:01.056 --> 00:02:03.126 align:middle
+Puede perjudicar el
+rendimiento de tu página...
+
+00:02:03.206 --> 00:02:04.616 align:middle
+o no ser un gran problema.
+
+00:02:04.886 --> 00:02:08.756 align:middle
+Pero si está ralentizando las cosas,
+podemos arreglarlo con un JOIN. Al fin y al
+
+00:02:09.226 --> 00:02:14.056 align:middle
+cabo, cuando consultamos las
+categorías, ya nos estamos uniendo
+
+00:02:14.056 --> 00:02:15.976 align:middle
+a la tabla de galletas de la suerte.
+
+00:02:16.636 --> 00:02:21.196 align:middle
+Así que... si sólo cogemos los datos de las
+galletas de la suerte en la primera consulta, ¿no
+
+00:02:21.426 --> 00:02:24.716 align:middle
+podríamos construir toda esta
+página con esa única consulta?
+
+00:02:25.376 --> 00:02:26.206 align:middle
+La respuesta es...
+
+00:02:26.436 --> 00:02:30.726 align:middle
+¡totalmente! Para ver esto en
+acción, busca algo primero. Hago
+
+00:02:31.526 --> 00:02:34.576 align:middle
+esto porque activará el método search()
+
+00:02:34.576 --> 00:02:37.166 align:middle
+en nuestro repositorio, que ya tiene el JOIN.
+
+00:02:37.996 --> 00:02:42.156 align:middle
+Aquí, como tenemos cinco
+resultados, hizo seis consultas.
+
+00:02:43.196 --> 00:02:46.506 align:middle
+Vale, ya nos estamos uniendo a fortuneCookie.
+
+00:02:46.816 --> 00:02:49.136 align:middle
+Entonces, ¿cómo podemos
+seleccionar sus datos?
+
+00:02:49.826 --> 00:02:51.676 align:middle
+Es deliciosamente sencillo.
+
+00:02:52.196 --> 00:02:56.736 align:middle
+Y de nuevo, el orden no importa:
+->addSelect('fortuneCookie').
+
+00:02:57.886 --> 00:02:58.446 align:middle
+¡Ya está!
+
+00:02:59.266 --> 00:03:00.206 align:middle
+¡Pruébalo!
+
+00:03:00.996 --> 00:03:04.336 align:middle
+¡Las consultas se redujeron a una
+y la página sigue funcionando!
+
+00:03:04.906 --> 00:03:06.266 align:middle
+Si abres el perfilador...
+
+00:03:06.666 --> 00:03:08.526 align:middle
+y ves la consulta formateada...
+
+00:03:09.266 --> 00:03:11.526 align:middle
+¡sí! Se está uniendo a fortune_cookie
+
+00:03:11.726 --> 00:03:15.476 align:middle
+y cogiendo los datos de
+fortune_cookie al mismo tiempo.
+
+00:03:16.276 --> 00:03:19.136 align:middle
+¡El problema "N+1" está resuelto!
+
+00:03:19.766 --> 00:03:21.676 align:middle
+Pero quiero señalar una cosa clave.
+
+00:03:22.266 --> 00:03:28.536 align:middle
+Como estamos dentro de CategoryRepository, cuando
+llamamos a $this->createQueryBuilder('category'),
+
+00:03:29.016 --> 00:03:32.446 align:middle
+eso añade automáticamente un
+->select('category') a la consulta.
+
+00:03:32.986 --> 00:03:33.956 align:middle
+Eso ya lo sabemos.
+
+00:03:34.506 --> 00:03:39.596 align:middle
+Sin embargo, ahora estamos seleccionando
+todos los datos de category y fortuneCookie.
+
+00:03:40.116 --> 00:03:42.426 align:middle
+Pero... nuestra página sigue funcionando...
+
+00:03:42.896 --> 00:03:48.056 align:middle
+lo que debe significar que, aunque
+estemos seleccionando datos de dos tablas,
+
+00:03:48.176 --> 00:03:55.056 align:middle
+nuestra consulta sigue devolviendo lo mismo
+que antes: una matriz de objetos Category.
+
+00:03:55.426 --> 00:03:59.516 align:middle
+No está devolviendo una mezcla de
+datos de category y fortuneCookie.
+
+00:04:00.466 --> 00:04:03.566 align:middle
+Este punto puede resultar un poco confuso,
+así que permíteme que te lo explique.
+
+00:04:04.286 --> 00:04:08.436 align:middle
+Cuando llamamos a createQueryBuilder(), en
+realidad se añaden 2 cosas a nuestra consulta:
+
+00:04:09.036 --> 00:04:13.806 align:middle
+FROM App\Entity\Category as
+category y SELECT category.
+
+00:04:14.536 --> 00:04:18.976 align:middle
+Gracias a FROM, Category es
+nuestra "entidad raíz" y,
+
+00:04:19.096 --> 00:04:24.666 align:middle
+a menos que empecemos a hacer algo más complejo,
+Doc trine intentará devolver objetos Category.
+
+00:04:25.446 --> 00:04:30.676 align:middle
+Cuando ->addSelect('fortuneCookie'), en
+lugar de devolver una mezcla de categorías
+
+00:04:30.676 --> 00:04:36.486 align:middle
+y galletas de la suerte, Doctrine básicamente coge los
+datos de fortuneCookie y los almacena para más adelante.
+
+00:04:37.326 --> 00:04:41.276 align:middle
+Entonces, si alguna vez llamamos a
+$category->getFortuneCookies(),
+
+00:04:41.726 --> 00:04:47.706 align:middle
+se da cuenta de que ya tiene esos datos, así
+que en lugar de hacer una consulta, los utiliza.
+
+00:04:48.486 --> 00:04:53.836 align:middle
+Lo realmente importante es que cuando utilizamos
+->addSelect() para coger los datos de un JOIN,
+
+00:04:54.096 --> 00:04:56.856 align:middle
+no cambia lo que devuelve nuestro método.
+
+00:04:57.426 --> 00:05:01.266 align:middle
+Aunque más adelante veremos
+ocasiones en las que utilizar select()
+
+00:05:01.376 --> 00:05:05.186 align:middle
+o addSelect() sí cambia lo
+que devuelve nuestra consulta.
+
+00:05:06.066 --> 00:05:10.286 align:middle
+Bien, acabamos de utilizar un JOIN para
+reducir nuestras consultas de 7 a 1.
+
+00:05:10.706 --> 00:05:14.626 align:middle
+Sin embargo, como sólo estamos contando
+el número de galletas de la suerte
+
+00:05:14.626 --> 00:05:17.506 align:middle
+de cada categoría, hay otra solución.
+
+00:05:18.136 --> 00:05:21.006 align:middle
+Hablemos ahora de las relaciones EXTRA_LAZY.
