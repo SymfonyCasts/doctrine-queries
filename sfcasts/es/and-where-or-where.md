@@ -61,7 +61,7 @@ Si lo probamos ahora... ¡eureka!
 
 Aquí abajo, podrías tener la tentación de utilizar este bonito `->orWhere()` pasando a `category.`con el nombre de esa propiedad... que... si miramos en `Category` rápidamente... es `$iconKey`. Así que `category.iconKey LIKE :searchTerm`.
 
-Y sí, podríamos hacerlo. Pero ¡no lo hagas! Recomiendo no utilizar nunca `orWhere()`. ¿Por qué? Porque... las cosas se pueden poner raras. Imagina que tuviéramos una consulta como ésta:`->andWhere('category.name LIKE :searchTerm')`,`->orWhere('category.iconKey LIKE :searchTerm')``->andWhere('category.active = true')` .
+Y sí, podríamos hacerlo. Pero ¡no lo hagas! Recomiendo no utilizar nunca `orWhere()`. ¿Por qué? Porque... las cosas se pueden poner raras. Imagina que tuviéramos una consulta como ésta: `->andWhere('category.name LIKE :searchTerm')`, `->orWhere('category.iconKey LIKE :searchTerm')` `->andWhere('category.active = true')` .
 
 ¿Ves el problema? Lo que probablemente estoy intentando hacer es buscar categorías... pero sólo todas las que coincidan con categorías activas. En realidad, si el `searchTerm`coincide con `iconKey`, se devolverá un `Category`, esté activo o no. Si escribiéramos esto en SQL, incluiríamos paréntesis alrededor de las dos primeras partes para que se comportara. Pero cuando utilizas `->orWhere()`, eso no ocurre.
 
