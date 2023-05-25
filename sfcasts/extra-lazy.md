@@ -13,11 +13,15 @@ rendering the actual `FortuneCookie` data. Nope, we're simply *counting* them.
 If you think about it, having a giant query that grabs *all* of the `FortuneCookie`
 data.... just to count them... isn't the *greatest* thing for efficiency.
 
+[[[ code('b9b9f1787f') ]]]
+
 ## Adding fetch: EXTRA_LAZY
 
 If you find yourself in this situation, you can tell Doctrine to be *clever* with
 how it loads the relation. Go into the `Category` entity and find the `OneToMany`
 relationship for `$fortuneCookies`. At the end, add `fetch:` set to `EXTRA_LAZY`.
+
+[[[ code('8b1ff4cbcd') ]]]
 
 Let's go see what that does. When you refresh, watch the query count. It *stays*
 at seven! But if we open up the profiler, the queries *themselves* have changed.
@@ -44,8 +48,12 @@ Open up `FortuneController` and find the `showCategory()` action. By type-hintin
 because we want to add a `JOIN` from `Category` to `fortuneCookies`,  we need to
 take *control* of that query.
 
+[[[ code('41d5630275') ]]]
+
 Change this so that Symfony passes us the `int $id` directly. Then, autowire
 `CategoryRepository $categoryRepository`.
+
+[[[ code('ed4e3086f2') ]]]
 
 Below, do the query manually with `$category = $categoryRepository->`...
 calling a new method: `findWithFortunesJoin($id)`. Before we create that, we also
@@ -56,15 +64,21 @@ Ok, copy the method name, hop over to `CategoryRepository` and say
 `public function findWithFortunesJoin(int $id)`, which will return a `Category`
 if one is found, else `null`. I'll fix that typo in a minute.
 
+[[[ code('0fbc284bba') ]]]
+
 The query starts like the other.... and we *could* steal some code... but since
 we're practicing, let's write it by hand. `return $this->createQueryBuilder()` and
 pass our normal `category` alias. Then `->andWhere('category.id = :id')` - I'll
 fix that typo in a minutes as well - filling in the wildcard with `->setParameter()`
 `id`, `$id`... ideally spelled correctly. Then `->getQuery()`.
 
+[[[ code('1e0d314c7b') ]]]
+
 Until now, we've been fetching *multiple* rows... and so we've used `->getResult()`.
 But this time, we want either the *one* result or null if it can't be found. To
 do *that*, use `->getOneOrNullResult()`.
+
+[[[ code('f0cb11c346') ]]]
 
 And that's it! That *should* get things working. I'll do a little sanity check over
 here, and... *oh*... it would probably help if I typed things correctly. But this
@@ -78,6 +92,8 @@ so let's say `->leftJoin()` on `category.` and the property name, which is
 `fortuneCookies`. Once again, the order doesn't matter, but above I'll say
 `->addSelect('fortuneCookie')`. Oh, and I also need to add `fortuneCookie` as a second
 argument inside the `->leftJoin()`: that's the alias.
+
+[[[ code('07444b3b1a') ]]]
 
 So we're aliasing that joined entity to `fortuneCookie` then *selecting* `fortuneCookie`.
 Now, we *should* see this query number go from two to one. And... it did!
