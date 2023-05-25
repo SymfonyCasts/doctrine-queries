@@ -1,0 +1,332 @@
+WEBVTT
+
+00:00:01.036 --> 00:00:03.516 align:middle
+Vuelve a la página de inicio sin
+ninguna consulta de búsqueda.
+
+00:00:03.836 --> 00:00:09.756 align:middle
+Todavía tenemos siete consultas porque seguimos
+utilizando nuestro método muy simple findAllOrdered()...
+
+00:00:10.106 --> 00:00:11.586 align:middle
+que no tiene el JOIN.
+
+00:00:12.036 --> 00:00:15.086 align:middle
+Así que... deberíamos añadir
+el JOIN aquí también, ¿no?
+
+00:00:15.816 --> 00:00:16.656 align:middle
+Sí Bueno...
+
+00:00:16.856 --> 00:00:20.696 align:middle
+probablemente. Pero quiero
+mostrarte una solución alternativa.
+
+00:00:21.416 --> 00:00:25.896 align:middle
+Nuestra página de inicio es única porque en realidad
+no necesitamos todos los datos de FortuneCookie
+
+00:00:25.896 --> 00:00:27.086 align:middle
+para cada Category...
+
+00:00:27.476 --> 00:00:29.406 align:middle
+lo único que necesitamos es el COUNT.
+
+00:00:30.096 --> 00:00:34.736 align:middle
+Fíjate en la plantilla: no estamos haciendo
+un bucle sobre category.fortuneCookies
+
+00:00:34.856 --> 00:00:37.636 align:middle
+y mostrando los datos reales de FortuneCookie.
+
+00:00:38.376 --> 00:00:40.726 align:middle
+No, simplemente los estamos contando.
+
+00:00:40.896 --> 00:00:46.666 align:middle
+Si lo piensas, tener una consulta gigante
+que coge todos los datos de FortuneCookie....
+
+00:00:47.066 --> 00:00:48.316 align:middle
+sólo para contarlos...
+
+00:00:48.676 --> 00:00:50.656 align:middle
+no es lo mejor para la eficiencia. Si te
+
+00:00:51.386 --> 00:00:54.516 align:middle
+encuentras en esta situación,
+puedes decirle a Doctrine
+
+00:00:54.516 --> 00:00:57.226 align:middle
+que sea inteligente con la
+forma en que carga la relación.
+
+00:00:57.836 --> 00:01:03.496 align:middle
+Entra en la entidad Category y busca la
+relación OneToMany para $fortuneCookies.
+
+00:01:04.586 --> 00:01:08.346 align:middle
+Al final, añade fetch: fijado en EXTRA_LAZY.
+
+00:01:08.346 --> 00:01:10.756 align:middle
+Vamos a ver qué hace eso.
+
+00:01:11.726 --> 00:01:14.256 align:middle
+Cuando actualices, observa
+el recuento de consultas.
+
+00:01:15.066 --> 00:01:16.626 align:middle
+¡Se queda en siete!
+
+00:01:17.086 --> 00:01:21.846 align:middle
+Pero si abrimos el perfilador, las
+propias consultas han cambiado.
+
+00:01:22.316 --> 00:01:25.136 align:middle
+La primera es la misma:
+consulta desde category.
+
+00:01:25.546 --> 00:01:26.866 align:middle
+Pero ¡mira las demás!
+
+00:01:27.106 --> 00:01:30.816 align:middle
+¡Tenemos SELECT COUNT(*) FROM
+fortune_cookie una y otra vez !
+
+00:01:31.316 --> 00:01:36.176 align:middle
+Así que tenemos siete consultas, ¡pero
+ahora cada una sólo selecciona el COUNT !
+
+00:01:37.166 --> 00:01:42.296 align:middle
+Cuando tienes fetch: 'EXTRA_LAZY' y simplemente
+cuentas una relación de colección, Doctrine
+
+00:01:42.506 --> 00:01:47.776 align:middle
+es lo suficientemente inteligente como para seleccionar sólo
+el COUNT en lugar de consultar todos los datos. Si hiciéramos
+
+00:01:48.566 --> 00:01:53.416 align:middle
+un bucle sobre esta colección y empezáramos
+a imprimir los datos de FortuneCookie,
+
+00:01:53.916 --> 00:01:57.216 align:middle
+seguiría haciendo una
+consulta completa de los datos.
+
+00:01:57.716 --> 00:02:02.356 align:middle
+Pero si lo único que necesitamos es contarlos,
+entonces fetch: 'EXTRA_LAZY' es una gran solución.
+
+00:02:03.616 --> 00:02:05.826 align:middle
+Vale: haz clic en una de las categorías.
+
+00:02:07.946 --> 00:02:10.096 align:middle
+El perfilador dice que tenemos dos consultas.
+
+00:02:10.646 --> 00:02:14.076 align:middle
+Se trata de un problema N+1 en "miniatura".
+
+00:02:14.816 --> 00:02:17.126 align:middle
+La primera consulta selecciona
+un único Category...
+
+00:02:17.586 --> 00:02:22.296 align:middle
+y la segunda selecciona todas las
+galletas de la suerte de esta categoría.
+
+00:02:23.196 --> 00:02:27.136 align:middle
+Utilicemos nuestras habilidades en JOIN
+para reducirlo a una sola consulta.
+
+00:02:27.776 --> 00:02:30.906 align:middle
+Abre FortuneController y busca
+la acción showCategory().
+
+00:02:31.716 --> 00:02:36.626 align:middle
+Al escribir Category en este argumento,
+le estamos diciendo a Symfony que busque
+
+00:02:36.626 --> 00:02:39.986 align:middle
+Category por nosotros, utilizando {id}.
+
+00:02:40.686 --> 00:02:42.436 align:middle
+Normalmente, ¡esto me encanta!
+
+00:02:42.696 --> 00:02:48.406 align:middle
+Sin embargo, en este caso, como queremos
+añadir un JOIN de Category a fortuneCookies,
+
+00:02:48.596 --> 00:02:51.086 align:middle
+tenemos que tomar el control de esa consulta.
+
+00:02:51.766 --> 00:02:55.316 align:middle
+Cambia esto para que Symfony nos
+pase el int $id directamente.
+
+00:02:56.206 --> 00:03:00.496 align:middle
+A continuación, autocablea
+CategoryRepository $categoryRepository.
+
+00:03:01.446 --> 00:03:06.906 align:middle
+A continuación, haz la consulta manualmente
+con $category = $categoryRepository->...
+
+00:03:07.216 --> 00:03:11.146 align:middle
+llamando a un nuevo método:
+findWithFortunesJoin($id).
+
+00:03:12.536 --> 00:03:16.496 align:middle
+Antes de crearlo, también tenemos
+que añadir if (!$category),
+
+00:03:17.466 --> 00:03:20.266 align:middle
+y luego throw
+$this->createNotFoundException().
+
+00:03:20.846 --> 00:03:22.636 align:middle
+Si quieres, puedes darle un mensaje.
+
+00:03:23.996 --> 00:03:28.676 align:middle
+Vale, copia el nombre del método,
+salta a CategoryRepository
+
+00:03:29.206 --> 00:03:33.416 align:middle
+y di public function
+findWithFortunesJoin(int $id),
+
+00:03:33.816 --> 00:03:37.926 align:middle
+que devolverá un Category si
+se encuentra alguno, si no null.
+
+00:03:38.296 --> 00:03:40.016 align:middle
+Arreglaré esa errata en un minuto.
+
+00:03:40.666 --> 00:03:42.086 align:middle
+La consulta empieza como la otra....
+
+00:03:42.486 --> 00:03:44.346 align:middle
+y podríamos robar algo de código...
+
+00:03:44.736 --> 00:03:47.146 align:middle
+pero como estamos practicando,
+escribámoslo a mano.
+
+00:03:47.806 --> 00:03:53.196 align:middle
+return $this->createQueryBuilder() y
+pasamos nuestro alias normal category.
+
+00:03:54.206 --> 00:04:02.426 align:middle
+Luego ->andWhere('category.id = :id')
+-también arreglaré esa errata en un minuto-
+
+00:04:02.926 --> 00:04:08.986 align:middle
+rellenando el comodín con
+->setParameter() id, $id...
+
+00:04:08.986 --> 00:04:10.676 align:middle
+idealmente escrito correctamente.
+
+00:04:11.186 --> 00:04:12.956 align:middle
+Luego ->getQuery().
+
+00:04:14.236 --> 00:04:17.156 align:middle
+Hasta ahora, hemos estado
+buscando varias filas...
+
+00:04:17.246 --> 00:04:19.156 align:middle
+y por eso hemos utilizado ->getResult().
+
+00:04:19.556 --> 00:04:25.236 align:middle
+Pero esta vez, queremos un único
+resultado o null si no se puede encontrar.
+
+00:04:25.926 --> 00:04:30.076 align:middle
+Para ello, utiliza ->getOneOrNullResult().
+
+00:04:30.076 --> 00:04:31.866 align:middle
+Y ya está
+
+00:04:31.866 --> 00:04:33.336 align:middle
+Con esto deberían funcionar las cosas.
+
+00:04:33.976 --> 00:04:36.966 align:middle
+Haré una pequeña comprobación
+de cordura por aquí, y...
+
+00:04:37.286 --> 00:04:41.096 align:middle
+oh... probablemente ayudaría si
+escribiera las cosas correctamente.
+
+00:04:41.586 --> 00:04:42.546 align:middle
+¡Pero esto es genial!
+
+00:04:43.166 --> 00:04:47.466 align:middle
+Ha reconocido que no sabía qué era
+ese alias y nos ha dado un error claro.
+
+00:04:48.116 --> 00:04:48.876 align:middle
+Y ahora...
+
+00:04:49.576 --> 00:04:52.166 align:middle
+funciona, y seguimos teniendo dos consultas.
+
+00:04:52.166 --> 00:04:53.676 align:middle
+¡Es la hora de JOIN !
+
+00:04:53.676 --> 00:05:03.086 align:middle
+Vamos de un Category a muchas galletas de la fortuna,
+así que digamos ->leftJoin() sobre category.
+
+00:05:03.626 --> 00:05:06.826 align:middle
+y el nombre de la propiedad,
+que es fortuneCookies.
+
+00:05:07.406 --> 00:05:13.086 align:middle
+Una vez más, el orden no importa, pero
+arriba diré ->addSelect('fortuneCookie').
+
+00:05:13.906 --> 00:05:16.456 align:middle
+Ah, y también tengo que
+añadir fortuneCookie como
+
+00:05:16.456 --> 00:05:20.576 align:middle
+segundo argumento dentro de
+->leftJoin() : ése es el alias.
+
+00:05:21.186 --> 00:05:27.066 align:middle
+Así que estamos poniendo el alias de esa entidad unida
+a fortuneCookie y luego seleccionando fortuneCookie.
+
+00:05:27.976 --> 00:05:31.486 align:middle
+Ahora, deberíamos ver que este
+número de consulta pasa de dos a uno.
+
+00:05:31.896 --> 00:05:33.566 align:middle
+Y... ¡así ha sido!
+Éstas son las conclusiones
+
+00:05:34.376 --> 00:05:40.966 align:middle
+: aunque no hay necesidad de
+sobreoptimizar, si tienes el problema N+1,
+
+00:05:41.336 --> 00:05:46.106 align:middle
+puedes resolverlo uniéndote a la tabla
+relacionada y seleccionando sus datos.
+
+00:05:47.206 --> 00:05:50.596 align:middle
+Vale, hasta ahora Doc trine
+devolvía una colección
+
+00:05:50.596 --> 00:05:53.866 align:middle
+de objetos Category o un
+único objeto Category.
+
+00:05:54.636 --> 00:06:00.486 align:middle
+Eso está muy bien, pero ¿y si, en lugar de
+objetos enteros, sólo necesitamos algunos datos,
+
+00:06:00.866 --> 00:06:04.026 align:middle
+como unas cuantas columnas,
+un COUNT, o un SUM ?
+
+00:06:04.706 --> 00:06:06.276 align:middle
+Vamos a profundizar en eso a continuación.
