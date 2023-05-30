@@ -1,0 +1,347 @@
+WEBVTT
+
+00:00:01.036 --> 00:00:01.746 align:middle
+¡Nuevo equipo de meta!
+
+00:00:02.116 --> 00:00:03.936 align:middle
+Mira la entidad FortuneCookie.
+
+00:00:04.756 --> 00:00:08.216 align:middle
+Una de sus propiedades es $numberPrinted,
+que es el número de veces que hemos impreso
+
+00:00:08.216 --> 00:00:10.196 align:middle
+esa fortuna.
+
+00:00:10.916 --> 00:00:15.516 align:middle
+En la página de categoría, aquí arriba,
+quiero imprimir el número total impreso
+
+00:00:15.516 --> 00:00:18.106 align:middle
+de todas las fortunas de esta categoría.
+
+00:00:19.216 --> 00:00:23.606 align:middle
+Podríamos resolver esto haciendo un bucle
+sobre $category->getFortuneCookies()...
+
+00:00:24.256 --> 00:00:28.636 align:middle
+llamando a ->getNumberPrinted() y
+añadiéndolo a alguna variable de $count.
+
+00:00:29.286 --> 00:00:33.476 align:middle
+Eso funcionaría siempre que tuviéramos siempre
+un número pequeño de galletas de la suerte.
+
+00:00:34.056 --> 00:00:36.266 align:middle
+Pero el negocio de las
+galletas está en auge...
+
+00:00:36.436 --> 00:00:39.346 align:middle
+y pronto tendremos cientos de
+galletas en cada categoría.
+
+00:00:39.346 --> 00:00:47.266 align:middle
+Sería una gran ralentización si consultáramos 500
+galletas de la suerte sólo para calcular la suma.
+
+00:00:47.756 --> 00:00:50.386 align:middle
+De hecho, ¡probablemente nos
+quedaríamos sin memoria antes!
+
+00:00:50.846 --> 00:00:52.916 align:middle
+Seguro que hay una forma mejor, ¿verdad?
+
+00:00:53.456 --> 00:00:58.066 align:middle
+¡Seguro que sí! Haz todo ese trabajo en
+la base de datos con una consulta de suma.
+
+00:00:58.656 --> 00:01:03.986 align:middle
+Pensemos: los datos que estamos consultando provendrán
+en última instancia de la entidad FortuneCookie...
+
+00:01:03.986 --> 00:01:09.096 align:middle
+así que abre FortuneCookieRepository para
+que podamos añadir un nuevo método allí.
+
+00:01:09.756 --> 00:01:14.556 align:middle
+¿Qué te parece: public function
+countNumberPrintedForCategory(Categoría
+
+00:01:14.556 --> 00:01:16.486 align:middle
+$categoría): int.
+
+00:01:17.356 --> 00:01:19.576 align:middle
+La consulta empieza más o menos como todas.
+
+00:01:19.576 --> 00:01:23.946 align:middle
+Digamos $result =
+$this->createQueryBuilder('fortuneCookie').
+
+00:01:24.786 --> 00:01:27.196 align:middle
+Por cierto, el alias puede ser cualquier cosa.
+
+00:01:27.756 --> 00:01:31.856 align:middle
+Personalmente, intento que sean lo suficientemente
+largos para que sean únicos en mi proyecto...
+
+00:01:32.116 --> 00:01:34.536 align:middle
+pero lo suficientemente cortos
+para no resultar molestos.
+
+00:01:35.056 --> 00:01:39.616 align:middle
+Y lo que es más importante, en cuanto elijas
+un alias para una entidad, quédate con él.
+
+00:01:40.386 --> 00:01:45.576 align:middle
+Vale, sabemos que cuando creamos un QueryBuilder,
+éste seleccionará todos los datos de FortuneCookie.
+
+00:01:46.056 --> 00:01:48.216 align:middle
+Pero en este caso, ¡no queremos eso!
+
+00:01:48.216 --> 00:01:52.616 align:middle
+Así que, a continuación, decimos
+->select() para anular eso.
+
+00:01:53.446 --> 00:01:59.016 align:middle
+Antes, en CategoryRepository, utilizamos
+->addSelect(), que básicamente dice:
+
+00:01:59.356 --> 00:02:03.776 align:middle
+Coge lo que estemos seleccionando
+y selecciona también esto otro.
+
+00:02:03.776 --> 00:02:08.746 align:middle
+Pero esta vez, estoy utilizando a
+propósito ->select() para que anule eso
+
+00:02:08.936 --> 00:02:12.486 align:middle
+y sólo seleccione lo que
+pongamos a continuación.
+
+00:02:12.486 --> 00:02:17.906 align:middle
+Dentro, escribe DQL: SUM() una función con
+la que probablemente estés familiarizado
+
+00:02:17.906 --> 00:02:20.006 align:middle
+seguida de fortuneCookie.
+
+00:02:20.006 --> 00:02:24.306 align:middle
+y el nombre de la propiedad que
+queremos utilizar - numberPrinted.
+
+00:02:25.156 --> 00:02:29.546 align:middle
+Y no hace falta que lo hagas, pero
+yo voy a añadir AS fortunesPrinted,
+
+00:02:29.786 --> 00:02:32.816 align:middle
+que dará nombre a ese
+resultado cuando sea devuelto.
+
+00:02:33.316 --> 00:02:34.356 align:middle
+Lo veremos en un minuto.
+
+00:02:34.986 --> 00:02:37.346 align:middle
+Vale, con esto ya tenemos ->select().
+
+00:02:37.786 --> 00:02:42.386 align:middle
+Ahora necesitamos un ->andWhere() con
+fortuneCookie.category = :category...
+
+00:02:43.356 --> 00:02:49.136 align:middle
+que llame a ->setParameter() para rellenar
+la dinámica category con el objeto $category.
+
+00:02:49.136 --> 00:02:51.156 align:middle
+¡Esto también es interesante!
+
+00:02:51.626 --> 00:02:54.396 align:middle
+En SQL, normalmente diríamos algo
+
+00:02:54.396 --> 00:03:00.276 align:middle
+como WHERE fortuneCookie.categoryId
+= y luego el ID entero.
+
+00:03:00.956 --> 00:03:06.346 align:middle
+Pero en Doctrine, no pensamos en las tablas ni
+en las columnas: nos centramos en las entidades.
+
+00:03:06.586 --> 00:03:10.826 align:middle
+Y no hay ninguna propiedad
+categoryId en FortuneCookie.
+
+00:03:10.826 --> 00:03:17.026 align:middle
+En su lugar, cuando decimos fortuneCookie.category
+estamos haciendo referencia a la propiedad $category
+
+00:03:17.026 --> 00:03:17.986 align:middle
+de FortuneCookie.
+
+00:03:17.986 --> 00:03:24.056 align:middle
+Y en lugar de pasar sólo el ID entero,
+pasamos el objeto Category completo.
+
+00:03:24.826 --> 00:03:26.946 align:middle
+En realidad es posible pasar el ID,
+
+00:03:27.286 --> 00:03:31.426 align:middle
+pero la mayoría de las veces pasarás
+el objeto entero de esta manera.
+
+00:03:31.426 --> 00:03:33.106 align:middle
+Bien, ¡terminemos esto!
+
+00:03:33.556 --> 00:03:35.996 align:middle
+Convierte esto en una
+consulta con ->getQuery().
+
+00:03:36.876 --> 00:03:41.876 align:middle
+A continuación, si lo piensas bien, en
+realidad sólo queremos una fila de resultados.
+
+00:03:41.876 --> 00:03:44.936 align:middle
+Así que digamos ->getOneOrNullResult().
+
+00:03:44.936 --> 00:03:47.976 align:middle
+Por último, return $result.
+
+00:03:48.896 --> 00:03:52.276 align:middle
+Hasta ahora, todas nuestras
+consultas han devuelto objetos.
+
+00:03:52.366 --> 00:03:55.656 align:middle
+Puesto que estábamos
+seleccionando sólo una cosa...
+
+00:03:55.986 --> 00:03:57.656 align:middle
+¿cambiará eso finalmente?
+
+00:03:58.256 --> 00:03:58.986 align:middle
+¡Averigüémoslo!
+
+00:03:59.596 --> 00:04:03.836 align:middle
+Añade dd($result) y luego dirígete
+a FortuneController para utilizarlo.
+
+00:04:03.836 --> 00:04:09.226 align:middle
+Para el controlador de la página
+mostrar, añade un argumento
+
+00:04:09.226 --> 00:04:10.806 align:middle
+FortuneCookieRepository
+$fortuneCookieRepository. Luego,
+
+00:04:11.676 --> 00:04:17.136 align:middle
+abajo, di $fortunesPrinted igual a
+$fortuneCookieRepository->countNumberPrintedForCategory()
+
+00:04:17.136 --> 00:04:20.146 align:middle
+pasando por $category. ¡Estupendo!
+
+00:04:20.916 --> 00:04:21.576 align:middle
+Toma
+
+00:04:22.336 --> 00:04:26.886 align:middle
+esa variable $fortunesPrinted y pásala a
+Twig como fortunesPrinted . Por último,
+
+00:04:28.986 --> 00:04:34.496 align:middle
+busca la plantilla -
+showCategory.html.twig - y. .. hay
+
+00:04:34.496 --> 00:04:36.606 align:middle
+un encabezado de tabla que dice
+"Historial de impresión". Añade
+
+00:04:37.256 --> 00:04:41.246 align:middle
+algunos paréntesis con {{
+fortunesPrinted }}. Añade
+
+00:04:42.056 --> 00:04:46.136 align:middle
+|number_format para que quede más bonito
+que la palabra total. ¡Fantástico!
+
+00:04:46.826 --> 00:04:51.076 align:middle
+Ya que tenemos ese dd() ,
+vamos a actualizar y... ¡mira
+
+00:04:51.556 --> 00:04:52.456 align:middle
+eso! ¡
+
+00:04:52.786 --> 00:04:57.306 align:middle
+Volvemos a tener un array con 1 clave
+llamada fortunesPrinted! Sí, en
+
+00:04:57.986 --> 00:05:03.736 align:middle
+cuanto empezamos a seleccionar datos específicos,
+recuperamos esos datos específicos. Es
+
+00:05:04.226 --> 00:05:07.606 align:middle
+exactamente como esperarías
+con una consulta SQL normal. Si
+
+00:05:08.356 --> 00:05:12.506 align:middle
+hubiéramos dicho ->select('fortuneCookie')
+(lo cual es redundante porque
+
+00:05:12.506 --> 00:05:14.916 align:middle
+eso es lo que ya hace
+createQueryBuilder() ), eso nos habría
+
+00:05:15.256 --> 00:05:17.856 align:middle
+dado un objeto FortuneCookie. Pero en cuanto
+
+00:05:18.496 --> 00:05:23.016 align:middle
+seleccionamos una cosa concreta,
+se deshace del objeto y
+
+00:05:23.056 --> 00:05:24.906 align:middle
+devuelve una matriz asociativa. Como
+
+00:05:25.946 --> 00:05:29.386 align:middle
+nuestro método debe devolver
+un int, podríamos completarlo
+
+00:05:29.386 --> 00:05:33.096 align:middle
+diciendo return
+$result['fortunesPrinted']. Pero
+
+00:05:33.096 --> 00:05:37.636 align:middle
+si te encuentras en una situación en la que
+estás seleccionando una fila de datos... y
+
+00:05:38.056 --> 00:05:42.106 align:middle
+sólo una columna de datos,
+hay un atajo para obtener esa
+
+00:05:42.106 --> 00:05:46.076 align:middle
+única columna: ->getSingleScalarResult().
+
+00:05:46.516 --> 00:05:48.606 align:middle
+Podemos devolverla directamente.
+
+00:05:49.646 --> 00:05:53.406 align:middle
+Mantendré el dd() para que podamos verlo. Y...
+
+00:05:53.406 --> 00:05:54.736 align:middle
+¡impresionante! ¡
+
+00:05:54.896 --> 00:05:56.426 align:middle
+Obtenemos sólo el número! Bueno,
+
+00:05:56.786 --> 00:05:58.856 align:middle
+técnicamente es una cadena. Si quieres
+
+00:05:58.856 --> 00:06:02.166 align:middle
+ser estricto, puedes añadir (int). Y
+
+00:06:02.166 --> 00:06:04.156 align:middle
+ahora... ¡ya está
+
+00:06:05.116 --> 00:06:08.566 align:middle
+! ¡Tenemos un número total
+bien formateado! A continuación:
+
+00:06:09.426 --> 00:06:14.366 align:middle
+Seleccionemos aún más datos y
+veamos cómo se complican las cosas.
