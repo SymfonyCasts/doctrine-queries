@@ -21,11 +21,15 @@ Let's think: the data we're querying for will ultimately come from the `FortuneC
 entity... so open up `FortuneCookieRepository` so we can add a new method there. How
 about: `public function countNumberPrintedForCategory(Category $category): int`.
 
+[[[ code('13fef07061') ]]]
+
 The query starts pretty much like they all do. Say
 `$result = $this->createQueryBuilder('fortuneCookie')`. By the way, the alias can
 be anything. Personally, I try to make them long enough to be unique in my project...
 but short enough to not be annoying. More importantly, as soon as you choose an
 alias for an entity, stick with it.
+
+[[[ code('e1b87d3878') ]]]
 
 Ok, we know that when we create a QueryBuilder, it will select *all* the data
 from `FortuneCookie`. But in this case, we *don't* want that! So, below, say
@@ -42,11 +46,15 @@ property we want to use - `numberPrinted`. And you don't *have* to do this, but 
 going to add `AS fortunesPrinted`, which will *name* that result when it's returned.
 We'll see that in a minute.
 
+[[[ code('b24e158822') ]]]
+
 ## andWhere() with an Entire Entity
 
 Ok, that takes care of the `->select()`. Now we need an `->andWhere()` with
 `fortuneCookie.category = :category`... calling `->setParameter()` to fill in the
 dynamic `category` with the `$category` object.
+
+[[[ code('2eadb05dee') ]]]
 
 This is interesting too! In SQL, we would normally say something like
 `WHERE fortuneCookie.categoryId =` and then the *integer* ID. But in Doctrine, we don't
@@ -61,6 +69,8 @@ Okay, let's finish this! Convert this to a query with `->getQuery()`. Below, if 
 think about it, we really only want *one* row of results. So let's say
 `->getOneOrNullResult()`. Finally, `return $result`.
 
+[[[ code('07ac4a22ff') ]]]
+
 Until now, all of our queries have returned *objects*. Since were selecting just
 *one* thing... does that finally change? Let's find out! Add `dd($result)` and
 then head  to `FortuneController` to use this. For the show page controller, add
@@ -68,12 +78,18 @@ an argument `FortuneCookieRepository $fortuneCookieRepository`. Then below, say
 `$fortunesPrinted` equals `$fortuneCookieRepository->countNumberPrintedForCategory()`
 passing `$category`.
 
+[[[ code('e07bc76f80') ]]]
+
 Beautiful! Take that `$fortunesPrinted` variable and pass it into Twig as
 `fortunesPrinted`.
+
+[[[ code('cf6579e316') ]]]
 
 Finally, find the template - `showCategory.html.twig` - and... there's a table header
 that says "Print History". Add some parentheses with `{{ fortunesPrinted }}`.
 Add `|number_format` to make this prettier then the word `total`.
+
+[[[ code('8580109145') ]]]
 
 Awesome! Since we have that `dd()`, let's refresh and... look at that! We get an
 array back with 1 key called `fortunesPrinted`! Yup, as soon as we start
@@ -92,8 +108,12 @@ Because our method should return an `int`, we *could* complete this by saying
 selecting one row of data... and only one *column* of data, there's a shortcut to
 *get* that one column: `->getSingleScalarResult()`. We can return *that* directly.
 
+[[[ code('ebd4d16b68') ]]]
+
 I'll keep the `dd()` so we can see it. And... awesome! We get *just* the number!
 Well, technically it's a string. If you want to be strict, you can add `(int)`.
 And now... got it! We have a nicely formatted total number!
+
+[[[ code('c11ec1f61d') ]]]
 
 Next: Let's select even *more* data and see how that complicates things.
