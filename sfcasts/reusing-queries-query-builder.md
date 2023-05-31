@@ -1,19 +1,78 @@
 # Reusing Queries in the Query Builder
 
-Open `CategoryRepository.php` again. Okay, we have a couple of places in here where we `->leftJoin()` over to `fortuneCookies` and select fortune cookies. In the future, we may need to do that in even more places inside of here, so it would be great if we could *reuse* that logic instead of repeating it over and over again. Let's fix that.
+Open up `CategoryRepository`. We have a few places in here where we `->leftJoin()`
+over to `fortuneCookies` and select fortune cookies. In the future, we may need to
+do that in even *more* methods... so it would be super duper if we could *reuse*
+that logic instead of repeating it over and over again. Let's do that!
 
-Anywhere inside of here, let's make a new `private function` called `addFortuneCookieJoinAndSelect()`. This is going to accept a `QueryBuilder` object (make sure you get the one from `Doctrine\ORM` - the "Object Relational Mapper"), and let's call it `$qb`. This will *also* return a `QueryBuilder`. The next step is pretty simple. I'm actually going to steal the `JOIN` logic from above... and, down here, we're going to say `return $qb`... and paste that. You may have to clean up the spacing a little here. And that's it! We now have a method that we can call, pass in the `QueryBuilder`, and it will add the `JOIN` and `SELECT` *for* us.
+Anywhere inside here, add a new `private function` called
+`addFortuneCookieJoinAndSelect()`. This will accept a `QueryBuilder` object (make
+sure you get the one from `Doctrine\ORM` - the "Object Relational Mapper"), and let's
+call it `$qb`. This will also *return* a `QueryBuilder`.
 
-The result is *pretty* nice. Up here, we could say `$qb = $this->createQueryBuilder('category')`... and, down here, say `return $this->addFortuneCookieJoinAndSelect()` and pass in that `$qb`. So we're passing in the `$qb`, which it modifies, but then, because our new method returns the `QueryBuilder` as well, we can just chain off of it like normal. If we go over here and try the "Search" feature... oh... of course that breaks. We need to remove this excess code. If we try it now... it works!
+The next step is pretty simple. Go steal the `JOIN` logic from above... and, down
+here, say `return $qb`... and paste that... being sure to clean up any spacing
+mess that may have occurred.
 
-Now that this is working, let's repeat that same thing down here. Replace this `return` with `$qb =` and then, below that, say `return $this->addFortuneCookieJoinAndSelect()`, pass in `$qb`, and then remove `->addSelect()` and `->leftJoin()` on that one. This is for the Category page, so if we click any category... perfect! It's still working.
+And... that's it! We now have a method that we can call, pass in the `QueryBuilder`,
+and *it* will add the `JOIN` and `SELECT` *for* us.
 
-We can even make this a little easier. Instead of requiring the `QueryBuilder` object, we could make it *optional*, and then, all we need to do down here is tweak this a little to say *if* we have a `$qb`, use it, otherwise, `$this->createQueryBuilder('category')`. There we go. So *if* there's a `QueryBuilder` passed in, we're just going to use this and call `->addSelect()` on it, *else* we'll create a fresh `QueryBuilder` and call `->addSelect()` on it.
+The result is *pretty* nice. Up here, we can say
+`$qb = $this->createQueryBuilder('category')`... then below,
+`return $this->addFortuneCookieJoinAndSelect()` passing `$qb`.
 
-The advantage of this is that we don't need to initialize our `QueryBuilder` at all up here, and the same thing goes for the method above. But you can see how important it is that we're using a consistent alias everywhere. We're referencing `category.name`,`category.iconKey`, and `category.id`, so we need to make sure that we always create their `QueryBuilder` using that exact alias to keep everything working nicely.
+So we create the `$qb`, pass it to the method, that *modifies* it... but it
+also *returns* the `QueryBuilder`, so can just chain off of it like normal.
 
-All right, while we're here, let's create one more reusable method in one other place - `public function addOrderByCategoryName()` - because we're probably going to want to always order our data the same way. And, like we did before, we're going to have a `QueryBuilder $qb = null` argument, return a `QueryBuilder`, and the inside of this is pretty simple. We're going to steal the code above... let me hit "enter" on this so it looks a little better... and then we'll start the same way. Create a `QueryBuilder` if you need to, and then say `->addOrderBy('category.name')`, followed by `Criteria::DESC`, which we used earlier in our `search()` method.
+Spin over over and try the "Search" feature. And... oh... of course that breaks!
+We need to remove this excess code. If we try it now... great success!
 
-Now we need to break this up a little, so we'll start with `$qb = $this->addOrderByCategoryName()` and pass nothing. We'll pass that `$qb` to the second part. Unfortunately, as soon as you shortcut these methods, you can't chain them all together. You can only chain a *little*. But that still allows us to remove this `->addOrderBy()` down here. If we try it now... the page still works! And if we try searching for something on the homepage... that still works too!
+To celebrate, let's repeat that same thing down here. Replace `return` with
+`$qb =`..., below that, say `return $this->addFortuneCookieJoinAndSelect()`
+passing in `$qb`, and then remove `->addSelect()` and `->leftJoin()`.
 
-Next: Let's learn about the criteria system, which is a really cool way to efficiently filter collection relationships inside the database.
+This is for the Category page, so if we click any category... perfect! It's still
+rocking.
+
+## Making the QueryBuilder Argument Optional
+
+But... we can even make this a bit nicer. Instead of requiring the `QueryBuilder`
+object as an argument, we can make it *optional*.
+
+Watch: down here, tweak this so that *if* we have a `$qb`, use it, otherwise,
+`$this->createQueryBuilder('category')`. So *if* a `QueryBuilder` was passed in,
+use this and call `->addSelect()`, *else* create a fresh `QueryBuilder` and call
+`->addSelect()` on *that*.
+
+The advantage of this is that we don't need to initialize our `QueryBuilder` at all
+up here... and the same thing goes for the method above.
+
+But you *can* see how important it is that we're using a *consistent* alias
+everywhere. We're referencing `category.name`,`category.iconKey`, and `category.id`...
+so we need to make sure that we always create a `QueryBuilder` using that *exact*
+alias. Else... things get explodey.
+
+Let's create one more reusable method: `public function addOrderByCategoryName()`...
+because we're probably going to want to *always* order our data in the same way.
+Give this the usual `QueryBuilder $qb = null` argument, return a `QueryBuilder`,
+and the inside is pretty simple. I'll steal the code above... let me hit "enter"
+so it looks a bit better... and then start the same way. Create a `QueryBuilder`
+if we need to, and then say `->addOrderBy('category.name')`, followed by
+`Criteria::DESC`, which we used earlier in our `search()` method. And yes, we *are*
+sorting in *reverse* alphabetical order because, well, hoenstly I have no idea *what*
+I was thinking when I coded this.
+
+To use this, we need to break things up a bit. Start with
+`$qb = $this->addOrderByCategoryName()` and pass nothing. then pass *that* `$qb`
+to the second part.
+
+As you can see, as soon as you have multiple shortcut methods, you can't chain them
+*all*... which is a small bummer. But this *does* still allow us to remove the
+`->addOrderBy()` down here.
+
+If we try it now... the page still works! And if we try searching for something on
+the homepage... that's looking good too!
+
+Next: Let's learn about the `Criteria` system: a *really* cool way to efficiently
+filter *collection* relationships inside the database, while keeping your code
+dead-simple.
