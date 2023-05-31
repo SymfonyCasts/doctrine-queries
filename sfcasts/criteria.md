@@ -1,30 +1,151 @@
 # Criteria: Filter Relation Collections
 
-On the category show page, we're looping over all of the fortune cookies in that category. Let's check out that template: `/templates/fortune/showCategory.html.twig`. Okay, we can see that we're looping over `category.fortuneCookies` and rendering some stuff inside of there. So here's the thing: If you look at the `FortuneCookie.php` entity, it has a `bool $discontinued` flag. Occasionally, we stop producing a specific fortune cookie. Right now, on this page, we're looping over *all* of the fortune cookies for a category, which includes cookies we're currently producing *and* those we have discontinued. We're really only interested in seeing the ones we're still making, so we need to find a way to hide our discontinued cookies. How can we do that?
+On the category show page, we're looping over all of the fortune cookies in that
+category. Let's check out that template: `templates/fortune/showCategory.html.twig`.
+Here it is: we loop over `category.fortuneCookies` and render some stuff.
 
-Over in the controller for this page - `FortuneController.php` - we could create a separate query here from the `$fortuneCookieRepository` where we say "where `category` equals this `$category` and `discontinued` equals `false`. But that's kind of lame because it's just so easy to do this inside of our template. So... is there some way to use the `category` object directly to only get the current fortune cookies? The answer is... absolutely! And if we do it correctly, we can do it *really* efficiently.
+But... there's a problem. Open up the `FortuneCookie` entity. It has a
+`bool $discontinued` flag. Occasionally, we stop producing a specific fortune cookie.
+When we do, we set `discontinued` to true.
 
-The first step is optional, but in the controller, I'm going to change `->findWithFortunesJoin()` back to just `->find()`. I'm removing the join we had to make the inner workings of the new feature we're *about* to work on a little more obvious. This doesn't change anything except that our queries go up to three. That's one query for the category, our custom query that we're making, and then one query for all of the fortunes *inside* of this category.
+Right now, we're looping over *all* of the fortune cookies for a category: including
+both current *and* discontinued cookies! But management is really only interested
+in *current* fortune cookies. We need a way to *hide* the discontinued ones. How
+can we do that?
 
-To get this working, we're going to go into our `Category.php` entity and find the `getFortuneCookies()` method. There it is. Right below that, let's create a new method here called `getFortuneCookiesStillInProduction()`. This, like the normal method, is going to return a Doctrine `Collection`. And, just to help it out, copy the `@return` doc above. we'll say that this is a `Collection` that's going to be a `FortuneCookie`, so if we loop over this, our editor is going to know that each item in the `Collection` is a `FortuneCookie` entity.
+Over in the controller for this page - `FortuneController` - we *could* create a
+separate query from the `$fortuneCookieRepository` with
 
-So... what do we do inside of here? We *could* just loop over `$this->fortuneCookies() as $fortuneCookie` and create an array of new ones that *aren't* discontinued, basically popping this into a new array. The problem with this is, as soon as we call `$this->getFortuneCookies()`, that's going to query for *every* single fortune cookie and then we're going to create a new collection. This new `$inProduction` collection will only contain some of them, though. So we're querying for *all* of them, even though we're only using *some* of them. Pretty wasteful. What we *really* want to do is tell Doctrine to make a fresh query from inside of here to the `FortuneCookieRepository`, where `discontinued` equals `false`.
+> WHERE category :category and discontinued = false.
 
-Normally, we can't make queries from inside of an entity because we need the repository and we don't have access to that. But these relationship properties are an exception to that rule using a really cool system called the *criteria system*. It works like this: We say `$criteria = Criteria::` - the one from Doctrine/Common/Collections - `create()`. This functions a bit like the `QueryBuilder`, but it's not *exactly* the same. We'll say `->andWhere()`, and we can use `Criteria::` again with `expr()->`, and here, we can kind of build our `WHERE` clause. You can see that there's `in`, `contains`, `gt`... but we're going to use `eq()` for "equals". And inside, we'll say `'discontinued', false`. This, on its own, is just creating an object that's describing a `WHERE` clause. Below, we can say `return $this->fortuneCookies->matching($criteria)`. This basically says:
+But... that's kind of lame! Right now, looping over the cookies in the template
+is deliciously simple. Do we really need to back up to the controller, create
+a custom query and pass in the results as a new Twig variable? Is it possible,
+instead, to use the `category` object... but filter *out* the discontinued
+cookies! Absolutely! And if we do it correctly, we can do it *really* efficiently
 
-`Take this collection, but only return the ones that match this criteria.`
+The first step is optional, but in the controller, I'm going to change
+`->findWithFortunesJoin()` back to just `->find()`. I'm making this change - which
+removes the join - *just* so that it's a bit easier for us to see the end result
+of what we're about to do.
 
-To actually *use* this method, over in `showCategory.html.twig`, instead of looping over `category.fortuneCookies`, we're going to loop over `category.fortuneCookiesStillInProduction`.
+Doing this doesn't change anything... except that our queries go up to three. That's
+one query for the `Category`, our custom query that we're making, and then one query
+for all of the fortunes *inside* of this `Category`.
 
-Let's try this! Refresh, and... I don't actually know if any of these are discontinued, but it *did* go from three to two. And the best part? Check out that query! Here's the first one for the category, here's our custom one... but take a look at this last query here. When we ask for the discontinued fortune cookies, it actually queries from `fortune_cookie`, where the `category` is our category and where `t0.discontinued` is false. So it made the most efficient query to just get the fortune cookies that we needed. That's *powerful*.
+## Adding a Custom Entity Method for Discontinued Cookies
 
-One weird downside to this right now is that I normally like to keep my query logic inside of my repository. Fortunately, we *can* move it there. Since this is dealing with fortune cookies, I'm going to open `FortuneCookieRepository.php` and, anywhere inside of here, we're going to create a `public static function` called... how about `createFortuneCookiesStillInProductionCriteria()`, and we're going to return a `Criteria` object from here. Then, I'm going to go and grab that `$criteria` statement from our other method... and return that.
+Remember the goal: we want to be able to call *something* on the `Category` object
+to get back the related fortune cookies... but hiding the discontinued ones.
 
-Notice that this is a `static` method. There are two reasons for that. These `Criteria` objects aren't actually making queries or anything, so they can be `static`. They can live in a `static` method. But more importantly, we don't have access to our repository object from inside `Category`. So if we're going to call a method on a repository, it has to be `static`.
+Open up the `Category` entity and find the `getFortuneCookies()` method. There it
+is. Below that, add a new method called `getFortuneCookiesStillInProduction()`. This,
+like the normal method, will return a Doctrine `Collection`. And... just to help
+my editor, copy the `@return` doc above to say that this is a `Collection` of
+`FortuneCookie` objects.
 
-Now, inside of this, we can say `$criteria =  FortuneCookieRepository::createFortuneCookiesStillInProductionCriteria()`. This has now centralized that logic inside of a repository. You can also reuse these `Criteria` in your queries as well, which is pretty cool. Let's see... I don't have an example at the moment... so if we scroll up a bit... in this method above, let's pretend I'm creating a `QueryBuilder` with `$this->createQueryBuilder('fortune_ cookie')`. And then we can say `->addCriteria(self::createFortuneCookiesStillInProduction)`. So even though the criteria system is a little bit different than our normal QueryBuilder, we can still put them *inside* of QueryBuilders so we can reuse the new method that we just created. And of course, if we head over and refresh... everything *still* works.
+So... what do we do inside here? We *could* loop over
+`$this->fortuneCookies as $fortuneCookie` and create an array of objects that
+are *not* discontinued.
 
-Okay, on the homepage, we have a similar problem. This says "Proverbs(3)", and if we click that, there are *two*. This is still showing the count of *all* of the fortune cookies. What's happening here? Over in `homepage.html.twig`... let's see... ah, yes. We're looping over `categories`, and then we're calling `category.fortuneCookies|length` which, as we know, returns *all* of the fortune cookies. Then we're just counting them. Let's change that to `fortuneCookiesStillInProduction`. Back on the homepage, watch this "(3)". It *should* go down to two, and... it *does*. But that's not even the best part. Open up the query for that. Remember, thanks to our fetch `EXTRA_LAZY`, since we're only counting the number of fortune cookies, it knows to make a super fast `COUNT` query for those fortune cookies. But because of the criteria system, it's selecting `COUNT FROM fortune_cookies WHERE` the `category` equals our category and our `discontinued` equals that. So it's still making the most efficient query possible to get this `COUNT`, which is pretty awesome.
+But... as soon as we start working with `$this->getFortuneCookies()`, that will
+cause Doctrine to query for *every* related fortune cookie. Do you see the problem?
+We might be asking Doctrine to query and prepare 100 `FortuneCookie` objects...
+even though this final `$inProduction` collection may only contain 10 of them.
+What a waste!
 
-Next: We want to hide discontinued fortune cookies from everywhere on our site. Is there a way that we could hook into Doctrine and just add that `WHERE` clause automatically *everywhere*? There *is*. It's called *filters*.
+What we *really* want to do is tell Doctrine that *when* it makes the query for
+the related fortune cookies, it should add an extra `WHERE discontinued = false`.
+inside.
 
+## Hello Criteria
+
+But... how the heck do we do that? Doctrine makes that query automatically and
+magically somewhere in the background. Whelp, this is where the *criteria system*
+comes in handy.
+
+It works like this: say `$criteria = Criteria::` - the one from
+`Doctrine\Common\Collections` - `create()`.
+
+This works a bit like the `QueryBuilder`, but it's not *exactly* the same. We
+can say `->andWhere()` and then use `Criteria::` again with `expr()->`. This
+`expr()` or "expression" functions lets us, sort of, *build* the WHREE clause.
+It has methods like `in`, `contains` or `gt` for "greater than". We want `eq()` for
+"equals". Inside, say `discontinued`, `false`.
+
+Ok, this, on its own, just creating an object that describes a `WHERE` clause
+that could be added to some *other* query. To *use* it,
+`return $this->fortuneCookies->matching($criteria)`.
+
+Cool, huh? This basically says:
+
+> Take this collection, but only return the ones that match this criteria.
+
+Yea, as you'll see in a minute, this will *modify* the query to get those fortune
+cookies!
+
+To *use* this method, over in `showCategory.html.twig`, instead of looping over
+`category.fortuneCookies`, loop over `category.fortuneCookiesStillInProduction`.
+
+Let's try this! Refresh, and... I don't actually know if any of these are
+discontinued, but it *did* go from three to two! And the best part? Check out that
+query! Here's the first one for the category, here's our custom one... but take a
+look at this last query. When we ask for the "fortune cookies still in production",
+it queries from `fortune_cookie`, where the `category =` our category *and* where
+`t0.discontinued` is false! So it made the most *efficient* query to fetch *just(*
+the fortune cookies that we need. That's *amazing*.
+
+## Organizing your Criteria Code in the Reposiotry
+
+Now, one minor downside right now is that... i normally like to keep my query logic
+inside of a repository... not in the middle of an entity. Fortunately, we can move
+it there.
+
+Becauise this is dealing with fortune cookies, I'm going to open
+`FortuneCookieRepository` and, anywhere, add a new `public static function` called...
+how about `createFortuneCookiesStillInProductionCriteria()`. This will return a
+`Criteria` object.
+
+Now, going the `$criteria` statement from the entity... and return that.
+
+## The Method is Static?
+
+Notice that this is a `static` method... which I don't use *too* often. There are
+two reasons for this. First, these `Criteria` objects aren't actually making queries...
+and they don't rely on any data or services. And so, this method *can* be static.
+Second, and more importantly, we don't have access to the repository object from
+inside `Category`. So... if want to call a method on a repository, it needs to
+be `static`. This is a special thing I typically do in my repositories *only* for
+this criteria situation.
+
+Back in the entity, we can say `$criteria` equals
+`FortuneCookieRepository::createFortuneCookiesStillInProductionCriteria()`.
+
+Logic centralization, check! We can also reuse these `Criteria` objects inside
+the `QueryBuilder`. Let's see... I don't have a good example... so... in this method,
+above, let's pretend I'm creating a `QueryBuilder` with
+`$this->createQueryBuilder('fortune_cookie')`. To add the criteria it's...
+`->addCriteria(self::createFortuneCookiesStillInProduction)`.
+
+So, even though the criteria system is a bit different than our normal QueryBuilder,
+we *can* still reuse them everywhere. Oh, and let's check that things are still
+working. We're good!
+
+Okay, on the homepage, we have a similar problem. This says "Proverbs(3)", and if
+we click that, there are *two*. This is still showing the count of *all* of the
+fortune cookies. What's happening here? Over in `homepage.html.twig`... let's see...
+ah, yes. We're looping over `categories`, and then we're calling
+`category.fortuneCookies|length` which, as we know, returns *all* of the fortune
+cookies. Then we're just counting them. Let's change that to
+`fortuneCookiesStillInProduction`.
+
+Back on the homepage, watch this "(3)". It *should* go down to two, and... it *does*.
+But that's not even the best part. Open up the query for that. Remember, thanks to
+our fetch `EXTRA_LAZY`, since we're only counting the number of fortune cookies,
+it knows to make a super fast `COUNT` query. And thanks to the criteria system, it's
+selecting `COUNT FROM fortune_cookies WHERE` the `category` = our category *and*
+`discontinued = false`. Woh!
+
+Next: We want to hide discontinued fortune cookies from everywhere on our site. Is
+there a way that we could hook into Doctrine and add that `WHERE` clause
+automatically... *everywhere*? There *is*. It's called *filters*.
