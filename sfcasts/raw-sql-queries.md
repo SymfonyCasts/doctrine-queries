@@ -1,21 +1,112 @@
 # Raw SQL Queries
 
-The QueryBuilder is fun to use and *super* powerful, but if you're writing a really complex query, it might be tough to figure out how to work it into the QueryBuilder. If you're writing a crazy query, you're probably fetching a few specific columns anyway, so the QueryBuilder is a little less beneficial to you. If you find yourself in this situation, you can always resort to writing *raw* SQL. Let's take a look at how we do that.
+The QueryBuilder is fun to use *and* powerful. But if you're writing a *super*
+complex query... it might be tough to figure out how to work it into the QueryBuilder.
+If you find yourself in this situation, you can always resort to just... writing
+*raw* SQL! I wouldn't make this my *first* choice - but there's no *huge* benefit
+to spending hours trying to adapt a well-written SQL query into a query builder.
 
-To start, we need to comment out our `->createQueryBuilder()` query. Then, we're going to need a low-level Doctrine connection object. We can get that with `$conn = $this->getEntityManager()->getConnection()`. And we can also toss `dd($conn)` on the end so we can see it. Head over and refresh and... awesome! We get this `Doctrine\DBAL\Connection` object. 
+## The Connection Object
 
-Doctrine is actually two main parts. There's a lower-level part called "DBAL", which stands for "Database Abstraction Library". This acts as a wrapper around PHP's native PDO ("PHP Data Object") and adds some features on top of it. So if you want to make queries *directly*, this lower-level object will let you do that. The *other* part of Doctrine that we've been dealing with so far is the higher-level part called the "ORM "or "Object Relational Mapper". That's when you get back data, and you put it onto objects. For this raw SQL query, we're going to deal with this connection object directly. 
+Let's see how raw SQL queries work. To start, comment out the `->createQueryBuilder()`
+query. Then, we need to fetch the low-level Doctrine `Connection` object. We can
+get that with `$conn = $this->getEntityManager()->getConnection()`. Toss `dd($conn)`
+onto the end so we can see it.
 
-We'll start with a simple query here. Say `$sql = 'SELECT * FROM fortune_cookie'`. At the moment, this is just normal SQL (I'm using MySQL behind the scenes). I used `fortune_cookie` for the table name because I know that, by default, Doctrine underscores my entities to make table names. Then we have `SELECT *`... all the normal SQL stuff. Once we have that, we're going to create a statement with `$stmt = $conn->prepare()`, and then we'll pass this `$sql`. This creates a statement object, which is similar to how we create a query object with QueryBuilder. It's just an object that is ultimately going to use to execute the query. To actually execute the query, we can say `$result = $stmt->executeQuery()`. Finally, to get the actual data off of the results, you can say `dd(result->)` and there's a number of methods to choose from here. Let's use `fetchAllAssociative()`. This will fetch all of the rows and give them to us as an associative array. If we head over and check this out... perfect! We get 20 rows for each of the 20 fortune cookies in the system, and this is literally just the raw data coming from the database.
+Head over,refresh and... awesome! We get a `Doctrine\DBAL\Connection` object.
 
-Okay, let's rewrite this QueryBuilder query up here in raw SQL. I'll take this part off and paste in this very long query. We'll go through this, but there's nothing really special about it. We're selecting `SUM`, `AS fortunesPrinted`, the `AVG`, `category.name`, `FROM fortune_cookie`, and then we do our `INNER JOIN` over to `category`. The biggest difference is that, when we do a `JOIN` with the QueryBuilder, we can just join across this relationship, and that's all we need to say. In raw SQL, however, we need to help it and actually *specify* that we're joining over to `category` and describe that we're joining on `category.id = fortune_cookie.category_id`. The rest is pretty normal - `fortune_cookie.category_id = :category`. So even though we're running raw SQL, we're still not going to do something like changing this to `$category->getId()`. That's a *huge* no-no, and it opens you up to SQL injection attacks. We're going to stick with these nice little placeholders like `:category`.
+The Doctrine library is actually *two* main parts. There's a lower-level part called
+"DBAL", which stands for "Database Abstraction Library". This acts as a wrapper around
+PHP's native PDO and adds some features on top of it.
 
-To fill that in, down here where we execute the query, we'll pass `'category' =>`. And again, instead of passing the entire `$category` object like we did before, this is raw SQL, so we're going to pass `$category->getId()`. If we spin over and check this... got it! So this is a bit more work, but if it's a complex enough query, then that's totally fine.
+The *second* part of Doctrine is what we've been dealing with so far: it's is the
+higher-level part called the "ORM "or "Object Relational Mapper". That's when you
+query by selecting classes and properties... and get back objects.
 
-By the way, instead of using `executeQuery()` to pass this `category` thing, we *could*, much like we see up here, use that `$stmt` object and say `->bindValue()`, which we can then bind to `'category', $category->getId()`. That's going to give us the same results as before, but notice that this returned an array with one row in it - an array of arrays. In this case, we really only want this array right here. That's easy! Instead of `fetchAllAssociative()`, we'll change this to `fetchAssociative()`. And now... beautiful! We just get that first row.
+For this raw SQL query, we're going to deal with the lower-level `Connection` object
+directly.
 
-You may remember that our method is supposed to return this `CategoryFortuneStats` object that we created last time. But what we *have* is this associative array. That's really no problem, right? We can just take `$result->fetchAssociative()` and `return new CategoryFortuneStats()`. Then we can just grab the array keys from `$result->fetchAssociative()` to pass them as the correct arguments. But I'm going to be even *lazier* than that and use the spread operator and named arguments. 
+## Writing & Executing the Query
 
-Notice that our arguments are called `fortunesPrinted`, `fortunesAverage`, and `categoryName`. Over *here*, they are `fortunesPrinted`, `fortunesAverage`, and `name`... not `categoryName`, but `name`. First, we need to fix that so that it's *also* called `categoryName`. Go down here and add `as categoryName`, and then... yep! Now it's called `categoryName`. That means we can use named arguments now. I'll take out the `dd()` and the `return $results`, since we don't need those, and... check this out. We'll say `...$result->fetchAssociative()`. This is going to grab that array and spread it out across those arguments so we have three *correctly* named arguments, which is kind of fun. And now... our page *works*. 
+Say `$sql = 'SELECT * FROM fortune_cookie'`. Yup, this is a boring normal SQL query.
+I used `fortune_cookie` for the table name because I know that, by default, Doctrine
+*underscores* my entities to make table names. 
 
-Next: Let's talk about organizing our repository so we can reuse parts of the query in *multiple* methods.
+Now that we have the query string, we need to create a `Statement` with
+`$stmt = $conn->prepare()` and pass `$sql`.
+
+This creates a `Statement` object... which is kind of like the `Query` object we
+would create with the `QueryBuilder` by saying `->getQuery()` at the end. It's...
+just an object that we'll use to execute this. Do that with
+`$result = $stmt->executeQuery()`.
+
+*Finally*, to get the actual *data* off of the result, say `dd(result->)`...
+and there are a number of methods to choose from. Use `fetchAllAssociative()`.
+
+This will fetch all of the rows and give each to us as an *associative* array.
+
+Watch: head back over and... perfect! We get 20 rows for each of the 20 fortune
+cookies in the system! And this is the raw data coming from the database.
+
+## A More Complex Query
+
+Okay, let's rewrite this entire QueryBuilder query up here in raw SQL. To save time,
+I'll paste in the final product: a *long* string... with nothing particularly special.
+We're selecting `SUM`, `AS fortunesPrinted`, the `AVG`, `category.name`, `FROM
+fortune_cookie`, and then we do our `INNER JOIN` over to `category`.
+
+The big difference is that, when we do a `JOIN` with the QueryBuilder, we can just
+join across the relationship... and that's all we need to say. In raw SQL, however,
+we need to help it by *specifying* that we're joining over to `category` and
+describe that we're joining on `category.id = fortune_cookie.category_id`.
+
+The rest is pretty normal... except for `fortune_cookie.category_id = :category`.
+So even though we're running raw SQL, we're *still* *not* going to do something like
+concatenating dynamic stuff into our query. That's a *huge* no-no, and, as we know,
+opens us up to SQL injection attacks. Instead, stick with these nice placeholders
+like `:category`. To fill that in, down here where we execute the query, pass
+`'category' =>`. But this time, instead of passing the entire `$category` object
+like we did before, this is raw SQL, so we need to pass `$category->getId()`.
+
+Ok! Spin over and check this out. Got it! So this doesn't look as awesome... but
+if your query is complex enough, don't hesitate to try this.
+
+## Using bindValue()
+
+By the way, instead of using `executeQuery()` to pass the `category`, we *could*,
+replace that with `$stmt->bindValue()` to bind `category` to `$category->getId()`.
+That's going to give us the same results as before.
+
+But, hmm, I'm realizing now that the result is an array inside of another array.
+What we *really* want to do is return *only* the associative array for the *one*
+result. No problem: instead of `fetchAllAssociative()`, use `fetchAssociative()`.
+
+And now... beautiful! We get just that first row.
+
+## Hydrating into an Object
+
+Now, you *may* remember that our method is *supposed* to return a
+`CategoryFortuneStats` object that we created earlier. Can we convert our array
+result into that object? Sure! It's not fancy, but easy enough.
+
+But... all *we* have is
+this associative array. That's really no problem, right? Return a
+`new CategoryFortuneStats()`... and then we could grab the array keys from
+`$result->fetchAssociative()`... and pass them as the correct arguments.
+
+Or, you can be even *lazier* use the spread operator along with named arguments.
+Check it out: the arguments are called `fortunesPrinted`, `fortunesAverage`, and
+`categoryName`. Over *here*, they are `fortunesPrinted`, `fortunesAverage`, and
+`name`... not `categoryName`. Let's fix that. Down here, add `as categoryName`.
+And then... yep! It's called `categoryName`.
+
+*Now* we can use named arguments. Remove the `dd()` and the other return. Now,
+to `CategoryFortuneStats`, pass `...$result->fetchAssociative()`.
+
+This will grab that array and spread it out across those arguments so that we have
+three *correctly* named arguments... which is just kind of fun.
+
+And now... our page works!
+
+Next: Let's talk about organizing our repository so we can *reuse* parts of our
+queries in *multiple* methods.
