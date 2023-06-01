@@ -1,0 +1,294 @@
+WEBVTT
+
+00:00:01.066 --> 00:00:02.406 align:middle
+¡Añadamos más cosas a esta página!
+
+00:00:02.856 --> 00:00:06.726 align:middle
+¿Qué tal el número medio de galletas de
+la suerte impresas para esta categoría?
+
+00:00:07.756 --> 00:00:12.396 align:middle
+Para ello, volvamos a nuestra consulta:
+vive en countNumberPrintedForCategory().
+
+00:00:13.256 --> 00:00:17.306 align:middle
+Para obtener la media, podemos añadir
+una coma y utilizar la función AVG().
+
+00:00:18.316 --> 00:00:20.466 align:middle
+O podemos utilizar addSelect()...
+
+00:00:20.686 --> 00:00:22.146 align:middle
+que me parece un poco mejor.
+
+00:00:22.626 --> 00:00:29.776 align:middle
+Queremos el AVG() de fortuneCookie.numberPrinted
+aliasado a fortunesAverage.
+
+00:00:30.346 --> 00:00:33.256 align:middle
+Esta vez, no he utilizado la palabra AS...
+
+00:00:33.586 --> 00:00:36.966 align:middle
+sólo para demostrar que
+la palabra AS es opcional.
+
+00:00:37.556 --> 00:00:43.586 align:middle
+De hecho, toda la parte fortunesAverage
+o AS fortunesPrinted es opcional.
+
+00:00:43.956 --> 00:00:47.116 align:middle
+Pero dándole un nombre a cada
+una, podemos controlar las claves
+
+00:00:47.116 --> 00:00:50.206 align:middle
+de la matriz de resultados final,
+que veremos en un minuto. Ya
+
+00:00:50.946 --> 00:00:55.146 align:middle
+que estamos aquí, en lugar de imprimir
+el nombre del objeto $category,
+
+00:00:55.636 --> 00:00:59.486 align:middle
+veamos si podemos obtener el nombre de
+la categoría dentro de esta consulta.
+
+00:00:59.946 --> 00:01:03.586 align:middle
+Diré ->addSelect('category.name').
+
+00:01:04.656 --> 00:01:07.346 align:middle
+Si ves un problema con esto, ¡tienes razón!
+
+00:01:07.786 --> 00:01:11.096 align:middle
+¡Pero ignorémoslo y avancemos a ciegas!
+
+00:01:11.656 --> 00:01:13.196 align:middle
+dd($result) en la parte inferior.
+
+00:01:14.056 --> 00:01:18.126 align:middle
+Antes, esto sólo devolvía
+el entero fortunesPrinted.
+
+00:01:18.626 --> 00:01:21.466 align:middle
+Pero ahora, estamos seleccionando tres cosas.
+
+00:01:21.956 --> 00:01:24.066 align:middle
+¿Qué nos devolverá ahora?
+
+00:01:24.786 --> 00:01:25.746 align:middle
+La respuesta es...
+
+00:01:25.956 --> 00:01:27.896 align:middle
+¡un error gigantesco!
+
+00:01:28.256 --> 00:01:29.946 align:middle
+'categoría' no está definida.
+
+00:01:30.516 --> 00:01:32.626 align:middle
+Sí, hice referencia a category...
+
+00:01:32.946 --> 00:01:35.376 align:middle
+pero nunca nos hemos unido a él.
+
+00:01:35.826 --> 00:01:36.866 align:middle
+Añadámoslo. Estamos
+
+00:01:37.496 --> 00:01:39.906 align:middle
+consultando la entidad FortuneCookie,
+
+00:01:40.206 --> 00:01:43.646 align:middle
+y tiene una propiedad
+category, que es ManyToOne.
+
+00:01:43.646 --> 00:01:47.016 align:middle
+Así que nos estamos uniendo a un objeto.
+
+00:01:47.856 --> 00:01:52.386 align:middle
+Hazlo con ->innerJoin()
+pasando a fortuneCookie.category
+
+00:01:52.946 --> 00:01:55.236 align:middle
+y dándole el alias category.
+
+00:01:56.366 --> 00:01:57.996 align:middle
+Si ahora vamos a actualizar la página...
+
+00:01:58.456 --> 00:02:03.926 align:middle
+éste es el error que esperaba: La consulta ha
+devuelto una fila que contiene varias columnas.
+
+00:02:04.716 --> 00:02:07.666 align:middle
+Este ->getSingleScalarResult() es perfecto
+
+00:02:07.666 --> 00:02:11.316 align:middle
+cuando devuelves una sola
+fila y una sola columna.
+
+00:02:11.996 --> 00:02:16.936 align:middle
+En cuanto devuelvas varias columnas,
+->getSingleScalarResult() no funcionará.
+
+00:02:17.716 --> 00:02:20.986 align:middle
+Para solucionarlo, cambia
+a ->getSingleResult().
+
+00:02:21.856 --> 00:02:25.996 align:middle
+Esto básicamente dice Dame la única
+fila de datos de la base de datos.
+
+00:02:26.866 --> 00:02:27.966 align:middle
+Inténtalo de nuevo.
+
+00:02:28.626 --> 00:02:29.796 align:middle
+¡Eso es lo que queremos!
+
+00:02:30.226 --> 00:02:33.256 align:middle
+¡Devuelve exactamente las tres
+columnas que hemos seleccionado!
+
+00:02:33.896 --> 00:02:34.686 align:middle
+Y ahora...
+
+00:02:34.946 --> 00:02:36.846 align:middle
+tenemos que cambiar un poco este método.
+
+00:02:37.476 --> 00:02:39.586 align:middle
+Actualiza el retorno int a un array...
+
+00:02:40.056 --> 00:02:44.456 align:middle
+y, aquí abajo, quita por completo
+el (int) y devuelve $result.
+
+00:02:45.086 --> 00:02:46.866 align:middle
+También podemos quitar el dd()...
+
+00:02:47.316 --> 00:02:51.306 align:middle
+y podrías poner el return
+aquí arriba si quisieras.
+
+00:02:51.306 --> 00:02:52.636 align:middle
+¡Nuestro método está listo!
+
+00:02:52.916 --> 00:02:54.496 align:middle
+Ahora vamos a arreglar el controlador.
+
+00:02:55.386 --> 00:02:57.496 align:middle
+Este $fortunesPrinted ya no está bien.
+
+00:02:57.986 --> 00:02:59.836 align:middle
+Cámbialo por $result en su lugar.
+
+00:03:00.716 --> 00:03:04.066 align:middle
+Luego... léelo abajo con -
+$result['fortunesPrinted'].
+
+00:03:04.986 --> 00:03:09.026 align:middle
+Copia eso, pégalo y envía
+una variable fortunesAverage
+
+00:03:09.026 --> 00:03:11.596 align:middle
+a la plantilla establecida
+en la clave fortunesAverage.
+
+00:03:12.396 --> 00:03:15.546 align:middle
+Pasa también categoryName
+ajustada a $result['name'].
+
+00:03:17.246 --> 00:03:18.326 align:middle
+¡Hora de la plantilla!
+
+00:03:18.916 --> 00:03:25.166 align:middle
+En showCategory.html.twig, tenemos
+acceso a todo el objeto $category...
+
+00:03:25.446 --> 00:03:28.526 align:middle
+que es como estamos imprimiendo category.name.
+
+00:03:28.946 --> 00:03:33.166 align:middle
+Pero ahora, también tenemos
+una variable categoryName.
+
+00:03:33.946 --> 00:03:36.826 align:middle
+Sustituye category.name por categoryName.
+
+00:03:37.486 --> 00:03:37.906 align:middle
+No hay...
+
+00:03:38.086 --> 00:03:42.646 align:middle
+ninguna razón real para hacerlo:
+sólo estoy demostrando que podemos
+
+00:03:42.646 --> 00:03:45.356 align:middle
+obtener datos adicionales en
+nuestra nueva consulta. Aunque
+
+00:03:45.886 --> 00:03:52.606 align:middle
+, si también hubiéramos seleccionado iconKey,
+entonces podríamos evitar potencialmente la consulta
+
+00:03:52.606 --> 00:03:54.596 align:middle
+del objeto Category por completo. Sin
+
+00:03:55.136 --> 00:04:01.946 align:middle
+embargo, aunque eso podría hacer que nuestra página fuera
+un poco más rápida, es casi definitivamente una exageración
+
+00:04:02.116 --> 00:04:03.806 align:middle
+y hace que nuestro código sea más confuso.
+
+00:04:04.156 --> 00:04:06.116 align:middle
+¡Utilizar objetos es lo mejor!
+
+00:04:07.126 --> 00:04:10.356 align:middle
+Vale, a continuación, para el
+"Historial de impresión", pulsa "enter"
+
+00:04:10.696 --> 00:04:16.546 align:middle
+y añade {{ fortunesAverage|number_format
+}} y luego average.
+
+00:04:17.146 --> 00:04:19.166 align:middle
+Fantástico. ¡Inténtalo de nuevo!
+
+00:04:19.626 --> 00:04:21.476 align:middle
+Si no he cometido ningún error...
+
+00:04:22.076 --> 00:04:24.366 align:middle
+¡ya está! ¡Todo funciona!
+
+00:04:24.756 --> 00:04:30.976 align:middle
+Tenemos dos consultas: una para el category
+que está unido a fortune_cookies y la que
+
+00:04:30.976 --> 00:04:36.756 align:middle
+acabamos de hacer que coge el SUM,
+AVG, y el name también con un JOIN.
+
+00:04:37.296 --> 00:04:44.096 align:middle
+¡Me encanta! Recuperar objetos de entidad completos
+de Doctrine es la situación ideal porque...
+
+00:04:44.396 --> 00:04:46.706 align:middle
+es muy agradable trabajar con objetos.
+
+00:04:47.426 --> 00:04:50.716 align:middle
+Pero al fin y al cabo, si
+necesitas consultar datos
+
+00:04:50.716 --> 00:04:53.346 align:middle
+o columnas específicos,
+puedes hacerlo perfectamente.
+
+00:04:53.916 --> 00:04:57.926 align:middle
+Y como acabamos de ver, Doctrine
+devolverá una matriz asociativa.
+
+00:04:58.656 --> 00:05:02.376 align:middle
+Sin embargo, podemos ir un paso
+más allá y pedirle a Doctrine
+
+00:05:02.376 --> 00:05:06.346 align:middle
+que devuelva esos datos
+concretos dentro de un objeto.
+
+00:05:06.886 --> 00:05:08.376 align:middle
+Hablemos de ello a continuación.
