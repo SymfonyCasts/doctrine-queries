@@ -1,0 +1,208 @@
+WEBVTT
+
+00:00:01.056 --> 00:00:05.036 align:middle
+Tener la flexibilidad de seleccionar
+los datos que queramos es genial.
+
+00:00:05.486 --> 00:00:08.826 align:middle
+Tratar con la matriz asociativa
+que obtenemos de vuelta es...
+
+00:00:08.996 --> 00:00:10.196 align:middle
+¡menos genial!
+
+00:00:10.756 --> 00:00:12.996 align:middle
+Me gusta trabajar con objetos
+siempre que sea posible.
+
+00:00:13.526 --> 00:00:16.296 align:middle
+Afortunadamente, Doc trine
+nos ofrece una forma sencilla
+
+00:00:16.296 --> 00:00:20.386 align:middle
+de mejorar esta situación:
+consultamos los datos que queremos...
+
+00:00:20.686 --> 00:00:23.106 align:middle
+pero le decimos que nos dé un objeto.
+
+00:00:24.326 --> 00:00:28.226 align:middle
+En primer lugar, tenemos que crear una nueva
+clase que contenga los datos de nuestra consulta.
+
+00:00:28.996 --> 00:00:31.466 align:middle
+Crearé un nuevo directorio
+llamado src/Model/...
+
+00:00:31.786 --> 00:00:33.556 align:middle
+pero podría llamarse como quieras.
+
+00:00:34.256 --> 00:00:34.896 align:middle
+Llama a la clase...
+
+00:00:35.136 --> 00:00:37.496 align:middle
+¿qué tal CategoryFortuneStats.
+
+00:00:38.816 --> 00:00:44.206 align:middle
+El único propósito de esta clase es contener
+los datos de esta consulta específica.
+
+00:00:44.656 --> 00:00:50.166 align:middle
+Así que añade un public function __construct() con
+unas cuantas propiedades public para simplificar:
+
+00:00:50.556 --> 00:00:55.286 align:middle
+public int $fortunesPrinted,
+public float $fortunesAverage,
+
+00:00:56.056 --> 00:00:58.196 align:middle
+y public string $categoryName.
+
+00:00:59.276 --> 00:00:59.966 align:middle
+¡Estupendo!
+
+00:01:01.216 --> 00:01:06.796 align:middle
+De vuelta al repositorio, en realidad no necesitamos
+ninguna magia de Doctrine para utilizar esta nueva clase.
+
+00:01:07.116 --> 00:01:09.526 align:middle
+Podríamos consultar la matriz asociativa,
+
+00:01:09.916 --> 00:01:14.696 align:middle
+devolver new CategoryFortuneStats()
+y pasarle cada clave. Es
+
+00:01:15.046 --> 00:01:21.996 align:middle
+una gran opción, muy sencilla y además este método
+del repositorio devolvería un objeto en lugar
+
+00:01:21.996 --> 00:01:22.536 align:middle
+de un array.
+
+00:01:23.116 --> 00:01:27.696 align:middle
+Pero... Doctrine lo hace aún más fácil
+gracias a una función poco conocida.
+
+00:01:28.356 --> 00:01:32.766 align:middle
+Añade un nuevo ->select() que
+contendrá todas estas selecciones en una.
+
+00:01:33.426 --> 00:01:36.506 align:middle
+Añade también un sprintf():
+verás por qué en un minuto.
+
+00:01:37.226 --> 00:01:39.176 align:middle
+Dentro, ¡mira esto! Di
+
+00:01:39.456 --> 00:01:47.026 align:middle
+NEW %s() y luego pasa
+CategoryFortuneStats::class
+
+00:01:47.216 --> 00:01:48.926 align:middle
+por ese marcador de posición.
+
+00:01:49.456 --> 00:01:54.426 align:middle
+Básicamente, estamos diciendo NEW
+App\Model\CategoryFortuneStats()...
+
+00:01:54.756 --> 00:01:58.066 align:middle
+Sólo quería evitar escribir ese
+nombre de clase tan largo. Dentro
+
+00:01:59.096 --> 00:02:05.166 align:middle
+de NEW, coge cada una de las 3 cosas
+que queremos seleccionar y pégalas,
+
+00:02:05.676 --> 00:02:08.836 align:middle
+como si las pasáramos
+directamente como primer,
+
+00:02:08.976 --> 00:02:13.736 align:middle
+segundo y tercer argumento al
+constructor de nuestra nueva clase.
+
+00:02:14.286 --> 00:02:15.116 align:middle
+¿No es genial?
+
+00:02:16.126 --> 00:02:19.176 align:middle
+¡Vamos a dd($result) para ver cómo queda!
+
+00:02:20.046 --> 00:02:21.536 align:middle
+Si nos dirigimos y actualizamos...
+
+00:02:22.076 --> 00:02:26.036 align:middle
+oh... me sale un error:
+T_CLOSE_PARENTHESIS, got 'AS'.
+
+00:02:26.656 --> 00:02:31.436 align:middle
+Cuando seleccionamos datos en un objeto,
+el aliasing ya no es necesario...
+
+00:02:31.756 --> 00:02:32.636 align:middle
+ni se permite.
+
+00:02:33.316 --> 00:02:38.066 align:middle
+Y tiene sentido: Doctrine pasará
+lo que sea esto al primer argumento
+
+00:02:38.066 --> 00:02:42.066 align:middle
+de nuestro constructor, esto al
+segundo argumento y esto al tercero.
+
+00:02:42.576 --> 00:02:44.696 align:middle
+Como los alias ya no tienen sentido...
+
+00:02:44.986 --> 00:02:45.666 align:middle
+elimínalos.
+
+00:02:46.476 --> 00:02:47.626 align:middle
+Si lo comprobamos ahora...
+
+00:02:48.216 --> 00:02:50.066 align:middle
+¡ya está! ¡Me encanta!
+
+00:02:50.226 --> 00:02:53.056 align:middle
+¡Tenemos un objeto con nuestros datos dentro!
+
+00:02:53.546 --> 00:02:55.636 align:middle
+Vamos a celebrarlo limpiando nuestro método.
+
+00:02:56.326 --> 00:03:01.146 align:middle
+En lugar de un array, devolvemos
+un CategoryFortuneStats.
+
+00:03:01.816 --> 00:03:04.466 align:middle
+Elimina también el dd($result) de aquí abajo.
+
+00:03:05.456 --> 00:03:10.056 align:middle
+De vuelta en el controlador, para mostrar
+lo bonito que es esto, cambia $result por...
+
+00:03:10.056 --> 00:03:11.556 align:middle
+¿qué tal $stats.
+
+00:03:12.316 --> 00:03:14.916 align:middle
+Entonces podemos utilizar
+$stats->fortunesPrinted,
+
+00:03:16.686 --> 00:03:21.436 align:middle
+$stats->fortunesAverage,
+y $stats->categoryName.
+
+00:03:22.346 --> 00:03:26.026 align:middle
+Ahora que lo hemos arreglado un poco,
+comprobemos si sigue funcionando.
+
+00:03:26.426 --> 00:03:28.396 align:middle
+Y... funciona.
+
+00:03:29.346 --> 00:03:32.536 align:middle
+Siguiente: A veces las
+consultas son tan complejas...
+
+00:03:32.756 --> 00:03:37.476 align:middle
+que la mejor opción es
+escribirlas en SQL nativo.
+
+00:03:38.146 --> 00:03:39.876 align:middle
+Hablemos de cómo hacerlo.
