@@ -1,27 +1,102 @@
 # Using GROUP BY to Fetch & Count in 1 Query
 
-*One last challenge* for us. On the homepage, we have seven queries. That's one query for each of the six categories, and another query for the fortune cookies count. You can see those queries here. That's not really necessarily a problem, and you shouldn't worry about optimizing performance until you actually see that there's a problem. But let's see if we can *challenge* ourselves to turn our seven queries into *one*. If you think about it, we *could* query for all categories, `JOIN` over to the related fortune cookies, `GROUP BY` the category, and then `COUNT` the fortune cookies. That will make more sense when you see it.
+*One last challenge*. On the homepage, we have seven queries. That's one to fetch
+all of the categories... and 6 more to get the fortune cookies count for each
+of those 6 categories.
 
-Head over to `FortuneController.php`. We're on the homepage, and we're using the `findAllOrdered()` method from `$categoryRepository`. So we'll go look for `findAllOrdered()` and... here we go. You can see here that we're already selecting from `category`. Now we're going to select something else. Say `->addSelect('COUNT(fortuneCookie.id) AS fortuneCookiesTotal')`. We don't have this `fortuneCookie` alias yet, and I haven't joined over to that, so let's do it. Add `->leftJoin('category.fortuneCookies')`, and we'll alias that to `fortuneCookie`. The last thing we need to do for this `COUNT` to work correctly is add `->addGroupBy('category.id')`.
+Having 7 queries is... probably not a problem... and you shouldn't worry about
+optimizing performance until you actually *see* that there *is* a problem. But let's
+*challenge* ourselves to turn these seven queries into *one*.
 
-Okay, let's see what we get! Down here, I'll `dd($query->getResult())` so we can see the results. As a reminder, this currently returns an `array` of `Category` objects. If we refresh... it *is* an array, but it's now an *array of arrays* where the `0` key is a `Category` object, and then we have this extra `fortuneCookiesTotal`. So... it selected exactly what we wanted, but it changed the underlying structure. And it kind of *had* to, right? It needed to somehow give us the `Category` object *and* the extra column behind the scenes. This *is* what we want, but we can take this a step firther.
+Let's think: we *could* query for all the categories, `JOIN` over to the related
+fortune cookies, `GROUP BY` the category, and then `COUNT` the fortune cookies.
+If that doesn't make sense, yet no worries. We'll see it in action.
 
-Over here, let's get rid of our `dd` statement. This is returning an `array`, so we need to remove this `@return` up here because that's wrong now. We *could* make this smarter, but we'll leave that for later. Since the structure just changed, head over to `homepage.html.twig`. Here, you can see that we're looping over `category in categories`. This is going to be one of those arrays with a `0` key on it, so let's change this to say `for categoryData in categories` and, inside here, say `set category = categoryData[0]`. We'll talk more about that in a second, but before we do, we'll scroll over here to the `COUNT`. This is where we're going across the relationship. We're going to change this to `categoryData.fortuneCookiesTotal`. If we test this now... the page works, and we have *one* query!
+## Using a Group By To Select an Object + Other Data
 
-Really, the worst part about this is that the structure changed and we're now reading the `0` key here. We won't do this, but a *better* solution might be to leverage a DTO object to hold this. For example, we might create a new class called `CategoryWithFortuneCount` with two properties - a `Category` object and the `fortuneCount`. In this method, that's what we would return. We would actually loop over `$query->getResults()` and create a `CategoryWithFortuneCount` object for each one of these. And *ultimately*, we'd return an array of DTO objects from that. The point is, we would be returning an array of objects again instead of an *array of arrays*, like we saw a moment ago.
+Head over to `FortuneController`. We're on the homepage, and we're using the
+`findAllOrdered()` method from `$categoryRepository`. Go find that method... here
+it is. We're already selecting from `category`. Now *also*
+`->addSelect('COUNT(fortuneCookie.id) AS fortuneCookiesTotal')`. To join and get
+that `fortuneCookie` alias, add `->leftJoin('category.fortuneCookies')`, then
+`fortuneCookie`. Finally, for this `COUNT` to work correctly, add
+`->addGroupBy('category.id')`.
+
+Okay, let's see what we get! Down here, `dd($query->getResult())`.
+
+As a reminder, this currently returns an `array` of `Category` objects. If we
+refresh... it *is* an array, but it's now an *array of arrays* where the `0` key
+is a `Category` object, and then we have this extra `fortuneCookiesTotal`. So...
+it selected *exactly* what we wanted! But... it changed the underlying structure.
+And it kind of *had* to, right? It needed to *somehow* give us the `Category` object
+*and* the extra column behind the scenes.
+
+Ok, remove the `dd` statement. This still returns an `array`... but remove the
+`@return` because it's no longer an array of `Category` objects. We could also update
+that to some fancier phpdoc that describes the structure.
+
+Next, to account for the new return, head to `homepage.html.twig`. We're looping
+over `category in categories`... which isn't quite right now - we need to account
+for the `0` index. change this to say `for categoryData in categories`... then inside
+add `set category = categoryData[0]`. It's ugly, but more on that in a minute.
+
+Scroll over here to the `length`. Instead of reaching across the relationship - 
+which *would* work, but trigger extra queries - use
+`categoryData.fortuneCookiesTotal`.
+
+Let's do this! Refresh and... just one query! Woo!
+
+## The Ugly Data Structure
+
+The *worst* part about this is that the structure of our data changed... and now
+we have to read this ugly `0` key here. I won't do it now, but a *better* solution
+would be to leverage a DTO object to hold this. For example, we might create a new
+class called `CategoryWithFortuneCount` with two properties - `$category` and
+`$fortuneCount`. In thie repository method, we could loop over `$query->getResults()`
+and create a `CategoryWithFortuneCount` object for each one. Ultimately, our method
+would return an array of `CategoryWithFortuneCount`. Returning an array of objects
+is a bit nicer than an *array of arrays*... with some random `0` index.
+
+## Fixing the Search Page
 
 Speaking of that changed structure, if we search for something... we get an error:
 
-`Impossible to access a key "0" on an object of class "App\Entity\Category" that does not implement ArrayAccess interface.`
+> Impossible to access a key "0" on an object of class `Category`.
 
-It's this line right here. That's because, when we search for something, we use the `search()` method and... surprise! The `search()` method doesn't have `->addOrderBy()`, so it's still returning an array of `Category` objects. To fix that, let's create a `private function` down here that can hold `addGroupBy`, and then we'll call it from both functions. Say `private function addGroupByCategory(QueryBuilder $qb)` and we'll return a `QueryBuilder`. We'll also be lazy and change this to `QueryBuilder $qb = null`. Then, we'll `return ($qb ?? $this->createQueryBuilder('category'))`.
+It's... this line right here. When we search for something, we use the `search()`
+method and... surprise! That method doesn't have the new `addSelect()` and `groupBy`:
+it still returns an array of `Category` objects.
 
-Now, we can head up here and steal some of this logic - the `->addSelect()`, `->leftJoin()`, and `->addGroupBy()` - and paste that down here. To keep it simple, I'll change this `addGroupByCategory()` to `addGroupByCategoryAndCountFortunes()`. *Awesome*. Back up here, we can simplify this as well. Change *this* to `addGroupByCategoryAndCountFortunes()`... and then we don't need the `->addGroupBy()`, `->leftJoin()`, or `->addSelect()` anymore.
+To fix that, create a `private function` down here that can hold the group by:
+`addGroupByCategory(QueryBuilder $qb)` and it ill return a `QueryBuilder`. Oh, and
+make the argument optional... then then create a new query builder if we don't
+have one.
 
-Let's try this now! Over on the homepage... that *still* works. If we go forward... this is still broken. But we can use that! Down in `search()` say `$qb = $this->addGroupByCategoryAndCountFortunes($qb)`. And now... *another* error:
+Ok, head up and steal some the logic - the `->addSelect()`, `->leftJoin()`, and
+`->addGroupBy()`. Paste that down here. Oh, and `addGroupByCategory()` isn't a
+great name: use `addGroupByCategoryAndCountFortunes()`.
 
-`'fortuneCookie' is already defined.`
+*Awesome*. Above, simply! Change *this* to `addGroupByCategoryAndCountFortunes()`...
+and then we don't need the `->addGroupBy()`, `->leftJoin()`, or `->addSelect()`.
 
-That makes sense. We are joining up here *and* down here, and we don't need to do that in both places. Grab this... and pop it right here. If we check this one more time... it works! *And* we only have one query!
+To make sure *that* part is working, spin over and... head back to the homepage.
+That still looks good... but if we go forward... still broken. Down in `search()`
+add `$qb = $this->addGroupByCategoryAndCountFortunes($qb)`.
 
-All right, friends! We're *done*! Thanks for joining me for this magical ride through all things Doctrine Query. This stuff is just weird, cool and fun. I hope you enjoyed it as much as I did. If you encounter some *crazy* situation we haven't thought about yet, have any questions, *or* pictures of your cat, we're always here for you down in the comments. Okay, friends! See you next time!
+And now... *another* error:
+
+> `fortuneCookie` is already defined.
+
+That makes sense. We're joining our new method... and also in
+`addFortuneCookieJoinAndSelect()`. Fortunately, we don't really *need* this second
+call at all anymore: we were joining and selecting to solve the N+1 problem... but
+now we have an even *more* advanced query for this page. Copy our new method, delete,
+then paste it over the old one.
+
+And now... got it! Only 1 query!
+
+Yo friends, we did it! Woo! Thanks for joining me for this magical ride through
+all things Doctrine Query. This stuff is just weird, cool and fun. I hope you enjoyed
+it as much as I did. If you encounter some *crazy* situation that we haven't thought
+about, have any questions, *or* pictures of your cat, we're always here for you
+down in the comments. Okay, see you next time!
