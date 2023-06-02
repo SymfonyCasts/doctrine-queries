@@ -1,13 +1,55 @@
 # Using RAND() or Other Non-Supported Functions
 
-For the heck of it, let's try to randomize the order of the fortunes on a page. This one has 4, so we'll go with that. First, open up `FortuneController.php` and find `showCategory()`. Right now, we're just querying for the categories in the normal way. Then, in our template, we're just looping over `category.fortuneCookies`. Let's change this back to our `->findWithFortunesJoin()`, which is over here in `CategoryRepository.php`. If you remember, this joins over to `FortuneCookie` and selects it, solving our N+1 problem. Now that we're calling this, we can actually control the *order* of the results. Say `->orderBy('RAND()', Criteria::ASC)`. Normally, we think of `orderBy()` controlling the list of categories being returned, but it will *also* order the joined fortune cookies, so that when we loop over them, they'll be in a different order. Pretty cool! If we try this... *error*?
+For the heck of it, let's try to randomize the order of the fortunes on a page. 
+I'll try this category that has 4.
+
+Ok, start by opening up `FortuneController` and finding `showCategory()`. Right now,
+we're querying for the category in the normal way. Then, in our template,
+we're looping over `category.fortuneCookies`.
+
+Change the query *back* to `->findWithFortunesJoin()`, which lives over here in
+`CategoryRepository`. Remember: this joins over to `FortuneCookie` and selects it,
+solving our N+1 problem.
+
+And now that we're doing this, we can actually control the *order* of stuff.
+Say `->orderBy('RAND()', Criteria::ASC)`. In this case, we're only querying for
+*one* `Category`... but this will control the order of the related fortune cookies,
+which we'll see when we loop over them.
+
+Pretty cool! If we try this... *error*?
 
 `Expected known function, got 'RAND'.`
 
-Wait... `RAND` is a known MySQL function, so... why doesn't it work? If you'll recall, Doctrine supports a lot of functions inside of DQL, but not *everything*. Why not? Because Doctrine is designed to work with many different types of databases, and if only one or some databases support a function like `RAND`, then Doctrine can't support it. *Fortunately*, we can add this function or any custom function we want *ourselves* or, really, via a library. Search for the "/beberlei/DoctrineExtensions" library. This is *awesome*. It allows you to add a bunch of different functions to multiple databases. Let's go down here and grab the `composer require` line. Notice that it has `dev-master` on there. We don't really need that, so I'll paste and then remove that. Beautiful!
+Wait... `RAND` *is* a known MySQL function, so... why doesn't it work? Ok, so
+Doctrine supports a *lot* of functions inside of DQL, but not *everything*. Why?
+Because Doctrine is designed to work with many different types of databases... and
+if only one or some databases support a function like `RAND`, then Doctrine *can't*
+support it. *Fortunately*, we *can* add this function or any custom function we want
+*ourselves* or, really, via a library.
 
-Installing that doesn't change anything in our system. It just adds a bunch of code that we can activate for any functions we want. To do that, back over in `/config/packages/doctrine.yaml`, somewhere under `orm`, say `dql`. There are a bunch of different categories under here, which you can read more about in the documentation. In our case, we want to say `numeric_functions` along with the *name* of the function, which is `rand`. Then, we're going to set this to the class that will let Doctrine know what to do: `DoctrineExtensions/Query/Mysql/Rand`. You definitely don't have to take my word for it, though. Over in the documentation... there's a little "config" link down here, and if you click on "mysql.yml", you can see that it describes *all* of the different things you can do and how to activate them.
+Search for the `beberlei/doctrineextensions` library. This is *awesome*. It allows
+us to add a *bunch* of different functions to multiple database types. Go down
+here and grab the `composer require` line... but we don't need the `dev-master`
+part. Run that!
 
-I'll close that up... refresh, and... got it! If you look closely, every time we refresh, the results are coming back in a different order. That was easy!
+```terminal
+composer require beberlei/doctrineextensions
+```
+
+Installing this doesn't change anything in our app.. it just adds a bunch of code
+that we can *activate* for any functions that we want. To do that, back over in
+`config/packages/doctrine.yaml`, somewhere under `orm`, say `dql`. There are a bunch
+of different categories under here, which you can read more about in the
+documentation. In our case, we want to say `numeric_functions` along with the *name*
+of the function, which is `rand`. Set this to the class that will let Doctrine know
+what to do: `DoctrineExtensions\Query\Mysql\Rand`.
+
+You definitely don't have to take my word about how this should be setup. Over in
+the documentation... there's a little "config" link down here... and if you click
+on `mysql.yml`, you can see that it describes *all* of the different things you can
+do and how to activate them.
+
+I'll close that up... refresh, and... got it! Each time we refresh, the results are
+coming back in a different order.
 
 Okay, *one more* topic. Let's finish with some complex `groupBy()` situations.
