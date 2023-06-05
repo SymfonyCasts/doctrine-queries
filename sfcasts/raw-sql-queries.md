@@ -13,6 +13,8 @@ query. Then, we need to fetch the low-level Doctrine `Connection` object. We can
 get that with `$conn = $this->getEntityManager()->getConnection()`. Toss `dd($conn)`
 onto the end so we can see it.
 
+[[[ code('454ac4f022') ]]]
+
 Head over, refresh and... awesome! We get a `Doctrine\DBAL\Connection` object.
 
 The Doctrine library is actually *two* main parts. First there's a lower-level part
@@ -32,16 +34,24 @@ Say `$sql = 'SELECT * FROM fortune_cookie'`. That's as *boring* as SQL queries c
 get. I used `fortune_cookie` for the table name because I know that, by default,
 Doctrine *underscores* my entities to make table names. 
 
+[[[ code('6615019ea3') ]]]
+
 Now that we have the query string, we need to create a `Statement` with
 `$stmt = $conn->prepare()` and pass `$sql`.
+
+[[[ code('33eeaca74f') ]]]
 
 This creates a `Statement` object... which is kind of like the `Query` object we
 would create with the `QueryBuilder` by saying `->getQuery()` at the end. It's...
 just an object that we'll use to execute this. Do that with
 `$result = $stmt->executeQuery()`.
 
+[[[ code('65b03b9414') ]]]
+
 *Finally*, to get the actual *data* off of the result, say `dd(result->)`...
 and there are a number of methods to choose from. Use `fetchAllAssociative()`.
+
+[[[ code('117b0202d3') ]]]
 
 This will fetch all the rows and give each one to us as an *associative* array.
 
@@ -54,6 +64,8 @@ Okay, let's rewrite this entire QueryBuilder query up here in raw SQL. To save t
 I'll paste in the final product: a *long* string... with nothing particularly special.
 We're selecting `SUM`, `AS fortunesPrinted`, the `AVG`, `category.name`, `FROM
 fortune_cookie`, and then we do our `INNER JOIN` over to `category`.
+
+[[[ code('5c3a6e97cf') ]]]
 
 The big difference is that, when we do a `JOIN` with the QueryBuilder, we can just
 join across the relationship... and that's all we need to say. In raw SQL, of course,
@@ -68,6 +80,8 @@ like `:category`. To fill that in, down where we execute the query, pass
 `'category' =>`. But this time, instead of passing the entire `$category` object
 like we did before, this is raw SQL, so we need to pass `$category->getId()`.
 
+[[[ code('3ccfa38cc5') ]]]
+
 Ok! Spin over and check this out. Got it! So writing raw SQL doesn't look as
 awesome... but if your query is complex enough, don't hesitate to try this.
 
@@ -77,9 +91,13 @@ By the way, instead of using `executeQuery()` to pass the `category`, we *could*
 replace that with `$stmt->bindValue()` to bind `category` to `$category->getId()`.
 That's going to give us the same results as before, so your call.
 
+[[[ code('e5b65d7aa7') ]]]
+
 But, hmm, I'm realizing now that the result is an array inside another array.
 What we *really* want to do is return *only* the associative array for the *one*
 result. No problem: instead of `fetchAllAssociative()`, use `fetchAssociative()`.
+
+[[[ code('62bde2d8ac') ]]]
 
 And now... beautiful! We get just that first row.
 
@@ -100,6 +118,8 @@ And then... yep! It's called `categoryName`.
 
 *Now* we can use named arguments. Remove the `dd()` and the other return.
 To `CategoryFortuneStats`, pass `...$result->fetchAssociative()`.
+
+[[[ code('66f8ffdd8d') ]]]
 
 This will grab that array and spread it out across those arguments so that we have
 three *correctly* named arguments... which is just kind of fun.
