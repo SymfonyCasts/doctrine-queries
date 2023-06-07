@@ -1,0 +1,519 @@
+WEBVTT
+
+00:00:01.116 --> 00:00:05.296 align:middle
+En la página de presentación de categorías, hacemos un
+bucle sobre todas las galletas de la suerte de esa categoría.
+
+00:00:05.906 --> 00:00:10.486 align:middle
+Veamos la plantilla:
+templates/fortune/showCategory.html.twig.
+
+00:00:11.026 --> 00:00:15.916 align:middle
+Aquí está: hacemos un bucle sobre
+category.fortuneCookies y mostramos algunas cosas.
+
+00:00:16.466 --> 00:00:17.856 align:middle
+Pero... hay un problema.
+
+00:00:18.336 --> 00:00:20.226 align:middle
+Abre la entidad FortuneCookie.
+
+00:00:21.466 --> 00:00:24.336 align:middle
+Tiene una bandera bool $discontinued.
+
+00:00:24.986 --> 00:00:28.726 align:middle
+De vez en cuando, tenemos que dejar de producir
+una galleta de la suerte específica...
+
+00:00:28.726 --> 00:00:30.486 align:middle
+por un motivo u otro.
+
+00:00:30.926 --> 00:00:34.906 align:middle
+Como aquella vez que teníamos una galleta
+de la fortuna que decía "Serás feliz...
+
+00:00:35.056 --> 00:00:38.236 align:middle
+hasta que te des cuenta de que
+la realidad es una ilusión".
+
+00:00:38.556 --> 00:00:40.576 align:middle
+Esa se escapó del control de calidad.
+
+00:00:41.066 --> 00:00:44.606 align:middle
+Cuando esto ocurre, ponemos
+discontinued en verdadero.
+
+00:00:45.166 --> 00:00:48.876 align:middle
+En este momento, hacemos un bucle con todas
+las galletas de la suerte de una categoría:
+
+00:00:49.116 --> 00:00:52.466 align:middle
+¡incluyendo tanto las galletas
+actuales como las descatalogadas!
+
+00:00:52.566 --> 00:00:56.746 align:middle
+Pero a la dirección sólo le interesan
+las galletas de la suerte actuales.
+
+00:00:57.096 --> 00:00:59.456 align:middle
+Necesitamos una forma de
+ocultar las descatalogadas.
+
+00:01:00.006 --> 00:01:00.896 align:middle
+¿Cómo podemos hacerlo?
+
+00:01:01.516 --> 00:01:04.166 align:middle
+En el controlador de esta
+página - FortuneController -
+
+00:01:04.546 --> 00:01:08.646 align:middle
+podríamos crear una consulta
+independiente de $fortuneCookieRepository
+
+00:01:09.006 --> 00:01:14.006 align:middle
+con WHERE category = :category
+y discontinued = false.
+
+00:01:14.496 --> 00:01:15.766 align:middle
+Pero... ¡eso es una tontería!
+
+00:01:16.186 --> 00:01:20.086 align:middle
+¡Hacer un bucle sobre
+category.fortuneCookies es tan fácil!
+
+00:01:20.596 --> 00:01:25.216 align:middle
+¿Realmente necesitamos volver al controlador,
+crear una consulta personalizada y pasar
+
+00:01:25.216 --> 00:01:27.426 align:middle
+los resultados como una nueva variable Twig ?
+
+00:01:28.026 --> 00:01:30.556 align:middle
+¿No podríamos utilizar de
+algún modo el objeto category...
+
+00:01:30.556 --> 00:01:33.086 align:middle
+¡pero filtrando las cookies descatalogadas!
+
+00:01:33.596 --> 00:01:34.706 align:middle
+¡Por supuesto!
+
+00:01:34.946 --> 00:01:38.736 align:middle
+Y si lo hacemos correctamente, podemos
+hacerlo de forma realmente eficiente.
+
+00:01:39.386 --> 00:01:41.706 align:middle
+El primer paso es opcional,
+pero en el controlador,
+
+00:01:41.856 --> 00:01:45.696 align:middle
+vuelve a cambiar ->findWithFortunesJoin()
+por sólo ->find(). Hago
+
+00:01:46.276 --> 00:01:50.746 align:middle
+esto -que elimina la unión-
+sólo para que sea más fácil
+
+00:01:50.746 --> 00:01:53.036 align:middle
+ver el resultado final de lo que vamos a hacer.
+
+00:01:53.786 --> 00:01:55.196 align:middle
+Hacer esto no cambia la página...
+
+00:01:55.476 --> 00:01:58.146 align:middle
+salvo que nuestras consultas
+pasan a ser tres. Es decir,
+
+00:01:58.586 --> 00:02:04.356 align:middle
+una consulta para el Category, nuestra consulta
+personalizada que estamos haciendo, y luego una consulta
+
+00:02:04.356 --> 00:02:06.996 align:middle
+para todas las fortunas
+dentro de este Category.
+
+00:02:07.716 --> 00:02:12.196 align:middle
+Recuerda el objetivo: queremos poder
+llamar a algo en el objeto Category
+
+00:02:12.326 --> 00:02:14.456 align:middle
+para recuperar las galletas
+de la fortuna relacionadas...
+
+00:02:14.676 --> 00:02:16.796 align:middle
+pero ocultando las descatalogadas.
+
+00:02:17.496 --> 00:02:21.226 align:middle
+Abre la entidad Category y
+busca getFortuneCookies().
+
+00:02:21.626 --> 00:02:22.126 align:middle
+Ahí lo tienes.
+
+00:02:22.806 --> 00:02:28.136 align:middle
+A continuación, añade un nuevo método
+llamado getFortuneCookiesStillInProduction().
+
+00:02:29.276 --> 00:02:33.266 align:middle
+Éste, al igual que el método normal,
+devolverá una D octrine Collection.
+
+00:02:33.766 --> 00:02:38.046 align:middle
+Y... sólo para ayudar a mi editor, copia
+el documento @return anterior para decir
+
+00:02:38.046 --> 00:02:41.076 align:middle
+que se trata de un Collection
+de objetos FortuneCookie.
+
+00:02:42.026 --> 00:02:44.026 align:middle
+Entonces... ¿qué hacemos dentro?
+
+00:02:44.826 --> 00:02:50.256 align:middle
+Podríamos hacer un bucle sobre $this->fortuneCookies
+as $fortuneCookie y crear una matriz
+
+00:02:50.256 --> 00:02:52.886 align:middle
+de objetos que no estén discontinuados.
+
+00:02:53.366 --> 00:02:54.916 align:middle
+¡Fácil! Pero... en
+
+00:02:55.086 --> 00:02:58.696 align:middle
+cuanto empecemos a trabajar con
+$this->getFortuneCookies(),
+
+00:02:59.176 --> 00:03:03.156 align:middle
+eso hará que Doctrine consulte cada
+galleta de la suerte relacionada.
+
+00:03:03.796 --> 00:03:04.776 align:middle
+¿Ves el problema?
+
+00:03:05.406 --> 00:03:10.986 align:middle
+Puede que estemos pidiendo a Doctrine que
+consulte y prepare 100 objetos FortuneCookie...
+
+00:03:11.356 --> 00:03:16.516 align:middle
+aunque esta colección final
+$inProduction sólo contenga 10 de ellos.
+
+00:03:16.816 --> 00:03:18.026 align:middle
+¡Menudo desperdicio!
+
+00:03:18.856 --> 00:03:23.486 align:middle
+Lo que realmente queremos hacer es decirle
+a Doctrine que cuando realice la consulta
+
+00:03:23.486 --> 00:03:26.866 align:middle
+de las galletas de la fortuna relacionadas,
+añada un WHERE discontinued = false extra
+
+00:03:27.086 --> 00:03:30.696 align:middle
+a esa consulta.
+
+00:03:31.326 --> 00:03:33.166 align:middle
+Pero... ¿cómo demonios lo hacemos?
+
+00:03:33.876 --> 00:03:36.546 align:middle
+Doctrine realiza esa consulta
+automáticamente y...
+
+00:03:36.596 --> 00:03:38.916 align:middle
+mágicamente en algún lugar en segundo plano.
+
+00:03:39.666 --> 00:03:43.446 align:middle
+Aquí es donde resulta útil
+el sistema de criterios.
+
+00:03:44.196 --> 00:03:51.656 align:middle
+Funciona así $criteria = Criteria:: - el
+de Doctrine\Common\Collections - create().
+
+00:03:51.656 --> 00:03:56.856 align:middle
+Este objeto es un poco como el de
+QueryBuilder, pero no exactamente igual.
+
+00:03:57.436 --> 00:04:04.186 align:middle
+Podemos decir ->andWhere() y luego volver
+a utilizar Criteria:: con expr()->.
+
+00:04:04.816 --> 00:04:10.306 align:middle
+Este expr() o "expresión" nos permite,
+más o menos, construir la cláusula WHERE.
+
+00:04:10.756 --> 00:04:15.846 align:middle
+Tiene métodos como in,
+contains o gt para "mayor que".
+
+00:04:16.486 --> 00:04:18.826 align:middle
+Queremos eq() para "igual a".
+
+00:04:19.326 --> 00:04:21.806 align:middle
+Dentro, digamos discontinued, false.
+
+00:04:23.026 --> 00:04:29.996 align:middle
+Vale, esto, por sí mismo, sólo crea un
+objeto que "describe" una cláusula WHERE
+
+00:04:30.116 --> 00:04:32.276 align:middle
+que podría añadirse a alguna otra consulta.
+
+00:04:33.496 --> 00:04:39.076 align:middle
+Para utilizarlo, return
+$this->fortuneCookies->matching($criteria).
+
+00:04:40.176 --> 00:04:40.736 align:middle
+Guay, ¿eh?
+
+00:04:41.376 --> 00:04:43.166 align:middle
+Estamos diciendo: ¡Eh Doctrine!
+
+00:04:43.536 --> 00:04:48.096 align:middle
+Toma esta colección, pero devuelve sólo
+las que coincidan con este criterio.
+
+00:04:48.986 --> 00:04:54.446 align:middle
+Y como veremos dentro de un minuto, ¡esto modificará
+la consulta para obtener esas galletas de la suerte!
+
+00:04:55.316 --> 00:04:59.546 align:middle
+Para utilizar este método,
+en showCategory.html.twig,
+
+00:05:00.096 --> 00:05:06.866 align:middle
+sustituye el bucle category.fortuneCookies
+por category.fortuneCookiesStillInProduction.
+
+00:05:07.956 --> 00:05:08.796 align:middle
+¡Vamos a hacerlo!
+
+00:05:09.406 --> 00:05:10.526 align:middle
+Actualiza, y...
+
+00:05:11.036 --> 00:05:16.446 align:middle
+En realidad, no sé si alguno de ellos está
+descatalogado, ¡pero pasó de tres a dos!
+
+00:05:16.446 --> 00:05:17.956 align:middle
+¿Y lo mejor?
+
+00:05:18.316 --> 00:05:19.806 align:middle
+¡Echa un vistazo a la consulta!
+
+00:05:20.376 --> 00:05:23.766 align:middle
+Aquí está la primera para la categoría,
+aquí está la nuestra personalizada...
+
+00:05:24.256 --> 00:05:26.006 align:middle
+pero fíjate en esta última consulta.
+
+00:05:26.786 --> 00:05:31.466 align:middle
+Cuando preguntamos por las "galletas de la suerte
+aún en producción", consulta desde fortune_cookie,
+
+00:05:31.586 --> 00:05:38.306 align:middle
+donde category = nuestra categoría
+y donde t0.discontinued ¡es falso!
+
+00:05:38.556 --> 00:05:43.706 align:middle
+Así que ha hecho la consulta más eficiente para
+obtener sólo las galletas de la suerte que necesitamos.
+
+00:05:44.086 --> 00:05:45.546 align:middle
+Es asombroso.
+
+00:05:46.146 --> 00:05:48.576 align:middle
+Ahora bien, un pequeño inconveniente es que...
+
+00:05:48.936 --> 00:05:52.896 align:middle
+Normalmente me gusta mantener mi lógica
+de consulta dentro de un repositorio...
+
+00:05:53.196 --> 00:05:54.826 align:middle
+no en medio de una entidad.
+
+00:05:55.516 --> 00:05:57.526 align:middle
+Afortunadamente, podemos moverla allí.
+
+00:05:58.446 --> 00:06:03.826 align:middle
+Como esto trata de galletas de la fortuna, abre
+FortuneCookieRepository y, en cualquier lugar,
+
+00:06:04.346 --> 00:06:06.486 align:middle
+añade un nuevo public
+static function llamado...
+
+00:06:07.086 --> 00:06:07.216 align:middle
+qué
+
+00:06:07.216 --> 00:06:10.956 align:middle
+tal
+createFortuneCookiesStillInProductionCriteria().
+
+00:06:10.956 --> 00:06:12.346 align:middle
+Esto
+
+00:06:12.346 --> 00:06:14.466 align:middle
+devolverá un objeto Criteria. Ahora,
+
+00:06:15.536 --> 00:06:18.596 align:middle
+coge la declaración
+$criteria de la entidad... y
+
+00:06:19.006 --> 00:06:20.236 align:middle
+devuélvela. Y
+
+00:06:20.706 --> 00:06:23.536 align:middle
+sí, éste es un método static ... que
+
+00:06:23.656 --> 00:06:25.866 align:middle
+no utilizo muy a menudo.
+
+00:06:26.546 --> 00:06:27.896 align:middle
+Hay dos razones para ello. En primer lugar,
+
+00:06:28.316 --> 00:06:32.736 align:middle
+estos objetos Criteria no realizan
+consultas en realidad... y
+
+00:06:32.736 --> 00:06:36.026 align:middle
+no dependen de ningún dato o servicio. Por
+
+00:06:36.226 --> 00:06:38.876 align:middle
+tanto, este método puede ser
+estático. En segundo lugar,
+
+00:06:39.566 --> 00:06:43.446 align:middle
+y más importante, no tenemos acceso
+
+00:06:43.446 --> 00:06:46.886 align:middle
+al objeto repositorio desde
+dentro de Category. Así que...
+
+00:06:47.286 --> 00:06:51.966 align:middle
+si queremos llamar a un método de un
+repositorio, tiene que ser static. Esto
+
+00:06:52.596 --> 00:06:58.636 align:middle
+es algo especial que suelo hacer en mis repositorios
+sólo para esta situación de criterios. Volviendo a
+
+00:06:59.476 --> 00:07:05.636 align:middle
+la entidad, digamos que $criteria es igual a
+FortuneCookieRepository::createFortuneCookiesStillInProductionCriteria().
+
+00:07:05.636 --> 00:07:07.296 align:middle
+Centralización lógica,
+
+00:07:08.176 --> 00:07:10.296 align:middle
+¡comprobado! Ah, e
+
+00:07:10.886 --> 00:07:15.826 align:middle
+incluso podemos reutilizar estos objetos
+Criteria dentro de un QueryBuilder. Veamos...
+
+00:07:16.486 --> 00:07:17.396 align:middle
+No
+
+00:07:17.396 --> 00:07:19.266 align:middle
+tengo un buen ejemplo... así que... en
+
+00:07:19.516 --> 00:07:24.616 align:middle
+este método, arriba, hagamos de cuenta que estoy creando un
+QueryBuilder con $this->createQueryBuilder('fortune_cookie').
+
+00:07:24.616 --> 00:07:27.686 align:middle
+Para añadir
+
+00:07:28.996 --> 00:07:30.856 align:middle
+los criterios es...
+->addCriteria(self::createFortuneCookiesStillInProduction()). Así que,
+
+00:07:30.926 --> 00:07:36.496 align:middle
+aunque
+
+00:07:37.306 --> 00:07:41.276 align:middle
+el sistema de criterios es un poco
+diferente del QueryBuilder normal, podemos
+
+00:07:41.596 --> 00:07:44.016 align:middle
+reutilizarlos en todas partes. Ah, y
+
+00:07:44.756 --> 00:07:46.956 align:middle
+comprobemos que todo sigue
+funcionando. ¡Vamos bien! En
+
+00:07:47.896 --> 00:07:49.086 align:middle
+la página de inicio,
+
+00:07:50.126 --> 00:07:52.206 align:middle
+tenemos un problema similar.
+Aquí dice "Proverbios(3)",
+
+00:07:52.656 --> 00:07:57.956 align:middle
+pero si hacemos clic en él,
+aparecen dos. ¿Qué ocurre aquí?
+
+00:07:58.816 --> 00:07:59.676 align:middle
+En homepage.html.twig...
+
+00:08:00.546 --> 00:08:02.796 align:middle
+veamos... ah,
+
+00:08:03.466 --> 00:08:04.226 align:middle
+sí. Estamos
+
+00:08:05.186 --> 00:08:12.266 align:middle
+haciendo un bucle sobre categories, y luego llamando
+a category.fortuneCookies|length que, como sabemos,
+
+00:08:12.546 --> 00:08:15.526 align:middle
+devuelve todas las galletas
+de la fortuna. Cámbialo a
+
+00:08:16.456 --> 00:08:19.526 align:middle
+fortuneCookiesStillInProduction. De vuelta a la
+
+00:08:20.866 --> 00:08:23.556 align:middle
+página de inicio, observa
+este "(3)". Debería bajar
+
+00:08:23.836 --> 00:08:26.136 align:middle
+a 2, y... lo hace. Pero
+
+00:08:26.566 --> 00:08:29.386 align:middle
+eso ni siquiera es lo mejor. Abre la consulta
+
+00:08:29.816 --> 00:08:31.106 align:middle
+para ello. Recuerda que , gracias a
+
+00:08:31.906 --> 00:08:37.086 align:middle
+nuestro fetch EXTRA_LAZY, como sólo estamos
+contando el número de galletas de la suerte,
+
+00:08:37.086 --> 00:08:41.126 align:middle
+sabe hacer una consulta
+superrápida COUNT. Y gracias
+
+00:08:41.556 --> 00:08:46.366 align:middle
+al sistema de criterios, está seleccionando
+COUNT FROM fortune_cookies WHERE la category
+
+00:08:46.366 --> 00:08:51.356 align:middle
+= nuestra categoría y discontinued
+= false. ¡Vaya! Siguiente:
+
+00:08:51.656 --> 00:08:58.136 align:middle
+Queremos ocultar las galletas de la suerte descatalogadas
+de todas partes de nuestro sitio. ¿Hay alguna
+
+00:08:58.756 --> 00:09:03.556 align:middle
+forma de engancharnos a Doctrine y añadir esa cláusula
+WHERE automáticamente... en todas partes? La hay.
+
+00:09:03.696 --> 00:09:04.346 align:middle
+Se
+
+00:09:04.986 --> 00:09:07.986 align:middle
+llama filtros.
