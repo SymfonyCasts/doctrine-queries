@@ -4,6 +4,8 @@ On the category show page, we're looping over all the fortune cookies in that
 category. Let's check out the template: `templates/fortune/showCategory.html.twig`.
 Here it is: we loop over `category.fortuneCookies` and render some stuff.
 
+[[[ code('657d74265f') ]]]
+
 But... there's a problem. Open up the `FortuneCookie` entity. It has a
 `bool $discontinued` flag. Occasionally, we have to stop producing a specific fortune
 cookie... for one reason or another. Like the time we had a fortune cookie that
@@ -31,6 +33,8 @@ The first step is optional, but in the controller, change
 removes the join - *just* so that it's a easier to see the end result
 of what we're about to do.
 
+[[[ code('0cfb9ffc84') ]]]
+
 Doing this doesn't change the page... except that our queries go up to three. That's
 one query for the `Category`, our custom query that we're making, and then one query
 for all the fortunes *inside* of this `Category`.
@@ -45,6 +49,8 @@ is. Below, add a new method called `getFortuneCookiesStillInProduction()`. This,
 like the normal method, will return a Doctrine `Collection`. And... just to help
 my editor, copy the `@return` doc above to say that this is a `Collection` of
 `FortuneCookie` objects.
+
+[[[ code('c83c2869a6') ]]]
 
 So... what do we do inside? We *could* loop over
 `$this->fortuneCookies as $fortuneCookie` and create an array of objects that
@@ -69,15 +75,21 @@ comes in handy.
 It works like this: `$criteria = Criteria::` - the one from
 `Doctrine\Common\Collections` - `create()`.
 
+[[[ code('69b5dd6206') ]]]
+
 This object is a bit like the `QueryBuilder`, but not *exactly* the same. We
 can say `->andWhere()` and then use `Criteria::` again with `expr()->`. This
 `expr()` or "expression" lets us, sort of, *build* the WHERE clause.
 It has methods like `in`, `contains` or `gt` for "greater than". We want `eq()` for
 "equals". Inside, say `discontinued`, `false`.
 
+[[[ code('bfdeee0848') ]]]
+
 Ok, this, by itself, just creates an object that "describes" a `WHERE` clause
 that could be added to some *other* query. To *use* it,
 `return $this->fortuneCookies->matching($criteria)`.
+
+[[[ code('2835162724') ]]]
 
 Cool, huh? We're saying:
 
@@ -88,6 +100,8 @@ cookies!
 
 To *use* this method, over in `showCategory.html.twig`, replace the
 `category.fortuneCookies` loop with `category.fortuneCookiesStillInProduction`.
+
+[[[ code('84f8e9f4ea') ]]]
 
 Let's do this! Refresh, and... I don't actually know if any of these are
 discontinued, but it *did* go from three to two! And the best part? Check out that
@@ -110,6 +124,8 @@ how about `createFortuneCookiesStillInProductionCriteria()`. This will return a
 
 Now, grab the `$criteria` statement from the entity... and return that.
 
+[[[ code('87afa6495f') ]]]
+
 ## The Method is Static?
 
 And yes, this *is* a `static` method... which I don't use *too* often. There are
@@ -122,6 +138,8 @@ this criteria situation.
 
 Back in the entity, say `$criteria` equals
 `FortuneCookieRepository::createFortuneCookiesStillInProductionCriteria()`.
+
+[[[ code('2a4e54ba70') ]]]
 
 Logic centralization, check! Oh, and we can even reuse these `Criteria` objects
 inside a `QueryBuilder`. Let's see... I don't have a good example... so... in this
@@ -140,6 +158,8 @@ we click that, there are *two*. What's happening here? Over in
 `homepage.html.twig`... let's see... ah, yes. We're looping over `categories`, and
 then calling `category.fortuneCookies|length` which, as we know, returns *all*
 the fortune cookies. Change that to `fortuneCookiesStillInProduction`.
+
+[[[ code('16709b79ac') ]]]
 
 Back on the homepage, watch this "(3)". It *should* go down to 2, and... it *does*.
 But that's not even the best part. Open up the query for that. Remember, thanks to
