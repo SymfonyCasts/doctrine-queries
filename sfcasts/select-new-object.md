@@ -16,6 +16,8 @@ So add a `public function __construct()` with a few `public` properties for simp
 `public int $fortunesPrinted`, `public float $fortunesAverage`, and
 `public string $categoryName`.
 
+[[[ code('82e7f4dc59') ]]]
+
 *Beautiful*!
 
 Back in the repository, we actually *don't* need any Doctrine magic to use this new
@@ -36,6 +38,8 @@ Inside of `NEW`, grab each of the 3 things that we want to select and paste them
 as *if* we're passing them directly as the first, second and third arguments to our
 new class's constructor.
 
+[[[ code('d450ea1fd4') ]]]
+
 Isn't that cool? Let's `dd($result)` so we can see what it looks like!
 
 ## No Aliasing with NEW
@@ -46,15 +50,21 @@ And it makes sense: Doctrine will pass whatever this is to the first argument of
 constructor, this to the second argument, and this to the third. Since aliases
 don't make sense anymore... remove them.
 
+[[[ code('b3c856cd48') ]]]
+
 If we check it now... got it! I love it! We have an object with our data
 inside!
 
 Let's celebrate by cleaning up our method. Instead of an `array`, we're
 returning a `CategoryFortuneStats`. Also remove the `dd($result)` down here.
 
+[[[ code('e6e552dc95') ]]]
+
 Back in the controller, to show off how nice this is, change `$result` to... how
 about `$stats`. Then we can use `$stats->fortunesPrinted`, `$stats->fortunesAverage`,
 and `$stats->categoryName`.
+
+[[[ code('fff67df61a') ]]]
 
 Now that we've tidied up a bit, let's check to see if this still works. And... it
 *does*.

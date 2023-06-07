@@ -1,0 +1,359 @@
+WEBVTT
+
+00:00:01.096 --> 00:00:03.396 align:middle
+El Constructor de consultas
+es divertido y potente.
+
+00:00:03.396 --> 00:00:05.906 align:middle
+Pero si estás escribiendo
+una consulta supercompleja...
+
+00:00:06.136 --> 00:00:10.576 align:middle
+puede ser difícil averiguar cómo transformarla
+al formato del Generador de consultas.
+
+00:00:11.136 --> 00:00:15.076 align:middle
+Si te encuentras en esta situación,
+siempre puedes recurrir a...
+
+00:00:15.076 --> 00:00:16.756 align:middle
+¡escribir SQL sin procesar!
+
+00:00:17.216 --> 00:00:20.956 align:middle
+Yo no haría de esto mi primera
+opción, pero no hay grandes ventajas
+
+00:00:20.956 --> 00:00:26.266 align:middle
+en pasar horas adaptando una consulta SQL
+bien escrita a un constructor de consultas.
+
+00:00:27.106 --> 00:00:29.436 align:middle
+Veamos cómo funcionan las
+consultas SQL sin procesar.
+
+00:00:30.286 --> 00:00:33.286 align:middle
+Para empezar, comenta la consulta
+->createQueryBuilder().
+
+00:00:33.876 --> 00:00:37.616 align:middle
+A continuación, necesitamos obtener el
+objeto de bajo nivel Doctrine Connection.
+
+00:00:38.286 --> 00:00:43.476 align:middle
+Podemos obtenerlo con $conn =
+$this->getEntityManager()->getConnection().
+
+00:00:44.216 --> 00:00:47.266 align:middle
+Añade dd($conn) al final
+para que podamos verlo.
+
+00:00:48.446 --> 00:00:50.176 align:middle
+Dirígete, actualiza y...
+
+00:00:50.716 --> 00:00:55.026 align:middle
+¡impresionante! Obtenemos un
+objeto Doctrine\DBAL\Connection.
+
+00:00:55.646 --> 00:00:58.876 align:middle
+La biblioteca Doctrine consta en
+realidad de dos partes principales.
+
+00:00:59.326 --> 00:01:05.666 align:middle
+Primero hay una parte de nivel inferior llamada "DBAL", que significa
+"Database Abstraction Library" (Biblioteca de Abstracción de Bases de Datos).
+
+00:01:06.256 --> 00:01:12.156 align:middle
+Actúa como una envoltura del PDO nativo
+de PHP y le añade algunas funciones.
+
+00:01:12.986 --> 00:01:16.526 align:middle
+La segunda parte de Doctrine es de
+la que nos hemos ocupado hasta ahora:
+
+00:01:16.836 --> 00:01:22.096 align:middle
+es la parte de nivel superior llamada
+"ORM "o "Object Relational Mapper".
+
+00:01:22.406 --> 00:01:25.156 align:middle
+Es cuando consultas seleccionando
+clases y propiedades...
+
+00:01:25.406 --> 00:01:27.096 align:middle
+y obtienes objetos.
+
+00:01:27.786 --> 00:01:33.276 align:middle
+Para esta consulta SQL sin procesar, vamos a tratar
+directamente con el objeto de nivel inferior Connection.
+
+00:01:34.476 --> 00:01:38.666 align:middle
+Digamos $sql = 'SELECT * FROM fortune_cookie'.
+
+00:01:39.136 --> 00:01:42.306 align:middle
+Eso es lo más aburrido que pueden
+llegar a ser las consultas SQL.
+
+00:01:42.986 --> 00:01:47.886 align:middle
+He utilizado fortune_cookie para el nombre
+de la tabla porque sé que, por defecto,
+
+00:01:48.126 --> 00:01:51.846 align:middle
+Doctrine subraya mis entidades
+para hacer nombres de tabla.
+
+00:01:53.036 --> 00:01:56.136 align:middle
+Ahora que tenemos la cadena de
+consulta, tenemos que crear un Statement
+
+00:01:56.136 --> 00:02:01.286 align:middle
+con $stmt = $conn->prepare() y pasarle $sql.
+
+00:02:01.376 --> 00:02:03.496 align:middle
+Esto crea un objeto Statement...
+
+00:02:03.496 --> 00:02:07.896 align:middle
+que es algo así como el objeto Query
+que crearíamos con el QueryBuilder
+
+00:02:07.896 --> 00:02:10.296 align:middle
+diciendo ->getQuery() al final.
+
+00:02:10.786 --> 00:02:14.356 align:middle
+Es... simplemente un objeto que
+utilizaremos para ejecutar esto.
+
+00:02:14.846 --> 00:02:19.286 align:middle
+Hazlo con $result = $stmt->executeQuery().
+
+00:02:20.156 --> 00:02:26.226 align:middle
+Por último, para obtener los datos reales
+del resultado, di dd(result->)...
+
+00:02:26.496 --> 00:02:29.406 align:middle
+y hay varios métodos para elegir.
+
+00:02:29.816 --> 00:02:32.146 align:middle
+Utiliza fetchAllAssociative().
+
+00:02:32.796 --> 00:02:37.736 align:middle
+Esto obtendrá todas las filas y nos dará
+cada una de ellas como una matriz asociativa.
+
+00:02:38.576 --> 00:02:40.716 align:middle
+Observa: vuelve a pasar y...
+
+00:02:41.186 --> 00:02:46.696 align:middle
+¡perfecto! ¡Obtenemos 20 filas por cada una
+de las 20 galletas de la suerte del sistema!
+
+00:02:47.056 --> 00:02:49.576 align:middle
+Estos son los datos brutos
+procedentes de la base de datos.
+
+00:02:50.516 --> 00:02:55.206 align:middle
+Bien, vamos a reescribir toda esta consulta
+QueryBuilder aquí arriba en SQL sin procesar.
+
+00:02:57.186 --> 00:03:02.086 align:middle
+Para ahorrar tiempo, pegaré el
+producto final: una cadena larga...
+
+00:03:02.126 --> 00:03:04.506 align:middle
+sin nada particularmente especial. Estamos
+
+00:03:05.236 --> 00:03:11.476 align:middle
+seleccionando SUM, AS fortunesPrinted, el
+AVG, category.name, FROM fortune_cookie,
+
+00:03:11.726 --> 00:03:14.826 align:middle
+y luego hacemos nuestro
+INNER JOIN hasta category.
+
+00:03:15.636 --> 00:03:19.246 align:middle
+La gran diferencia es que, cuando
+hacemos un JOIN con el QueryBuilder,
+
+00:03:19.516 --> 00:03:21.736 align:middle
+podemos simplemente unirnos
+a través de la relación...
+
+00:03:21.856 --> 00:03:23.796 align:middle
+y eso es todo lo que tenemos que decir.
+
+00:03:24.446 --> 00:03:31.176 align:middle
+En SQL sin procesar, por supuesto, tenemos que ayudarle
+especificando que nos estamos uniendo a category
+
+00:03:31.466 --> 00:03:39.056 align:middle
+y describiendo que nos estamos uniendo a
+category.id = fortune_cookie.category_id.
+
+00:03:39.056 --> 00:03:40.296 align:middle
+El resto es bastante normal...
+
+00:03:40.716 --> 00:03:45.256 align:middle
+excepto fortune_cookie.category_id = :category.
+
+00:03:45.816 --> 00:03:50.016 align:middle
+Aunque estemos ejecutando
+SQL sin procesar, no vamos a
+
+00:03:50.016 --> 00:03:53.566 align:middle
+concatenar cosas dinámicas
+directamente en nuestra consulta.
+
+00:03:53.916 --> 00:04:00.646 align:middle
+Es un gran error y, como sabemos, nos
+expone a ataques de inyección SQL.
+
+00:04:01.286 --> 00:04:05.746 align:middle
+En su lugar, utiliza estos bonitos
+marcadores de posición como :category.
+
+00:04:06.646 --> 00:04:11.746 align:middle
+Para rellenarlo, abajo, donde ejecutamos
+la consulta, pasamos 'category' =>.
+
+00:04:11.746 --> 00:04:17.496 align:middle
+Pero esta vez, en lugar de pasar todo
+el objeto $category como hicimos antes,
+
+00:04:17.736 --> 00:04:22.836 align:middle
+esto es SQL sin procesar, así que
+tenemos que pasar $category->getId().
+
+00:04:24.346 --> 00:04:26.696 align:middle
+De acuerdo Gira y comprueba esto.
+
+00:04:28.476 --> 00:04:32.616 align:middle
+Ya está Así que escribir SQL sin
+procesar no tiene tan buena pinta...
+
+00:04:32.916 --> 00:04:36.946 align:middle
+pero si tu consulta es lo suficientemente
+compleja, no dudes en intentarlo. Por
+
+00:04:37.666 --> 00:04:42.256 align:middle
+cierto, en lugar de utilizar executeQuery()
+para pasar el category, podríamos,
+
+00:04:42.256 --> 00:04:49.226 align:middle
+sustituirlo por $stmt->bindValue() para
+enlazar category con $category->getId().
+
+00:04:49.806 --> 00:04:53.776 align:middle
+Eso nos dará los mismos resultados
+que antes, así que tú decides.
+
+00:04:54.786 --> 00:05:01.446 align:middle
+Pero, hmm, ahora me doy cuenta de que el
+resultado es un array dentro de otro array.
+
+00:05:01.856 --> 00:05:07.496 align:middle
+Lo que realmente queremos hacer es devolver
+sólo la matriz asociativa del único resultado.
+
+00:05:08.276 --> 00:05:13.236 align:middle
+No hay problema: en lugar de
+fetchAllAssociative(), utiliza fetchAssociative().
+
+00:05:14.166 --> 00:05:15.016 align:middle
+Y ahora...
+
+00:05:15.646 --> 00:05:16.336 align:middle
+¡precioso!
+
+00:05:16.606 --> 00:05:18.486 align:middle
+Obtenemos sólo esa primera fila.
+
+00:05:19.196 --> 00:05:22.236 align:middle
+Ahora, quizá recuerdes que nuestro método
+
+00:05:22.236 --> 00:05:26.656 align:middle
+debe devolver un objeto
+CategoryFortuneStats que hemos creado antes.
+
+00:05:27.386 --> 00:05:31.166 align:middle
+¿Podemos convertir el resultado
+de nuestra matriz en ese objeto?
+
+00:05:31.686 --> 00:05:34.806 align:middle
+Claro, no es muy complicado,
+pero es bastante fácil.
+
+00:05:35.346 --> 00:05:38.216 align:middle
+Podríamos devolver un new
+CategoryFortuneStats()...
+
+00:05:38.596 --> 00:05:42.906 align:middle
+y luego coger las claves del array
+$result->fetchAssociative()...
+
+00:05:43.176 --> 00:05:45.526 align:middle
+y pasarlas como argumentos correctos.
+
+00:05:45.876 --> 00:05:52.036 align:middle
+O puedes ser aún más perezoso y utilizar el operador
+de dispersión junto con argumentos con nombre.
+
+00:05:52.856 --> 00:05:55.766 align:middle
+Fíjate: los argumentos
+se llaman fortunesPrinted,
+
+00:05:55.956 --> 00:05:58.506 align:middle
+fortunesAverage, y categoryName.
+
+00:05:59.676 --> 00:06:04.326 align:middle
+Aquí, son fortunesPrinted,
+fortunesAverage, y name...
+
+00:06:04.556 --> 00:06:06.076 align:middle
+no categoryName.
+
+00:06:06.856 --> 00:06:07.496 align:middle
+Vamos a arreglarlo.
+
+00:06:08.956 --> 00:06:11.856 align:middle
+Aquí abajo, añade as categoryName.
+
+00:06:12.436 --> 00:06:14.566 align:middle
+Y luego...
+
+00:06:14.686 --> 00:06:16.336 align:middle
+¡sí! Se llama categoryName.
+
+00:06:17.036 --> 00:06:19.376 align:middle
+Ahora podemos utilizar argumentos con nombre.
+
+00:06:19.786 --> 00:06:22.076 align:middle
+Elimina el dd() y el otro retorno.
+
+00:06:23.266 --> 00:06:25.436 align:middle
+A CategoryFortuneStats, pásale
+...$result->fetchAssociative().
+
+00:06:25.596 --> 00:06:28.926 align:middle
+Esto
+
+00:06:29.736 --> 00:06:34.026 align:middle
+cogerá ese array y lo repartirá
+entre esos argumentos para
+
+00:06:34.296 --> 00:06:37.356 align:middle
+que tengamos tres argumentos
+con nombre correcto... lo cual
+
+00:06:37.476 --> 00:06:39.756 align:middle
+es bastante divertido. Y
+
+00:06:39.756 --> 00:06:40.446 align:middle
+ahora... ¡nuestra
+
+00:06:40.836 --> 00:06:42.666 align:middle
+página funciona! A continuación:
+
+00:06:43.586 --> 00:06:48.546 align:middle
+Hablemos de organizar nuestro repositorio
+para poder reutilizar partes de
+
+00:06:48.546 --> 00:06:50.896 align:middle
+nuestras consultas en varios métodos.
