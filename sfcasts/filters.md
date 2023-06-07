@@ -87,9 +87,9 @@ passing some string I'm making up: `discontinued`. You'll see how that's used in
 a minute.
 
 Now, I don't *normally* add `%s` to my queries... because that can allow SQL
-injection attacks. In this case, it's okay, but only because we're going to
-*entirely* supply this value *ourselves*. This value should *never* come from
-the user.
+injection attacks. In this case, it's okay, but only because the `getParameter()`
+method is designed to escape the value *for* us. In every other situation,
+avoid this.
 
 If we head over and try it now... we get a giant error! Yay!
 
