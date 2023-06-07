@@ -58,6 +58,15 @@ data? It's delightfully simple. And again, order doesn't matter:
 [[[ code('83b2d224ff') ]]]
 
 That's it! Try this thing! The queries went down to one and the page still works!
+
+***TIP
+You might notice that not only the number of queries changed on page refresh but also
+the fortune cookies count for categories. Before adding `addSelect('fortuneCookie')`
+Doctrine executed separate simple queries to count related fortune cookies without
+considering our search term. But after, the ORM knows that data was loaded so it doesn't
+create new queries, just counts from the join instead.
+***
+
 If you open the profiler... and view the formatted query... yes! It's
 joining over to `fortune_cookie` and *grabbing* the `fortune_cookie` data at the
 same time. The "N+1" problem is *solved*!
