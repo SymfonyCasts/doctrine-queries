@@ -60,11 +60,11 @@ data? It's delightfully simple. And again, order doesn't matter:
 That's it! Try this thing! The queries went down to one and the page still works!
 
 ***TIP
-You might notice that not only the number of queries changed on page refresh but also
-the fortune cookies count for categories. Before adding `addSelect('fortuneCookie')`
-Doctrine executed separate simple queries to count related fortune cookies without
-considering our search term. But after, the ORM knows that data was loaded so it doesn't
-create new queries, just counts from the join instead.
+You might notice that the fortune cookie count for each category *also* change. Before,
+Doctrine executed separate queries to count the related fortune cookies without
+considering our search term. But after adding `addSelect('fortuneCookie')`, the ORM
+uses *that* data to count instead of making new queries... which includes our search
+term!
 ***
 
 If you open the profiler... and view the formatted query... yes! It's
