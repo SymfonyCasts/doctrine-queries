@@ -1,0 +1,107 @@
+WEBVTT
+
+00:00:01.156 --> 00:00:06.146 align:middle
+Tenemos categorías para "Mascotas" y "Amor",
+pero si buscamos aquí arriba "mascotas amor"...
+
+00:00:07.076 --> 00:00:07.976 align:middle
+¡no hay resultados!
+
+00:00:08.306 --> 00:00:09.156 align:middle
+Eso tiene sentido.
+
+00:00:09.516 --> 00:00:13.816 align:middle
+Estamos buscando si esta cadena
+coincide con name o con iconKey.
+
+00:00:14.436 --> 00:00:17.116 align:middle
+Hagamos nuestra búsqueda más inteligente
+para ver si podemos coincidir con ambas
+
+00:00:17.116 --> 00:00:19.496 align:middle
+categorías buscando palabra por palabra.
+
+00:00:20.086 --> 00:00:22.806 align:middle
+La consulta para esto vive
+en CategoryRepository...
+
+00:00:23.096 --> 00:00:24.456 align:middle
+en el método search().
+
+00:00:24.456 --> 00:00:27.506 align:middle
+El argumento $term es la cadena que escribimos.
+
+00:00:28.266 --> 00:00:33.336 align:middle
+Aquí abajo, digamos $termList =,
+entonces explode convierte esa cadena
+
+00:00:33.336 --> 00:00:35.976 align:middle
+en una matriz dividiéndola
+en espacios vacíos.
+
+00:00:36.916 --> 00:00:41.146 align:middle
+Si quieres una búsqueda realmente rica, deberías
+utilizar un sistema de búsqueda de verdad.
+
+00:00:41.146 --> 00:00:44.226 align:middle
+Pero podemos hacer cosas muy chulas
+sólo con la base de datos. Éste es el
+
+00:00:45.026 --> 00:00:49.826 align:middle
+objetivo: quiero que también coincidan los
+resultados en los que category.name esté
+
+00:00:49.996 --> 00:00:52.066 align:middle
+en una de las palabras de la matriz.
+
+00:00:53.436 --> 00:00:59.296 align:middle
+Justo después de category.name LIKE
+:searchTerm, añade OR category.name IN.
+
+00:01:00.136 --> 00:01:03.396 align:middle
+Lo único complicado de esto es la sintaxis.
+
+00:01:03.726 --> 00:01:12.936 align:middle
+Añade (). Si estuviéramos escribiendo una consulta SQL sin
+procesar, escribiríamos aquí una lista, como 'foo', 'bar'.
+
+00:01:12.936 --> 00:01:20.166 align:middle
+Pero con el constructor de consultas, en lugar de
+eso, pon un marcador de posición, como :termList.
+
+00:01:21.026 --> 00:01:25.616 align:middle
+A continuación, pásalo:
+->setParameter('termList', $termList).
+
+00:01:26.696 --> 00:01:33.016 align:middle
+Lo importante es que, cuando utilices IN,
+necesitarás los paréntesis como siempre...
+
+00:01:33.386 --> 00:01:38.996 align:middle
+pero dentro, en lugar de una lista
+separada por comas, pondrás una matriz.
+
+00:01:39.596 --> 00:01:42.116 align:middle
+Doctrine transformará eso por nosotros.
+
+00:01:42.766 --> 00:01:43.586 align:middle
+Y ahora...
+
+00:01:44.476 --> 00:01:48.136 align:middle
+¡bien! Una vez que sabes cómo
+funciona, es así de fácil.
+
+00:01:48.986 --> 00:01:52.466 align:middle
+Lo siguiente: Probablemente estés
+familiarizado con la función RAND()
+
+00:01:52.466 --> 00:01:55.306 align:middle
+de MySQL, o quizá con la función YEAR()...
+
+00:01:55.636 --> 00:02:00.406 align:middle
+o alguna de las muchas funciones
+MySQL o PostgreSQL que existen.
+
+00:02:00.936 --> 00:02:06.016 align:middle
+Pues bien, quizá te sorprenda saber que algunas
+de ellas no funcionan de forma inmediata.
