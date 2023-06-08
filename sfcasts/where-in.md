@@ -11,6 +11,8 @@ The query for this lives in `CategoryRepository`... on the `search()` method. Th
 If you want a *really* rich search, you should use a *real* search system.
 But we can do some pretty cool stuff just with the database.
 
+[[[ code('38a4d57d5f') ]]]
+
 Here's the goal: I want to *also* match results where `category.name` is *in*
 one of the words in the array.
 
@@ -21,6 +23,8 @@ tricky thing about this is the syntax. Add `()`. If we were writing a raw SQL qu
 we would write a list here, like `'foo', 'bar'`. But with the query builder, instead,
 put a placeholder - like `:termList`. Below pass that in:
 `->setParameter('termList', $termList)`.
+
+[[[ code('e173b7be76') ]]]
 
 The *key* thing is that, when you use `IN`, you *will* need the parentheses like
 normal... but inside of that, instead of a comma-separated list, you'll set an
