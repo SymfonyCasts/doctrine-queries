@@ -17,6 +17,8 @@ add a new *class* called `DiscontinuedFilter`. Make this extend `SQLFilter`...
 then go to Code -> Generate (or "command" + "N" on a Mac) and select "Implement
 Methods" to generate the one method we need `addFilterConstraint()`.
 
+[[[ code('87abc8f970') ]]]
+
 Once we have things set up, Doctrine will call `addFilterConstraint()` when it's
 building *any* query and pass us some info about *which* entity we're querying
 for: that's this `ClassMetadata` thing. It will also pass us the
@@ -26,6 +28,8 @@ Oh, and to avoid a deprecation notice, add a `string` return type to the method.
 
 To better see what's happening, let's do our favorite thing and
 `dd($targetEntity, $targetTableAlias)`.
+
+[[[ code('3bffbba387') ]]]
 
 ## Activating the Filter
 
@@ -37,6 +41,8 @@ First, in `config/packages/doctrine.yaml`, we need to tell Doctrine that the
 filter exists. Anywhere directly under the `orm` key, add `filters` and then
 `fortuneCookie_discontinued`. That string could be anything... and you'll see
 how we use it in a minute. Set this to the class: `App\Doctrine\DiscontinuedFilter`.
+
+[[[ code('24003e34ad') ]]]
 
 Easy peasy.
 
@@ -50,6 +56,8 @@ Open the controller... there we go... head up to the homepage and autowire
 `$entityManager->getFilters()` followed by `->enable()`. Then pass this the *same*
 key we used in `doctrine.yaml` - `fortuneCookie_discontinued`. Go grab it...
 and paste.
+
+[[[ code('f3f75ced71') ]]]
 
 With any luck, every query that we make *after* this line will
 use that filter. Head over to the homepage and... yes! It hit it!
@@ -65,9 +73,13 @@ to *only* add our `WHERE` clause when we're querying for fortune cookies.
 To do that, say if `$targetEntity->name !== FortuneCookie::class`, then
 `return ''`.
 
+[[[ code('d11f8a2329') ]]]
+
 This method returns a `string`... and that string is basically added to
 a `WHERE` clause. At the bottom, `return sprintf('%s.discontinued = false')`,
 passing `$targetTableAlias` for the wildcard.
+
+[[[ code('82b4f5a720') ]]]
 
 Ready to check this out? On the homepage, the "Proverbs" count should go from 3
 to 2. And... it does! Check out the query for this. Yup! It has
@@ -86,6 +98,8 @@ To do that, change this to `%s` and fill it in with `$this->getParameter()`...
 passing some string I'm making up: `discontinued`. You'll see how that's used in
 a minute.
 
+[[[ code('ef29324a88') ]]]
+
 Now, I don't *normally* add `%s` to my queries... because that can allow SQL
 injection attacks. In this case, it's okay, but only because the `getParameter()`
 method is designed to escape the value *for* us. In every other situation,
@@ -98,6 +112,8 @@ If we head over and try it now... we get a giant error! Yay!
 That's true! As soon as you read a parameter, you need to pass that *in* when you
 enable the filter. Do that with `->setParameter('discontinued')`... and let's say
 `false`.
+
+[[[ code('07ad8293a9') ]]]
 
 If we reload now... it's working! What happens if we change this to
 `true`? Refresh again and... yep! The number changed! We rule!
@@ -118,6 +134,8 @@ this onto a new line, set that to `class` then set `enabled` to `true`.
 And just like that, this will be enabled *everywhere*... though you could still
 disable it in specific controllers. Oh, but since we have the parameter, we also
 need `parameters`, with `discontinued: false`.
+
+[[[ code('f09fc4f1d3') ]]]
 
 And... there we go! Filters are *cool*.
 
