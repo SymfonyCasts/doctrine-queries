@@ -1,0 +1,388 @@
+WEBVTT
+
+00:00:01.136 --> 00:00:05.386 align:middle
+Gracias a nuestro nuevo y genial método, podemos
+filtrar las galletas de la suerte descatalogadas.
+
+00:00:05.556 --> 00:00:11.546 align:middle
+Pero, ¿y si queremos aplicar un criterio como éste
+de forma global a todas las consultas de una tabla?
+
+00:00:11.776 --> 00:00:16.196 align:middle
+Por ejemplo, diciéndole a Doctrine que
+siempre que busquemos galletas de la suerte,
+
+00:00:16.486 --> 00:00:20.796 align:middle
+queremos añadir un WHERE
+discontinued = false a esa consulta.
+
+00:00:21.496 --> 00:00:22.816 align:middle
+Parece una locura.
+
+00:00:22.946 --> 00:00:24.816 align:middle
+Y, sin embargo, es totalmente posible.
+
+00:00:25.316 --> 00:00:30.406 align:middle
+Para demostrarlo, volvamos a dejar
+nuestras dos plantillas como estaban antes.
+
+00:00:31.216 --> 00:00:32.096 align:middle
+Y ahora...
+
+00:00:32.646 --> 00:00:34.176 align:middle
+si entramos en "Proverbios"...
+
+00:00:34.776 --> 00:00:37.196 align:middle
+¡sí! Vuelven a aparecer las 3 fortunas.
+
+00:00:37.896 --> 00:00:42.236 align:middle
+Para aplicar una cláusula WHERE "global",
+podemos crear un filtro Doctrine.
+
+00:00:42.986 --> 00:00:47.046 align:middle
+En el directorio src/, añade un nuevo directorio
+llamado Doctrine/ para la organización.
+
+00:00:47.666 --> 00:00:51.926 align:middle
+Dentro de él, añade una nueva
+clase llamada DiscontinuedFilter.
+
+00:00:53.126 --> 00:00:55.266 align:middle
+Haz que ésta extienda SQLFilter...
+
+00:00:55.656 --> 00:01:00.776 align:middle
+luego ve a Código -> Generar (o "comando" +
+"N" en un Mac) y selecciona "Implementar métodos"
+
+00:01:01.126 --> 00:01:04.796 align:middle
+para generar el único método que
+necesitamos addFilterConstraint().
+
+00:01:05.796 --> 00:01:09.246 align:middle
+Una vez que tengamos todo listo, Doc
+trine llamará a addFilterConstraint()
+
+00:01:09.246 --> 00:01:12.676 align:middle
+cuando esté construyendo cualquier
+consulta y nos pasará información
+
+00:01:12.676 --> 00:01:17.386 align:middle
+sobre la entidad que estamos
+consultando: esto es ClassMetadata.
+
+00:01:17.706 --> 00:01:20.816 align:middle
+También nos pasará el $targetTableAlias,
+
+00:01:20.946 --> 00:01:23.506 align:middle
+que necesitaremos dentro de un
+minuto para modificar la consulta.
+
+00:01:24.176 --> 00:01:28.876 align:middle
+Ah, y para evitar un aviso de obsoleto,
+añade un tipo de retorno string al método.
+
+00:01:28.876 --> 00:01:32.676 align:middle
+Para ver mejor lo que ocurre,
+hagamos nuestra cosa favorita
+
+00:01:32.676 --> 00:01:36.416 align:middle
+y dd($targetEntity, $targetTableAlias).
+
+00:01:37.556 --> 00:01:39.826 align:middle
+Pero... cuando nos dirigimos
+y actualizamos la página...
+
+00:01:40.176 --> 00:01:41.496 align:middle
+¡no ocurre nada!
+
+00:01:42.056 --> 00:01:48.236 align:middle
+A diferencia de otras cosas, los filtros no se
+activan automáticamente con sólo crear la clase.
+
+00:01:48.656 --> 00:01:51.076 align:middle
+Activarlo es un proceso de dos pasos.
+
+00:01:51.106 --> 00:01:57.696 align:middle
+En primer lugar, en config/packages/doctrine.yaml,
+tenemos que decirle a Doctrine que el filtro existe.
+
+00:01:58.436 --> 00:02:05.786 align:middle
+En cualquier lugar directamente debajo de la clave
+orm, añade filters y luego fortuneCookie_discontinued.
+
+00:02:06.486 --> 00:02:08.246 align:middle
+Esa cadena puede ser cualquier cosa...
+
+00:02:08.556 --> 00:02:10.516 align:middle
+y verás cómo la utilizamos
+dentro de un minuto.
+
+00:02:11.056 --> 00:02:15.066 align:middle
+Pon esto en la clase:
+App\Doctrine\DiscontinuedFilter.
+
+00:02:16.166 --> 00:02:16.906 align:middle
+Muy fácil.
+
+00:02:17.566 --> 00:02:19.886 align:middle
+Esto ya está registrado en Doctrine...
+
+00:02:20.336 --> 00:02:24.196 align:middle
+pero como puedes ver aquí,
+todavía no se ha llamado.
+
+00:02:24.596 --> 00:02:28.516 align:middle
+El segundo paso es activarlo donde quieras.
+
+00:02:29.016 --> 00:02:33.796 align:middle
+En algunos casos, puede que quieras que este
+DiscontinuedFilter se utilice en una sección
+
+00:02:33.796 --> 00:02:35.586 align:middle
+de tu sitio, pero no en otra.
+
+00:02:36.236 --> 00:02:37.086 align:middle
+Abre el controlador...
+
+00:02:37.656 --> 00:02:38.326 align:middle
+allá vamos...
+
+00:02:38.866 --> 00:02:43.906 align:middle
+dirígete a la página principal y autoconecta
+EntityManagerInterface $entityManager.
+
+00:02:45.316 --> 00:02:46.526 align:middle
+Luego, justo encima,
+
+00:02:46.796 --> 00:02:51.056 align:middle
+di $entityManager->getFilters()
+seguido de ->enable().
+
+00:02:51.916 --> 00:02:57.696 align:middle
+Luego pásale la misma clave que utilizamos
+en doctrine.yaml - fortuneCookie_discontinued.
+
+00:02:58.186 --> 00:02:59.636 align:middle
+Ve a cogerla...
+
+00:02:59.636 --> 00:03:00.206 align:middle
+y pégala.
+
+00:03:01.226 --> 00:03:06.256 align:middle
+Con un poco de suerte, todas las consultas que hagamos
+después de esta línea utilizarán ese filtro.
+
+00:03:06.796 --> 00:03:08.556 align:middle
+Dirígete a la página principal y...
+
+00:03:08.956 --> 00:03:10.896 align:middle
+¡sí! ¡Ha dado en el clavo!
+
+00:03:10.896 --> 00:03:16.886 align:middle
+Y ¡woh! Este ClassMetadata es un gran objeto
+que lo sabe todo sobre nuestra entidad.
+
+00:03:17.486 --> 00:03:23.806 align:middle
+Aquí abajo, aparentemente, para cualquier consulta
+que estemos haciendo primero, el alias de la tabla
+
+00:03:24.046 --> 00:03:28.926 align:middle
+-el alias que se está utilizando
+en la consulta- es c0_.
+
+00:03:28.926 --> 00:03:30.706 align:middle
+¡De acuerdo! ¡Manos a la obra!
+
+00:03:31.326 --> 00:03:34.806 align:middle
+Como ya he dicho, esto se
+llamará para cada consulta.
+
+00:03:35.366 --> 00:03:40.696 align:middle
+Así que tenemos que tener cuidado de añadir nuestra cláusula
+WHERE sólo cuando estemos consultando galletas de la suerte.
+
+00:03:41.516 --> 00:03:48.766 align:middle
+Para ello, di if $targetEntity->name
+!== FortuneCookie::class, then return ''.
+
+00:03:48.766 --> 00:03:52.356 align:middle
+Este método devuelve un string...
+
+00:03:52.736 --> 00:03:56.596 align:middle
+y esa cadena se añade básicamente a
+una cláusula WHERE. En la parte inferior
+
+00:03:57.246 --> 00:04:02.256 align:middle
+, return sprintf('%s.discontinued = false'),
+
+00:04:02.776 --> 00:04:05.826 align:middle
+pasando $targetTableAlias por el comodín.
+
+00:04:06.726 --> 00:04:07.856 align:middle
+¿Listo para comprobarlo?
+
+00:04:08.566 --> 00:04:12.836 align:middle
+En la página de inicio, el recuento de
+"Proverbios" debería pasar de 3 a 2.
+
+00:04:12.836 --> 00:04:14.756 align:middle
+Y... ¡así es!
+
+00:04:15.266 --> 00:04:19.036 align:middle
+Echa un vistazo a la consulta.
+
+00:04:19.036 --> 00:04:24.746 align:middle
+Sí! Tiene t0.discontinued = false dentro de
+cada consulta para galletas de la fortuna.
+
+00:04:25.166 --> 00:04:26.426 align:middle
+¡Es increíble!
+
+00:04:27.026 --> 00:04:31.286 align:middle
+Ahora bien, una cosa complicada de
+estos filtros es que no son servicios.
+
+00:04:31.696 --> 00:04:33.576 align:middle
+Así que no pueden tener un constructor...
+
+00:04:33.696 --> 00:04:35.076 align:middle
+simplemente no está permitido.
+
+00:04:35.886 --> 00:04:40.476 align:middle
+Si necesitamos pasarle algo, como alguna
+configuración, tendremos que hacerlo de otra manera.
+
+00:04:40.476 --> 00:04:46.546 align:middle
+Por ejemplo, supongamos que a veces
+queremos ocultar las cookies discontinuas...
+
+00:04:46.666 --> 00:04:51.806 align:middle
+pero otras veces queremos mostrar
+sólo las descatalogadas, o al revés.
+
+00:04:52.346 --> 00:04:56.686 align:middle
+Básicamente, queremos poder
+cambiar este valor de false a true.
+
+00:04:57.386 --> 00:05:03.686 align:middle
+Para ello, cambia esto a %s y rellénalo
+con $this->getParameter()...
+
+00:05:04.026 --> 00:05:07.386 align:middle
+pasando una cadena que me
+estoy inventando: discontinued.
+
+00:05:07.806 --> 00:05:09.546 align:middle
+Verás cómo se utiliza en un minuto.
+
+00:05:10.216 --> 00:05:13.346 align:middle
+Ahora bien, normalmente no
+añado %s a mis consultas...
+
+00:05:13.626 --> 00:05:16.576 align:middle
+porque eso puede permitir
+ataques de inyección SQL.
+
+00:05:17.186 --> 00:05:21.776 align:middle
+En este caso, está bien, pero sólo porque
+el método getParameter() está diseñado
+
+00:05:21.776 --> 00:05:23.726 align:middle
+para escapar del valor por nosotros.
+
+00:05:24.466 --> 00:05:27.076 align:middle
+En cualquier otra situación, evítalo.
+
+00:05:28.096 --> 00:05:29.386 align:middle
+Si nos dirigimos y lo intentamos ahora...
+
+00:05:29.856 --> 00:05:31.486 align:middle
+¡obtendremos un error gigantesco!
+
+00:05:31.566 --> 00:05:34.826 align:middle
+¡Sí! El parámetro 'discontinuado' no existe.
+
+00:05:35.206 --> 00:05:35.936 align:middle
+¡Es cierto!
+
+00:05:36.496 --> 00:05:41.946 align:middle
+En cuanto leas un parámetro, tienes
+que pasarlo cuando actives el filtro.
+
+00:05:42.566 --> 00:05:45.236 align:middle
+Hazlo con ->setParameter('discontinued')...
+
+00:05:46.186 --> 00:05:47.706 align:middle
+y digamos false.
+
+00:05:48.676 --> 00:05:49.896 align:middle
+Si recargamos ahora...
+
+00:05:50.576 --> 00:05:51.806 align:middle
+¡funciona!
+
+00:05:52.386 --> 00:05:54.616 align:middle
+¿Qué ocurre si lo cambiamos por true?
+
+00:05:55.156 --> 00:05:56.636 align:middle
+Recarga de nuevo y...
+
+00:05:57.036 --> 00:05:58.716 align:middle
+¡sí! ¡El número ha cambiado!
+
+00:05:58.846 --> 00:06:01.266 align:middle
+¡Dominamos! Aunque...
+
+00:06:01.266 --> 00:06:05.486 align:middle
+probablemente estés pensando:
+Ryan, tío, sí, esto mola...
+
+00:06:05.486 --> 00:06:08.806 align:middle
+¿pero no puedo activar
+este filtro globalmente...
+
+00:06:09.166 --> 00:06:12.346 align:middle
+sin necesidad de poner este
+código en cada controlador?
+
+00:06:12.936 --> 00:06:14.026 align:middle
+¡Por supuesto que sí!
+
+00:06:14.356 --> 00:06:16.766 align:middle
+Vuelve al controlador y comenta esto.
+
+00:06:17.506 --> 00:06:20.266 align:middle
+Al hacerlo, el número vuelve a ser 3.
+
+00:06:21.056 --> 00:06:24.286 align:middle
+Para activarlo globalmente,
+vuelve a la configuración:
+
+00:06:24.686 --> 00:06:27.026 align:middle
+vamos a complicarlo un poco más.
+
+00:06:27.626 --> 00:06:32.876 align:middle
+Pon esto en una nueva línea, ponlo
+en class y luego pon enabled en true.
+
+00:06:33.836 --> 00:06:37.086 align:middle
+Y así de fácil, esto se
+activará en todas partes...
+
+00:06:37.386 --> 00:06:41.206 align:middle
+aunque aún podrías desactivarlo
+en controladores específicos.
+
+00:06:41.846 --> 00:06:47.296 align:middle
+Ah, pero ya que tenemos el parámetro, también
+necesitamos parameters, con discontinued: false.
+
+00:06:49.196 --> 00:06:51.356 align:middle
+Y... ¡ya está!
+
+00:06:51.806 --> 00:06:53.326 align:middle
+Los filtros molan.
+
+00:06:54.206 --> 00:06:58.686 align:middle
+Lo siguiente: Hablemos de cómo utilizar
+el práctico operador IN con una consulta.
