@@ -11,10 +11,14 @@ Change the query *back* to `->findWithFortunesJoin()`, which lives over here in
 `CategoryRepository`. Remember: this joins over to `FortuneCookie` and selects
 that data, solving our N+1 problem.
 
+[[[ code('41d5951e47') ]]]
+
 Now that we're doing this, we can *also* control the *order*. Say
 `->orderBy('RAND()', Criteria::ASC)`. We're only querying for *one* `Category`...
 but this will control the order of the related fortune cookies as well...
 which we'll see when we loop over them.
+
+[[[ code('724ce25bbf') ]]]
 
 Pretty cool! If we try this... *error*?
 
@@ -43,6 +47,8 @@ of different categories under here, which you can read more about in the
 documentation. In our case, we need to add `numeric_functions` along with the *name*
 of the function, which is `rand`. Set this to the class that will let Doctrine know
 what to do: `DoctrineExtensions\Query\Mysql\Rand`.
+
+[[[ code('03cff179d1') ]]]
 
 You definitely don't have to take my word about how this should be set up. Over in
 the documentation... there's a "config" link down here... and if you click
