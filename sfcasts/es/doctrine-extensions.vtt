@@ -1,0 +1,179 @@
+WEBVTT
+
+00:00:01.056 --> 00:00:05.156 align:middle
+Por si acaso, aleatoricemos el orden
+de las fortunas en una página.
+
+00:00:05.606 --> 00:00:07.876 align:middle
+Prueba con esta categoría, que tiene 4.
+
+00:00:08.686 --> 00:00:11.706 align:middle
+Empieza abriendo FortuneController
+y buscando showCategory().
+
+00:00:12.586 --> 00:00:15.786 align:middle
+En este momento, estamos consultando
+la categoría de la forma normal.
+
+00:00:16.536 --> 00:00:20.656 align:middle
+Luego, en nuestra plantilla, hacemos
+un bucle sobre category.fortuneCookies.
+
+00:00:21.256 --> 00:00:25.176 align:middle
+Cambia la consulta a
+->findWithFortunesJoin(),
+
+00:00:25.746 --> 00:00:28.456 align:middle
+que está aquí en CategoryRepository.
+
+00:00:29.386 --> 00:00:36.096 align:middle
+Recuerda: esto se une a FortuneCookie y selecciona
+esos datos, resolviendo nuestro problema N+1.
+
+00:00:36.926 --> 00:00:41.496 align:middle
+Ahora que hacemos esto, también
+podemos controlar el orden.
+
+00:00:41.496 --> 00:00:45.406 align:middle
+Digamos ->orderBy('RAND()', Criteria::ASC).
+
+00:00:46.096 --> 00:00:48.586 align:middle
+Sólo estamos consultando un Category...
+
+00:00:48.986 --> 00:00:52.726 align:middle
+pero esto controlará también el orden de
+las galletas de la fortuna relacionadas...
+
+00:00:53.006 --> 00:00:55.326 align:middle
+que veremos cuando hagamos
+un bucle sobre ellas.
+
+00:00:55.906 --> 00:00:56.416 align:middle
+¡Genial!
+
+00:00:57.166 --> 00:00:58.356 align:middle
+Si probamos esto...
+
+00:00:58.866 --> 00:01:03.846 align:middle
+¿error? Esperaba una función
+conocida, obtuvo RAND Espera...
+
+00:01:04.186 --> 00:01:07.226 align:middle
+RAND es una función conocida de MySQL.
+
+00:01:07.706 --> 00:01:09.366 align:middle
+Entonces... ¿por qué no funciona?
+
+00:01:10.186 --> 00:01:16.166 align:middle
+Vale, Doctrine soporta muchas
+funciones dentro de DQL, pero no todo.
+
+00:01:16.716 --> 00:01:21.656 align:middle
+¿Por qué? Porque Doctrine está diseñado para
+trabajar con muchos tipos diferentes de bases de datos...
+
+00:01:21.916 --> 00:01:26.296 align:middle
+y si sólo una o algunas bases
+de datos soportan una función
+
+00:01:26.296 --> 00:01:28.966 align:middle
+como RAND, entonces Doctrine
+no puede soportarla.
+
+00:01:29.496 --> 00:01:32.156 align:middle
+Afortunadamente, podemos añadir esta función
+
+00:01:32.366 --> 00:01:37.456 align:middle
+o cualquier función personalizada que queramos nosotros
+mismos o, en realidad, a través de una biblioteca.
+
+00:01:38.186 --> 00:01:41.096 align:middle
+Busca la biblioteca
+beberlei/doctrineextensions.
+
+00:01:41.706 --> 00:01:43.226 align:middle
+Es genial.
+
+00:01:43.726 --> 00:01:47.776 align:middle
+Nos permite añadir un montón de funciones
+diferentes a varios tipos de bases de datos.
+
+00:01:48.356 --> 00:01:50.856 align:middle
+Baja aquí y coge la línea composer require...
+
+00:01:51.486 --> 00:01:53.776 align:middle
+pero no necesitamos la parte dev-master.
+
+00:01:54.786 --> 00:01:58.916 align:middle
+¡Ejecuta eso! Instalar esto no
+cambia nada en nuestra aplicación...
+
+00:01:59.256 --> 00:02:03.806 align:middle
+sólo añade un montón de código que podemos
+activar para las funciones que queramos.
+
+00:02:04.536 --> 00:02:05.936 align:middle
+Para ello, vuelve a
+
+00:02:05.936 --> 00:02:12.026 align:middle
+config/packages/doctrine.yaml, en
+algún lugar debajo de orm, digamos dql.
+
+00:02:12.756 --> 00:02:15.226 align:middle
+Aquí hay un montón de categorías diferentes,
+
+00:02:15.556 --> 00:02:17.926 align:middle
+sobre las que puedes leer
+más en la documentación.
+
+00:02:18.426 --> 00:02:22.526 align:middle
+En nuestro caso, tenemos que
+añadir numeric_functions junto
+
+00:02:22.526 --> 00:02:25.506 align:middle
+con el nombre de la función, que es rand.
+
+00:02:26.096 --> 00:02:30.536 align:middle
+Pon esto en la clase que permitirá
+a Doctrine saber qué hacer:
+
+00:02:31.116 --> 00:02:33.066 align:middle
+DoctrineExtensions\Query\Mysql\Rand.
+
+00:02:33.896 --> 00:02:38.266 align:middle
+Definitivamente, no tienes que fiarte de mi
+palabra sobre cómo debe configurarse esto.
+
+00:02:38.786 --> 00:02:40.156 align:middle
+En la documentación...
+
+00:02:40.516 --> 00:02:42.386 align:middle
+hay un enlace "config" aquí abajo...
+
+00:02:42.776 --> 00:02:46.116 align:middle
+y si haces clic en mysql.yml, verás
+
+00:02:46.116 --> 00:02:50.366 align:middle
+que describe todas las cosas que
+puedes hacer y cómo activarlas.
+
+00:02:50.366 --> 00:02:52.746 align:middle
+Voy a cerrar eso...
+
+00:02:53.186 --> 00:02:54.416 align:middle
+refrescar, y...
+
+00:02:54.866 --> 00:02:59.696 align:middle
+¡lo tengo! Cada vez que actualizamos, los
+resultados aparecen en un orden diferente.
+
+00:03:00.556 --> 00:03:02.786 align:middle
+Vale, ¡otro equipo de temas!
+
+00:03:03.256 --> 00:03:06.366 align:middle
+Terminemos con una situación
+compleja de groupBy() en
+
+00:03:06.756 --> 00:03:10.766 align:middle
+la que seleccionamos algunos objetos
+y algunos datos adicionales a la vez.
