@@ -1,0 +1,353 @@
+WEBVTT
+
+00:00:01.056 --> 00:00:02.426 align:middle
+Un último reto.
+
+00:00:02.756 --> 00:00:04.646 align:middle
+En la página de inicio,
+tenemos siete consultas.
+
+00:00:04.926 --> 00:00:07.016 align:middle
+Una para obtener las categorías...
+
+00:00:07.326 --> 00:00:12.126 align:middle
+y 6 más para obtener el recuento de galletas
+de la suerte de cada una de esas 6 categorías.
+
+00:00:12.746 --> 00:00:14.226 align:middle
+Tener 7 consultas es...
+
+00:00:14.416 --> 00:00:15.896 align:middle
+probablemente no sea un problema...
+
+00:00:16.176 --> 00:00:18.796 align:middle
+y no deberías preocuparte
+por optimizar el rendimiento
+
+00:00:18.846 --> 00:00:21.926 align:middle
+hasta que realmente veas que hay un problema.
+
+00:00:22.176 --> 00:00:26.316 align:middle
+Pero desafiémonos a convertir
+esas 7 consultas en una sola.
+
+00:00:26.826 --> 00:00:30.146 align:middle
+Pensemos: podríamos consultar
+todas las categorías,
+
+00:00:30.506 --> 00:00:34.856 align:middle
+JOIN hasta las galletas de la suerte
+relacionadas, GROUP BY la categoría
+
+00:00:35.236 --> 00:00:37.216 align:middle
+y, a continuación, COUNT
+las galletas de la suerte.
+
+00:00:37.786 --> 00:00:39.896 align:middle
+Si eso no tiene sentido, no te preocupes.
+
+00:00:40.226 --> 00:00:41.366 align:middle
+Lo veremos en acción.
+
+00:00:42.176 --> 00:00:43.606 align:middle
+Dirígete a FortuneController. Estamos
+
+00:00:45.616 --> 00:00:48.856 align:middle
+en la página de inicio, y estamos
+utilizando el método findAllOrdered()
+
+00:00:48.856 --> 00:00:50.536 align:middle
+de $categoryRepository.
+
+00:00:51.266 --> 00:00:52.506 align:middle
+Ve a buscar ese método...
+
+00:00:53.886 --> 00:00:54.406 align:middle
+aquí está.
+
+00:00:54.916 --> 00:00:57.036 align:middle
+Ya estamos seleccionando en category.
+
+00:00:57.486 --> 00:01:04.846 align:middle
+Ahora también ->addSelect('COUNT(fortuneCookie.id)
+AS fortuneCookiesTotal').
+
+00:01:06.146 --> 00:01:08.906 align:middle
+Para unirnos y conseguir
+ese alias fortuneCookie,
+
+00:01:09.256 --> 00:01:13.986 align:middle
+añade ->leftJoin('category.fortuneCookies'),
+luego fortuneCookie.
+
+00:01:15.116 --> 00:01:20.766 align:middle
+Por último, para que este COUNT funcione
+correctamente, di ->addGroupBy('category.id').
+
+00:01:20.906 --> 00:01:24.196 align:middle
+Bien, ¡veamos qué obtenemos!
+
+00:01:24.686 --> 00:01:27.326 align:middle
+Aquí abajo, dd($query->getResult()).
+
+00:01:28.216 --> 00:01:32.216 align:middle
+Anteriormente, esto devolvía
+un array de objetos Category.
+
+00:01:32.966 --> 00:01:34.116 align:middle
+Si refrescamos...
+
+00:01:34.486 --> 00:01:41.286 align:middle
+es un array, pero ahora es un array de arrays
+donde la clave 0 es el objeto Category,
+
+00:01:41.286 --> 00:01:44.286 align:middle
+y luego tenemos este fortuneCookiesTotal extra.
+
+00:01:45.026 --> 00:01:47.766 align:middle
+Así que... ¡seleccionó
+exactamente lo que queríamos!
+
+00:01:48.276 --> 00:01:50.966 align:middle
+Pero... cambió la estructura subyacente.
+
+00:01:51.516 --> 00:01:53.476 align:middle
+Y tenía que hacerlo, ¿no?
+
+00:01:53.926 --> 00:01:59.766 align:middle
+Tenía que darnos de alguna manera el objeto
+Category y la columna extra entre bastidores.
+
+00:02:00.496 --> 00:02:01.936 align:middle
+Elimina la sentencia dd.
+
+00:02:02.356 --> 00:02:04.066 align:middle
+Esto sigue devolviendo un array...
+
+00:02:04.486 --> 00:02:09.946 align:middle
+pero elimina el @return porque ya no
+devuelve una matriz de objetos Category.
+
+00:02:10.476 --> 00:02:15.166 align:middle
+También podríamos actualizarlo a un phpdoc
+más elegante que describa la nueva estructura.
+
+00:02:16.026 --> 00:02:21.026 align:middle
+A continuación, para tener en cuenta el
+nuevo retorno, dirígete a homepage.html.twig.
+
+00:02:21.686 --> 00:02:24.346 align:middle
+Estamos haciendo un bucle
+sobre category in categories...
+
+00:02:24.346 --> 00:02:29.166 align:middle
+lo que no es del todo correcto ahora:
+la categoría está en este índice 0.
+
+00:02:29.726 --> 00:02:33.336 align:middle
+Cámbialo por for categoryData in categories...
+
+00:02:33.986 --> 00:02:38.666 align:middle
+y dentro añade set category = categoryData[0].
+
+00:02:39.396 --> 00:02:42.256 align:middle
+Es feo, pero hablaremos de ello más adelante.
+
+00:02:43.016 --> 00:02:44.496 align:middle
+Desplázate hasta length.
+
+00:02:45.076 --> 00:02:49.246 align:middle
+En lugar de llegar al otro lado de
+la relación -lo que funcionaría,
+
+00:02:49.246 --> 00:02:55.276 align:middle
+pero provocaría consultas adicionales-
+utiliza categoryData.fortuneCookiesTotal.
+
+00:02:57.016 --> 00:02:57.896 align:middle
+Vamos a hacerlo
+
+00:02:58.286 --> 00:02:59.436 align:middle
+Actualiza y...
+
+00:02:59.946 --> 00:03:01.796 align:middle
+¡una sola consulta!
+
+00:03:02.016 --> 00:03:07.036 align:middle
+¡Guau! Lo peor de todo es que la
+estructura de nuestros datos ha cambiado...
+
+00:03:07.336 --> 00:03:09.956 align:middle
+y ahora tenemos que leer esta fea clave 0.
+
+00:03:10.706 --> 00:03:17.306 align:middle
+No lo haré ahora, pero una solución mejor sería
+aprovechar un objeto DTO para contener esto.
+
+00:03:17.786 --> 00:03:22.696 align:middle
+Por ejemplo, podríamos crear una nueva
+clase llamada CategoryWithFortuneCount
+
+00:03:22.756 --> 00:03:26.116 align:middle
+con dos propiedades: $category y $fortuneCount.
+
+00:03:26.796 --> 00:03:31.666 align:middle
+En este método del repositorio, podríamos
+hacer un bucle sobre $query->getResults()
+
+00:03:32.046 --> 00:03:35.936 align:middle
+y crear un objeto
+CategoryWithFortuneCount para cada uno.
+
+00:03:36.596 --> 00:03:41.126 align:middle
+Al final, nuestro método devolvería
+una matriz de CategoryWithFortuneCount.
+
+00:03:41.716 --> 00:03:46.696 align:middle
+Devolver una matriz de objetos es mucho
+mejor que una matriz de matrices...
+
+00:03:46.816 --> 00:03:49.086 align:middle
+con algún índice aleatorio 0.
+
+00:03:49.726 --> 00:03:53.596 align:middle
+Hablando de esa estructura
+modificada, si buscamos algo...
+
+00:03:53.886 --> 00:03:59.416 align:middle
+obtenemos un error: Imposible acceder a una
+clave "0" en un objeto de la clase Category.
+
+00:04:00.176 --> 00:04:01.676 align:middle
+Es... esta línea de aquí.
+
+00:04:03.586 --> 00:04:07.166 align:middle
+Cuando buscamos algo, utilizamos
+el método search() y...
+
+00:04:07.426 --> 00:04:13.056 align:middle
+¡sorpresa! Ese método no tiene
+los nuevos addSelect() y groupBy():
+
+00:04:13.456 --> 00:04:15.966 align:middle
+sigue devolviendo una
+matriz de objetos Category.
+
+00:04:16.516 --> 00:04:20.866 align:middle
+Para solucionarlo, crea un private function
+aquí abajo que pueda contener el grupo por:
+
+00:04:21.356 --> 00:04:27.766 align:middle
+addGroupByCategory(QueryBuilder
+$qb) y devolverá un QueryBuilder.
+
+00:04:28.516 --> 00:04:30.486 align:middle
+Ah, y haz que el argumento sea opcional...
+
+00:04:30.886 --> 00:04:34.216 align:middle
+y crea un nuevo constructor de
+consultas si no tenemos ninguno.
+
+00:04:36.716 --> 00:04:42.216 align:middle
+Vale, sube y roba la lógica - el ->addSelect(),
+->leftJoin(), y ->addGroupBy().
+
+00:04:43.246 --> 00:04:44.396 align:middle
+Pégalo aquí abajo.
+
+00:04:45.306 --> 00:04:51.646 align:middle
+Ah, y addGroupByCategory() no es un gran nombre:
+utiliza addGroupByCategoryAndCountFortunes().
+
+00:04:52.766 --> 00:04:55.946 align:middle
+Fantástico. Arriba, ¡simplifica!
+
+00:04:56.816 --> 00:05:00.756 align:middle
+Cambia esto por
+addGroupByCategoryAndCountFortunes()...
+
+00:05:01.436 --> 00:05:05.796 align:middle
+y entonces no necesitaremos ->addGroupBy(),
+->leftJoin(), ni ->addSelect().
+
+00:05:06.896 --> 00:05:10.476 align:middle
+Para asegurarte de que esa
+parte funciona, gira y...
+
+00:05:10.476 --> 00:05:11.816 align:middle
+vuelve a la página de inicio.
+
+00:05:12.416 --> 00:05:13.496 align:middle
+Eso tiene buena pinta...
+
+00:05:13.856 --> 00:05:14.916 align:middle
+pero si avanzamos...
+
+00:05:15.206 --> 00:05:16.466 align:middle
+sigue estropeado.
+
+00:05:17.336 --> 00:05:25.236 align:middle
+Abajo en search() añade $qb =
+$this->addGroupByCategoryAndCountFortunes($qb).
+
+00:05:25.236 --> 00:05:27.316 align:middle
+Y ahora...
+
+00:05:28.156 --> 00:05:31.616 align:middle
+otro error: fortuneCookie ya está definido.
+
+00:05:32.206 --> 00:05:34.416 align:middle
+¡Maldición! Pero, sí, tiene sentido.
+
+00:05:34.856 --> 00:05:36.376 align:middle
+Estamos uniendo nuestro nuevo método...
+
+00:05:36.696 --> 00:05:40.166 align:middle
+y también en addFortuneCookieJoinAndSelect().
+
+00:05:41.066 --> 00:05:45.976 align:middle
+Afortunadamente, ya no necesitamos esta
+segunda llamada: estábamos uniendo
+
+00:05:45.976 --> 00:05:49.016 align:middle
+y seleccionando para
+resolver el problema N+1...
+
+00:05:49.356 --> 00:05:52.796 align:middle
+pero ahora tenemos una consulta
+aún más avanzada para hacerlo.
+
+00:05:53.426 --> 00:05:57.696 align:middle
+Copia nuestro nuevo método,
+bórralo y pégalo sobre el antiguo.
+
+00:05:59.286 --> 00:05:59.926 align:middle
+Y ahora...
+
+00:06:00.486 --> 00:06:02.966 align:middle
+¡ya está! ¡Sólo 1 consulta!
+
+00:06:03.956 --> 00:06:05.666 align:middle
+Amigos, ¡lo hemos conseguido!
+
+00:06:06.056 --> 00:06:11.236 align:middle
+¡Guau! Gracias por acompañarme en este viaje mágico
+a través de todas las cosas de Doctrine Query.
+
+00:06:11.796 --> 00:06:14.836 align:middle
+Estas cosas son raras, geniales y divertidas.
+
+00:06:15.296 --> 00:06:17.096 align:middle
+Espero que lo hayas disfrutado
+tanto como yo. Si te
+
+00:06:17.646 --> 00:06:22.326 align:middle
+encuentras con alguna situación loca en la
+que no hayamos pensado, tienes alguna pregunta
+
+00:06:22.516 --> 00:06:26.096 align:middle
+o fotos de tu gato, siempre estamos
+aquí para ti en los comentarios.
+
+00:06:26.796 --> 00:06:28.326 align:middle
+Bueno, ¡hasta la próxima!
