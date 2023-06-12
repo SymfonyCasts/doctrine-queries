@@ -22,7 +22,11 @@ that `fortuneCookie` alias, add `->leftJoin('category.fortuneCookies')`, then
 `fortuneCookie`. Finally, for this `COUNT` to work correctly, say
 `->addGroupBy('category.id')`.
 
+[[[ code('a7b2c44938') ]]]
+
 Okay, let's see what we get! Down here, `dd($query->getResult())`.
+
+[[[ code('513a83c557') ]]]
 
 Previously, this returned an `array` of `Category` objects. If we
 refresh... it *is* an array, but it's now an *array of arrays* where the `0` key
@@ -40,9 +44,13 @@ over `category in categories`... which isn't quite right now: the category is
 on this `0` index. Change this to say `for categoryData in categories`... then inside
 add `set category = categoryData[0]`. It's ugly, but more on that in a minute.
 
+[[[ code('8012330388') ]]]
+
 Scroll over to the `length`. Instead of reaching across the relationship - 
 which *would* work, but would trigger extra queries - use
 `categoryData.fortuneCookiesTotal`.
+
+[[[ code('a5929333b3') ]]]
 
 Let's do this! Refresh and... just one query! Woo!
 
@@ -67,21 +75,31 @@ It's... this line right here. When we search for something, we use the `search()
 method and... surprise! That method doesn't have the new `addSelect()` and
 `groupBy()`: it still returns an array of `Category` objects.
 
+[[[ code('e10a64df1c') ]]]
+
 To fix that, create a `private function` down here that can hold the group by:
 `addGroupByCategory(QueryBuilder $qb)` and it'll return a `QueryBuilder`. Oh, and
 make the argument optional... then create a new query builder if we don't
 have one.
 
+[[[ code('45492e9602') ]]]
+
 Ok, head up and steal the logic - the `->addSelect()`, `->leftJoin()`, and
 `->addGroupBy()`. Paste that down here. Oh, and `addGroupByCategory()` isn't a
 great name: use `addGroupByCategoryAndCountFortunes()`.
 
+[[[ code('caaa7aba76') ]]]
+
 *Awesome*. Above, simplify! Change *this* to `addGroupByCategoryAndCountFortunes()`...
 and then we don't need the `->addGroupBy()`, `->leftJoin()`, or `->addSelect()`.
+
+[[[ code('ac5bea4917') ]]]
 
 To make sure *that* part is working, spin over and... head back to the homepage.
 That looks good... but if we go forward... still broken. Down in `search()`
 add `$qb = $this->addGroupByCategoryAndCountFortunes($qb)`.
+
+[[[ code('47e0b13692') ]]]
 
 And now... *another* error:
 
@@ -92,6 +110,8 @@ Darn! But, yea, that makes sense. We're joining in our new method... and also in
 call at all anymore: we were joining and selecting to solve the N+1 problem... but
 now we have an even *more* advanced query to do that. Copy our new method, delete,
 then paste it over the old one.
+
+[[[ code('3dbcd5555f') ]]]
 
 And now... got it! Only 1 query!
 
