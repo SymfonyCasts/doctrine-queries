@@ -66,7 +66,7 @@ And woh! This `ClassMetadata` is a *big* object that knows *all* about our entit
 Down here, apparently, for whatever query we're making first, the table alias -
 the alias being used in the query - is `c0_`. Ok! Let's get to work!
 
-## Adding the Filter Logoc
+## Adding the Filter Logic
 
 As I mentioned, this will be called for *every* query. So we need to be careful
 to *only* add our `WHERE` clause when we're querying for fortune cookies.
