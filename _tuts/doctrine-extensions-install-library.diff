@@ -11,7 +11,7 @@ index d5f59a0..5307d87 100644
          "doctrine/doctrine-migrations-bundle": "^3.2",
          "doctrine/orm": "^2.13",
 diff --git a/composer.lock b/composer.lock
-index eff160f..760b54a 100644
+index 3146192..2660b26 100644
 --- a/composer.lock
 +++ b/composer.lock
 @@ -4,8 +4,65 @@
