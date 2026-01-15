@@ -80,7 +80,8 @@ Volviendo a la entidad, digamos que `$criteria` es igual a`FortuneCookieReposito
 
 [[[ code('2a4e54ba70') ]]]
 
-Centralización lógica, ¡comprobado! Ah, e incluso podemos reutilizar estos objetos `Criteria` dentro de un `QueryBuilder`. Veamos... No tengo un buen ejemplo... así que... en este método, arriba, hagamos de cuenta que estoy creando un `QueryBuilder` con`$this->createQueryBuilder('fortune_cookie')`. Para añadir los criterios es...`->addCriteria(self::createFortuneCookiesStillInProduction())`.
+Centralización lógica, ¡comprobado! Ah, e incluso podemos reutilizar estos objetos `Criteria` dentro de un `QueryBuilder`. Veamos... No tengo un buen ejemplo... así que... en este método, arriba, hagamos de cuenta que estoy creando un `QueryBuilder` con`$this->createQueryBuilder('fortune_cookie')`. Para añadir los criterios es...
+`->addCriteria(self::createFortuneCookiesStillInProduction())`.
 
 Así que, aunque el sistema de criterios es un poco diferente del QueryBuilder normal, podemos reutilizarlos en todas partes. Ah, y comprobemos que todo sigue funcionando. ¡Ya está!
 
