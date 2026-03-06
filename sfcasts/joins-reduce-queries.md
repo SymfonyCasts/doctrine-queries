@@ -41,7 +41,7 @@ main query for the categories plus 6 more queries to get the fortune cookie data
 This isn't *necessarily* a problem. It *might* hurt performance on your page...
 or be no big deal. But if it *is* slowing things down, we *can* fix it with a `JOIN`.
 After all, when we query for the categories, we're *already* joining over to the
-fortune cookie table. So... if we just grab the fortine cookie data in the first
+fortune cookie table. So... if we just grab the fortune cookie data in the first
 query, couldn't we build this whole page *with* that *one* query? The answer is...
 totally!
 
