@@ -4,7 +4,13 @@ Cuando estamos en la página principal, vemos siete consultas. Tenemos una para 
 
 ## Relaciones de carga perezosa
 
-Si has utilizado Doctrine, probablemente reconozcas lo que ocurre. Doctrine carga sus relaciones perezosamente. Sigamos la lógica. En `FortuneController`, empezamos consultando una matriz de `$categories`. En esa consulta, si nos fijamos, sólo está seleccionando datos de categorías: no datos de galletas de la suerte. Pero si entramos en la plantilla - `templates/fortune/homepage.html.twig` - hacemos un bucle sobre las categorías y finalmente llamamos a `category.fortuneCookies|length`.
+Si has utilizado Doctrine, probablemente reconozcas lo que ocurre. Doctrine carga sus relaciones perezosamente. Sigamos la lógica. En `FortuneController`, empezamos buscando una matriz de `$categories`. 
+
+[[[ code('18107dd0f4') ]]]
+
+En esa consulta, si nos fijamos, sólo está seleccionando datos de categorías: no datos de galletas de la suerte. Pero si entramos en la plantilla - `templates/fortune/homepage.html.twig` - hacemos un bucle sobre las categorías y finalmente llamamos a `category.fortuneCookies|length`.
+
+[[[ code('68b4c5bddc') ]]]
 
 ## El problema N+1
 
@@ -24,7 +30,15 @@ Para ver esto en acción, busca algo primero. Hago esto porque activará el mét
 
 Vale, ya nos estamos uniendo a `fortuneCookie`. Entonces, ¿cómo podemos seleccionar sus datos? Es deliciosamente sencillo. Y de nuevo, el orden no importa:`->addSelect('fortuneCookie')`.
 
-¡Ya está! ¡Pruébalo! Las consultas se redujeron a una y la página sigue funcionando! Si abres el perfilador... y ves la consulta formateada... ¡sí! Se está uniendo a `fortune_cookie` y cogiendo los datos de `fortune_cookie` al mismo tiempo. ¡El problema "N+1" está resuelto!
+[[[ code('83b2d224ff') ]]]
+
+¡Ya está! ¡Pruébalo! ¡Las consultas se redujeron a una y la página sigue funcionando!
+
+***TIP
+Quizá notes que el recuento de galletas de la suerte de cada categoría también cambia. Antes, Doctrine ejecutaba consultas separadas para contar las galletas de la suerte relacionadas sin tener en cuenta nuestro término de búsqueda. Pero después de añadir `addSelect('fortuneCookie')`, el ORM utiliza esos datos para contar en lugar de hacer nuevas consultas... ¡que incluyen nuestro término de búsqueda!
+***
+
+Si abres el perfilador... y ves la consulta formateada... ¡sí! Se está uniendo a `fortune_cookie` y cogiendo los datos de `fortune_cookie` al mismo tiempo. ¡El problema "N+1" está resuelto!
 
 ## ¿Dónde se esconden los datos de la unión?
 
